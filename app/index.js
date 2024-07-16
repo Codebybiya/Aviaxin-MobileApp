@@ -16,12 +16,12 @@ const Home = () => {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.whiteText1}>Aviaxin A Project of </Text>
+        <Text style={styles.whiteText1}>Aviaxin</Text>
         <Text style={styles.whiteText}>Welcome Back</Text>
       </View>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => router.push("/(tabs)/Vet")}
+        onPress={() => router.push("/auth/Login")}
       >
         <Text style={styles.buttonText}>Sign In</Text>
       </TouchableOpacity>
