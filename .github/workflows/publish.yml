@@ -24,4 +24,4 @@ jobs:
       - name: Publish to Expo
         env:
           EXPO_TOKEN: Cv8d70cCquDFpBT0-HGpHPbxGSNrEXaF_m1-ERc2
-        run: eas update --channel main --auto
+        run: eas update --channel default --auto
