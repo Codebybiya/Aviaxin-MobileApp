@@ -23,7 +23,7 @@ const Home = () => {
         style={styles.button}
         onPress={() => router.push("/(tabs)/Vet")}
       >
-        <Text style={styles.buttonText}>Sign In</Text>
+        <Text style={styles.buttonText}>Sign Inn to aviaxin</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
