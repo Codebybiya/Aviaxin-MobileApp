@@ -1,0 +1,27 @@
+name: Publish Expo App
+on:
+  push:
+    branches:
+      - main
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - name: Install dependencies
+        run: npm install
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+      - name: Authenticate with Expo
+        run: eas whoami
+        env:
+          EXPO_TOKEN: Cv8d70cCquDFpBT0-HGpHPbxGSNrEXaF_m1-ERc2
+      - name: Publish to Expo
+        env:
+          EXPO_TOKEN: Cv8d70cCquDFpBT0-HGpHPbxGSNrEXaF_m1-ERc2
+        run: eas update --auto

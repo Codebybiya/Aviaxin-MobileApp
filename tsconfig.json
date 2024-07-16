@@ -1,0 +1,17 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
+, "app/about.js", "app/(tabs)/admin/notifications.js", "app/(tabs)/admin/about.js", "app/(tabs)/admin/addadmin.js", "app/(tabs)/admin/index.js"  ]
+}
