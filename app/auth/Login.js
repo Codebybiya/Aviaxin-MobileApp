@@ -13,7 +13,8 @@ import { useRouter } from "expo-router";
 import axios from "axios";
 import * as Yup from "yup";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import config from "../../assets/config";
+const baseUrl = `${config.baseUrl}`;
 const Login = () => {
   const router = useRouter();
 
@@ -76,54 +77,55 @@ const Login = () => {
     });
   };
 
-  // // Navigate to role-specific screen
-  // const navigateToRoleScreen = (role) => {
-  //   if (role === "microbiologist") {
-  //     router.push("/(tabs)/micro");
-  //   } else if (role === "vetenarian") {
-  //     router.push("/(tabs)/Vet");
-  //   } else if (role === "farmer") {
-  //     router.push("/(tabs)/micro");
-  //   } else if (role === "superadmin") {
-  //     router.push("/(tabs)/admin");
-  //   } else {
-  //     router.push("/(tabs)/");
-  //   }
-  // };
+  // Navigate to role-specific screen
+  const navigateToRoleScreen = (role) => {
+    if (role === "microbiologist") {
+      router.replace("/(tabs)/micro");
+    } else if (role === "vetenarian") {
+      router.replace("/(tabs)/Vet");
+    } else if (role === "farmer") {
+      router.replace("/(tabs)/micro");
+    } else if (role === "superadmin") {
+      router.replace("/(tabs)/admin");
+    }
+    else {
+      router.push("/(tabs)/");
+    }
+  };
 
-  // // Handle form submission
-  // const handleSubmit = async () => {
-  //   const isValid = await validateInputs();
-  //   if (!isValid) return;
+  // Handle form submission
+  const handleSubmit = async () => {
+    const isValid = await validateInputs();
+    if (!isValid) return;
 
-  //   const userData = { email, password };
+    const userData = { email, password };
 
-  //   try {
-  //     const response = await axios.post(
-  //       "http://192.168.253.110:8080/aviaxin/user/login",
-  //       userData
-  //     );
-  //     if (response.data.status === "failed") {
-  //       showPopup(response.data.message);
-  //       return;
-  //     }
+    try {
+      const response = await axios.post(
+        `${baseUrl}/user/login`,
+        userData
+      );
+      if (response.data.status === "failed") {
+        showPopup(response.data.message);
+        return;
+      }
 
-  //     const { name, email, role } = response.data;
-  //     console.log(response.data);
+      const { name, email, role } = response.data;
+      console.log(response.data);
 
-  //     const userToSave = { name, email, role };
+      const userToSave = { name, email, role };
 
-  //     await AsyncStorage.setItem("userData", JSON.stringify(userToSave));
-  //     navigateToRoleScreen(role);
-  //   } catch (error) {
-  //     if (axios.isAxiosError(error)) {
-  //       console.error("Axios error:", error.message);
-  //     } else {
-  //       console.error("Unexpected error:", error);
-  //     }
-  //     showPopup("An error occurred. Please try again.");
-  //   }
-  // };
+      await AsyncStorage.setItem("userData", JSON.stringify(userToSave));
+      navigateToRoleScreen(role);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Axios error:", error.message);
+      } else {
+        console.error("Unexpected error:", error);
+      }
+      showPopup("An error occurred. Please try again.");
+    }
+  };
 
   if (loading) {
     return (
@@ -182,7 +184,8 @@ const Login = () => {
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => router.push("/(tabs)/Vet")}
+            // onPress={() => router.push("/(tabs)/Vet")}
+            onPress={() => { handleSubmit(); }}
           >
             <Text style={styles.buttonText}>Sign In</Text>
           </TouchableOpacity>

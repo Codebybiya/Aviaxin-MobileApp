@@ -16,18 +16,18 @@ const Home = () => {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.whiteText1}>Aviaxin Appp</Text>
+        <Text style={styles.whiteText1}>Aviaxin App</Text>
         <Text style={styles.whiteText}>Welcome Back</Text>
       </View>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => router.push("/auth/Login")}
+        onPress={() => router.replace("/auth/Login")}
       >
         <Text style={styles.buttonText}>Sign In</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => router.push("/auth/Register")}
+        onPress={() => router.replace("/auth/Register")}
       >
         <Text style={styles.buttonText}>Register</Text>
       </TouchableOpacity>
