@@ -87,8 +87,7 @@ const Login = () => {
       router.replace("/(tabs)/micro");
     } else if (role === "superadmin") {
       router.replace("/(tabs)/admin");
-    }
-    else {
+    } else {
       router.push("/(tabs)/");
     }
   };
@@ -101,10 +100,9 @@ const Login = () => {
     const userData = { email, password };
 
     try {
-      const response = await axios.post(
-        `${baseUrl}/user/login`,
-        userData
-      );
+      const response = await axios.post(`${baseUrl}/users/login`, userData);
+      console.log(`base url  ${baseUrl}`);
+
       if (response.data.status === "failed") {
         showPopup(response.data.message);
         return;
@@ -185,7 +183,9 @@ const Login = () => {
           <TouchableOpacity
             style={styles.button}
             // onPress={() => router.push("/(tabs)/Vet")}
-            onPress={() => { handleSubmit(); }}
+            onPress={() => {
+              handleSubmit();
+            }}
           >
             <Text style={styles.buttonText}>Sign In</Text>
           </TouchableOpacity>
