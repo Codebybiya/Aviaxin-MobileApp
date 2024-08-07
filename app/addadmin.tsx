@@ -9,6 +9,9 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
+import config from "../assets/config";
+
+const backendUrl = `${config.backendUrl}`;
 
 interface Admin {
   _id: string;
@@ -34,9 +37,10 @@ const AddAdmin: React.FC = () => {
 
   const fetchAdmins = async () => {
     console.log("Hello i reached here ");
+    console.log("bacekend url is ", backendUrl);
     try {
       const response = await axios.get(
-        "http://192.168.253.110:8080/aviaxin/user/fetchAdmins"
+        `${backendUrl}/admin/fetchAdmins`
       ); // Replace with your API endpoint
       console.log(response.data);
       setAdmins(response.data);
@@ -48,12 +52,12 @@ const AddAdmin: React.FC = () => {
   const handleCreateSuperAdmin = async () => {
     try {
       const response = await axios.post(
-        "http://192.168.253.110:8080/aviaxin/user/signup",
+        `${backendUrl}/users/register`,
         {
-          firstName,
-          lastName,
-          phNo: phoneNumber,
-          role,
+          firstname:firstName,
+          lastname:lastName,
+          phno: phoneNumber,
+          role:role.toLowerCase(),
           email,
           password,
         }

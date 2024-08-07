@@ -1,5 +1,6 @@
+import axios from "axios";
 import { router } from "expo-router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -9,8 +10,35 @@ import {
   ScrollView,
   TextInput,
 } from "react-native";
+import config from "@/assets/config";
+
+const backendUrl = `${config.backendUrl}`;
+interface Products {
+  _id: string;
+  productName: string;
+  productPrice: string;
+  imagePath: string;
+}
 
 const HomeTab = () => {
+  const [products, setProducts] = useState<Products[]>([]);
+  useEffect(() => {
+    // Fetch the list of products when the component mounts
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    console.log("Hello, I reached view products");
+    console.log("backend url is ", backendUrl);
+    try {
+      const response = await axios.get(`${backendUrl}/products/allproduct`); // Replace with your API endpoint
+      console.log(response.data);
+      setProducts(response?.data?.data);
+      console.log(products);
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+    }
+  };
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.header}>Vetnarian Name </Text>
@@ -39,7 +67,7 @@ const HomeTab = () => {
       </View>
 
       <View style={styles.productGrid}>
-        {Array.from({ length: 2 }).map((_, index) => (
+        {/* {Array.from({ length: 2 }).map((_, index) => (
           <View key={index} style={styles.productCard}>
             <Image
               source={{ uri: "https://via.placeholder.com/150" }} // Placeholder image, replace with actual product image URL
@@ -48,6 +76,24 @@ const HomeTab = () => {
             <Text style={styles.productName}>Nike Air Max 200</Text>
             <Text style={styles.productTag}>Trending Now</Text>
             <Text style={styles.productPrice}>$ 240.00</Text>
+            <TouchableOpacity
+              style={styles.detailButton}
+              onPress={() => router.push("../../productdetail")}
+            >
+              <Text style={styles.detailButtonText}>View Details</Text>
+            </TouchableOpacity>
+          </View>
+        ))} */}
+        {products.map((item, index) => (
+          <View key={index} style={styles.productCard}>
+            <Image
+              // source={{uri:item.imagePath}} // Placeholder image, replace with actual product image URL
+              source={{ uri: "https://via.placeholder.com/150" }} // Placeholder image, replace with actual product image URL
+              style={styles.productImage}
+            />
+            <Text style={styles.productName}>{item.productName}</Text>
+            <Text style={styles.productTag}>Trending Now</Text>
+            <Text style={styles.productPrice}>{item.productPrice}</Text>
             <TouchableOpacity
               style={styles.detailButton}
               onPress={() => router.push("../../productdetail")}

@@ -51,11 +51,11 @@ const Register = () => {
     };
 
     axios
-      .post("http://192.168.253.110:8080/aviaxin/user/signup", userData)
+      .post(`${backendUrl}/users/register`, userData)
       .then((res) => {
         console.log(res.data);
 
-        router.push("/auth/Login");
+        router.push("/auth/login");
       })
       .catch((e) => console.log(e));
   };

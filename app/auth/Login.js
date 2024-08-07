@@ -15,6 +15,8 @@ import * as Yup from "yup";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import config from "../../assets/config";
 const baseUrl = `${config.baseUrl}`;
+const backendUrl = `${config.backendUrl}`;
+
 const Login = () => {
   const router = useRouter();
 
@@ -98,11 +100,12 @@ const Login = () => {
     if (!isValid) return;
 
     const userData = { email, password };
+    console.log(userData);
+    console.log(`base url  ${baseUrl}`);
 
     try {
-      const response = await axios.post(`${baseUrl}/users/login`, userData);
-      console.log(`base url  ${baseUrl}`);
-
+      const response = await axios.post(`${backendUrl}/users/login`, userData);
+      console.log(response);
       if (response.data.status === "failed") {
         showPopup(response.data.message);
         return;

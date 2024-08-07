@@ -87,6 +87,23 @@ const HomeTab = () => {
           <Text style={styles.sectionText}>Add Member</Text>
         </TouchableOpacity>
       </View>
+      <View style={styles.row}>
+        <TouchableOpacity
+          style={styles.section}
+          onPress={() => router.push("/viewadmins")}
+        >
+          <FontAwesome name="hourglass-half" size={24} color="#FFFFFF" />
+          <Text style={styles.sectionText}>View Admins</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.section}
+          onPress={() => router.push("/viewproducts")}
+        >
+          <FontAwesome name="user-plus" size={24} color="#FFFFFF" />
+          <Text style={styles.sectionText}>View Products</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };

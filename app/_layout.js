@@ -40,6 +40,14 @@ export default function RootLayout() {
         name="orderdetail"
         options={{ title: "Order Detail", headerShown: true }}
       />
+      <Stack.Screen
+        name="viewproducts"
+        options={{ title: "All Products", headerShown: true }}
+      />
+      <Stack.Screen
+        name="viewadmins"
+        options={{ title: "All Admins", headerShown: true }}
+      />
     </Stack>
   );
 }
