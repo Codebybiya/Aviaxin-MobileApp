@@ -28,25 +28,47 @@ export const adminInputs = [
       maxLength: 15,
     },
   },
+];
 
-//   {
-//     name: "password",
-//     type: "password",
-//     placeholder: "Password",
-//     icon: "lock",
-//     validation: {
-//       required: true,
-//       minLength: 5,
-//     },
-//   },
-//   {
-//     name: "confirmPassword",
-//     type: "password",
-//     placeholder: "Confirm Password",
-//     icon: "lock",
-//     validation: {
-//       required: true,
-//       match:"password"
-//     },
-//   },
+export const productInputs = [
+  {
+    name: "productName",
+    type: "text",
+    placeholder: "Product Name",
+    icon: "user",
+    validation: {
+      required: "true",
+    },
+    
+  },
+  {
+    name: "productPrice",
+    type: "number",
+    placeholder: "Product Price",
+    icon: "user",
+    validation: {
+      required: "true",
+    },
+    
+  },
+  {
+    name: "productDescription",
+    type: "text",
+    placeholder: "First Description",
+    icon: "user",
+    validation: {
+      required: "true",
+    },
+    
+  },
+  {
+    name: "imagePath",
+    type: "text",
+    placeholder: "Upload Your Image",
+    icon: "user",
+    validation: {
+      required: "true",
+    },
+    
+  },
 ];

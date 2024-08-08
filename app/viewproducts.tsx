@@ -70,7 +70,7 @@ const ViewProducts: React.FC = () => {
         justifyContent: "space-between",
       }}
     >
-      <Image source={{ uri: item.imagePath }} style={styles.productImage} />
+      <Image source={{ uri: `${backendUrl}/${item.imagePath}` }} style={styles.productImage}  />
       <Text style={styles.productText}>{item.productName}</Text>
       <Text style={styles.productText}>{item.productPrice}</Text>
       <View style={{ flex: 1, flexDirection: "row" }}>
