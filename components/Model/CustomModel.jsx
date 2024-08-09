@@ -1,9 +1,15 @@
-import React from "react";
 import { Modal, StyleSheet, TouchableOpacity, View } from "react-native";
 import CustomForm from "../Form/Form";
 import { AntDesign } from "@expo/vector-icons";
 
-const CustomModel = ({ visible, onClose, inputs, id, setShow,handleSubmit }) => {
+const CustomModel = ({
+  visible,
+  onClose,
+  inputs,
+  id,
+  setShow,
+  handleSubmit,
+}) => {
   return (
     <Modal
       animationType="slide"
@@ -19,7 +25,7 @@ const CustomModel = ({ visible, onClose, inputs, id, setShow,handleSubmit }) => 
           >
             <AntDesign name="close" size={24} color="black" />
           </TouchableOpacity>
-          <CustomForm inputs={inputs} handleSubmit={handleSubmit}/>
+          <CustomForm inputs={inputs} handleSubmit={handleSubmit} />
         </View>
       </View>
     </Modal>

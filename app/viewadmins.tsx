@@ -4,7 +4,6 @@ import {
   Text,
   View,
   FlatList,
-  Image,
   Alert,
   TouchableOpacity,
 } from "react-native";
@@ -22,13 +21,13 @@ interface Admins {
   _id: string;
   firstname: string;
   lastname: string;
-  //   imagePath: string;
 }
 
 const ViewAdmins: React.FC = () => {
   const [admins, setAdmins] = useState<Admins[]>([]);
   const [show, setShow] = useState<boolean>(false);
   const [id, setId] = useState<string>("");
+
   const showPopup = (message: string, title: string) => {
     Alert.alert(title, message, [{ text: "OK" }], {
       cancelable: true,
@@ -41,79 +40,66 @@ const ViewAdmins: React.FC = () => {
   };
 
   const handleSubmit = async (body: object) => {
-    if(!id)
-      return;
+    if (!id) return;
     try {
-      console.log("body is ", body);
       const resp = await axios.put(
         `${backendUrl}/admin/updateAdmin/${id}`,
         body
       );
-      console.log(resp.data);
       if (resp.data.status === "success") {
         showPopup(resp.data.message, "Admin Updated!");
+        fetchAdmins(); // Refresh the list after update
       }
     } catch (error) {
-      console.log(error);
       showPopup("Admin cannot be updated", "Error");
     }
   };
+
   const handleDelete = async (id: string) => {
     try {
       const response = await axios.delete(
         `${backendUrl}/admin/deleteAdmin/${id}`
       );
-      console.log(response.data);
-
       if (response.data.status === "Success") {
         setAdmins(admins.filter((admin) => admin._id !== id));
         showPopup(response.data.message, "Admin Deleted");
       }
     } catch (error) {
-      console.log(error);
-      // showPopup("Error", error.message);
+      showPopup("Admin cannot be deleted", "Error");
     }
   };
+
   useEffect(() => {
-    // Fetch the list of admins when the component mounts
     fetchAdmins();
   }, []);
 
   const fetchAdmins = async () => {
-    console.log("Hello, I reached view admins");
-    console.log("backend url is ", backendUrl);
     try {
-      const response = await axios.get(`${backendUrl}/admin/fetchAdmins`); // Replace with your API endpoint
-      console.log(response.data);
+      const response = await axios.get(`${backendUrl}/admin/fetchAdmins`);
       setAdmins(response?.data?.data);
-      console.log(admins);
     } catch (error) {
       console.error("Failed to fetch admins:", error);
     }
   };
 
-  const renderProductItem = ({ item }: { item: Admins }) => (
-    <View
-      style={{
-        flex: 1,
-        flexDirection: "row",
-        marginTop: 10,
-        paddingLeft: 10,
-        paddingRight: 10,
-        justifyContent: "space-between",
-      }}
-    >
-      <Text style={styles.adminText}>{item.user_id}</Text>
-      <Text style={styles.adminText}>
-        {item.firstname} {item.lastname}
-      </Text>
-      <Text style={styles.adminText}>{item.phno}</Text>
-      <View style={{ flex: 1, flexDirection: "row" }}>
+  const renderAdminItem = ({ item }: { item: Admins }) => (
+    <View style={styles.adminItem}>
+      <View style={styles.adminInfo}>
+        <Text style={styles.adminText}>{item.user_id}</Text>
+        <Text style={styles.adminName}>
+          {item.firstname} {item.lastname}
+        </Text>
+        <Text style={styles.adminText}>{item.phno}</Text>
+      </View>
+      <View style={styles.adminActions}>
         <TouchableOpacity onPress={() => handleUpdate(item._id)}>
-          <Ionicons name="create-outline" size={28} />
+          <Ionicons name="create-outline" size={28} color="#007AFF" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleDelete(item._id)}>
-          <Ionicons name="trash-outline" size={28} />
+        <TouchableOpacity
+          onPress={() => handleDelete(item._id)}
+          style={styles.deleteButton}
+        >
+          <Ionicons name="trash-outline" size={28} color="#FF3B30" />
         </TouchableOpacity>
       </View>
     </View>
@@ -125,13 +111,13 @@ const ViewAdmins: React.FC = () => {
         <Text style={styles.headerText}>ID</Text>
         <Text style={styles.headerText}>Name</Text>
         <Text style={styles.headerText}>Contact</Text>
-        <Text style={styles.headerText}>Operations</Text>
+        <Text style={styles.headerText}>Actions</Text>
       </View>
       <FlatList
         data={admins}
-        renderItem={renderProductItem}
+        renderItem={renderAdminItem}
         keyExtractor={(item) => item._id}
-        // contentContainerStyle={[styles.listContentContainer,{backgroundColor:"yellow"}]}
+        contentContainerStyle={styles.listContentContainer}
       />
       {show && id && (
         <CustomModel
@@ -153,33 +139,55 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: "#F8F9FA",
   },
   header: {
-    backgroundColor: "black",
-    paddingLeft: 20,
-    paddingRight: 20,
+    backgroundColor: "#007AFF",
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 10,
   },
   headerText: {
-    fontWeight: "bold",
+    fontWeight: "600",
     color: "#fff",
+    flex: 1,
+    textAlign: "center",
   },
   adminItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 10,
-    borderBottomColor: "#ccc",
-    borderBottomWidth: 1,
-    marginTop: 20,
+    backgroundColor: "#FFF",
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  adminInfo: {
+    flexDirection: "column",
+    flex: 2,
+  },
+  adminName: {
+    fontSize: 16,
+    fontWeight: "500",
+    marginTop: 4,
   },
   adminText: {
-    flex: 1,
-    textAlign: "left",
+    fontSize: 14,
+    color: "#555",
   },
-  adminImage: {
-    width: 100,
-    height: 100,
+  adminActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    flex: 1,
+  },
+  deleteButton: {
+    marginLeft: 15,
   },
   listContentContainer: {
     paddingBottom: 20,

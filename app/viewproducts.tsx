@@ -11,6 +11,8 @@ import {
 import axios from "axios";
 import config from "../assets/config";
 import { Ionicons } from "@expo/vector-icons";
+import CustomModel from "@/components/Model/CustomModel"; // Assuming this component is implemented for update modal
+import { productInputs } from "@/constants/constants"; // Update the inputs as needed
 
 const backendUrl = `${config.backendUrl}`;
 
@@ -22,63 +24,81 @@ interface Products {
 }
 
 const ViewProducts: React.FC = () => {
+  const [products, setProducts] = useState<Products[]>([]);
+  const [show, setShow] = useState<boolean>(false);
+  const [id, setId] = useState<string>("");
+
   const showPopup = (message: string, title: string) => {
     Alert.alert(title, message, [{ text: "OK" }], {
       cancelable: true,
     });
   };
+
+  const handleUpdate = (id: string) => {
+    setShow(true);
+    setId(id);
+  };
+
+  const handleSubmit = async (body: object) => {
+    if (!id) return;
+    try {
+      const resp = await axios.put(
+        `${backendUrl}/products/updateProduct/${id}`,
+        body
+      );
+      if (resp.data.status === "Success") {
+        showPopup(resp.data.message, "Product Updated!");
+        fetchProducts(); // Refresh the list after update
+      }
+    } catch (error) {
+      showPopup("Product cannot be updated", "Error");
+    }
+  };
+
   const handleDelete = async (id: string) => {
     try {
       const response = await axios.delete(
         `${backendUrl}/products/deleteProduct/${id}`
       );
-      console.log(response.data);
-      showPopup(response.data.message,"Product Deleted");
-      
       if (response.data.status === "Success") {
         setProducts(products.filter((product) => product._id !== id));
+        showPopup(response.data.message, "Product Deleted");
       }
     } catch (error) {
-      console.log(error);
-      // showPopup("Error", error.message);
+      showPopup("Product cannot be deleted", "Error");
     }
   };
-  const [products, setProducts] = useState<Products[]>([]);
+
   useEffect(() => {
-    // Fetch the list of products when the component mounts
     fetchProducts();
-  }, [products.length]);
+  }, []);
 
   const fetchProducts = async () => {
-    console.log("Hello, I reached view products");
-    console.log("backend url is ", backendUrl);
     try {
-      const response = await axios.get(`${backendUrl}/products/allproduct`); // Replace with your API endpoint
-      console.log(response.data);
+      const response = await axios.get(`${backendUrl}/products/allproduct`);
       setProducts(response?.data?.data);
-      console.log(products);
     } catch (error) {
       console.error("Failed to fetch products:", error);
     }
   };
 
   const renderProductItem = ({ item }: { item: Products }) => (
-    <View
-      style={{
-        flex: 1,
-        flexDirection: "row",
-        justifyContent: "space-between",
-      }}
-    >
-      <Image source={{ uri: `${backendUrl}/${item.imagePath}` }} style={styles.productImage}  />
+    <View style={styles.productItem}>
+      <Image
+        source={{ uri: `${backendUrl}/${item.imagePath}` }}
+        style={styles.productImage}
+      />
       <Text style={styles.productText}>{item.productName}</Text>
-      <Text style={styles.productText}>{item.productPrice}</Text>
-      <View style={{ flex: 1, flexDirection: "row" }}>
-        <TouchableOpacity onPress={() => handleDelete(item._id)}>
-          <Ionicons name="create-outline" size={28} />
+      <Text style={styles.productText}>${item.productPrice}</Text>
+      <View style={styles.productActions}>
+        <TouchableOpacity onPress={() => handleUpdate(item._id)}>
+          <Ionicons name="create-outline" size={28} color="#007AFF" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleDelete(item._id)}>
-          <Ionicons name="trash-outline" size={28} />
+        <TouchableOpacity
+          onPress={() => handleDelete(item._id)}
+          style={styles.deleteButton}
+        >
+          <Ionicons name="trash-outline" size={28} color="#FF3B30" />
         </TouchableOpacity>
       </View>
     </View>
@@ -97,9 +117,18 @@ const ViewProducts: React.FC = () => {
           data={products}
           renderItem={renderProductItem}
           keyExtractor={(item) => item._id}
-          // contentContainerStyle={[styles.listContentContainer,{backgroundColor:"yellow"}]}
         />
       </View>
+      {show && id && (
+        <CustomModel
+          visible={show}
+          onClose={() => setShow(false)}
+          inputs={productInputs}
+          id={id}
+          setShow={setShow}
+          handleSubmit={handleSubmit}
+        />
+      )}
     </View>
   );
 };
@@ -113,30 +142,51 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   header: {
-    backgroundColor: "black",
-    paddingLeft: 20,
-    paddingRight: 20,
+    backgroundColor: "#007AFF",
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 10,
   },
   headerText: {
-    fontWeight: "bold",
+    fontWeight: "600",
     color: "#fff",
+    flex: 1,
+    textAlign: "center",
   },
   productItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 10,
-    borderBottomColor: "#ccc",
-    borderBottomWidth: 1,
-    marginTop: 20,
+    backgroundColor: "#FFF",
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  productImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30, // Circular image
+    marginRight: 15,
   },
   productText: {
     flex: 1,
+    fontSize: 16,
+    fontWeight: "500",
     textAlign: "left",
   },
-  productImage: {
-    width: 100,
-    height: 100,
+  productActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    flex: 1,
+  },
+  deleteButton: {
+    marginLeft: 15,
   },
   listContentContainer: {
     paddingBottom: 20,
