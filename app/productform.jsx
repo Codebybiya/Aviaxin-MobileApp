@@ -10,12 +10,16 @@ import {
   Platform,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import { router } from "expo-router";
 
-const ProductForm = () => {
+const ProductForm = ({ onSubmit }) => {
   const [veterinarianName, setVeterinarianName] = useState("");
   const [colonyName, setColonyName] = useState("");
   const [ortConfirmed, setOrtConfirmed] = useState("");
+
+  const handleCheckout = () => {
+    // Pass the form data back to the parent component
+    onSubmit({ veterinarianName, colonyName, ortConfirmed });
+  };
 
   return (
     <KeyboardAvoidingView
@@ -68,10 +72,7 @@ const ProductForm = () => {
             </View>
           </View>
 
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => router.push("../../orderstatus")}
-          >
+          <TouchableOpacity style={styles.button} onPress={handleCheckout}>
             <Text style={styles.buttonText}>Checkout</Text>
           </TouchableOpacity>
         </View>
