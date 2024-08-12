@@ -16,6 +16,9 @@
     "app/(tabs)/admin/about.js",
     "app/(tabs)/admin/.js",
     "app/(tabs)/admin/index.js",
-    "app/productdetail.js"
+    "app/productdetail.js",
+    "app/orderstatus.js",
+    "app/placedorders.js",
+    "app/orderdetail.js"
   ]
 }

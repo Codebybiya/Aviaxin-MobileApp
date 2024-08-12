@@ -51,22 +51,26 @@ const ProductDetail = () => {
       productName: product.productName,
       productPrice: product.productPrice,
       quantity,
-      imagePath: product.imagePath, // Added image path to show the image in the cart
+      imagePath: product.imagePath,
     };
 
     try {
-      // Fetch the current cart items
       const existingCart = await AsyncStorage.getItem("cartItems");
       let cartItems = existingCart ? JSON.parse(existingCart) : [];
 
-      // Add the new item to the cart
       cartItems.push(cartItem);
 
-      // Save the updated cart back to AsyncStorage
       await AsyncStorage.setItem("cartItems", JSON.stringify(cartItems));
 
       Alert.alert("Success", "Product added to cart!", [
-        { text: "OK", onPress: () => router.push("/cart") },
+        {
+          text: "OK",
+          onPress: () =>
+            router.push({
+              pathname: "/cart",
+              params: { cartItems: JSON.stringify(cartItems) }, // Pass the cart items as a parameter
+            }),
+        },
       ]);
     } catch (error) {
       console.error("Failed to add to cart:", error);

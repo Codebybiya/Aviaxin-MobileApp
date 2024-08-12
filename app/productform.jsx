@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -8,17 +8,87 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import config from "@/assets/config";
 
-const ProductForm = ({ onSubmit }) => {
+const backendUrl = `${config.backendUrl}`;
+
+const ProductForm = () => {
+  const { cartItems } = useLocalSearchParams();
+  const parsedCartItems = JSON.parse(cartItems);
+  const router = useRouter();
+
+  const [userID, setUserID] = useState(null);
+
+  useEffect(() => {
+    const fetchUserID = async () => {
+      try {
+        const storedUserData = await AsyncStorage.getItem("userData");
+        if (storedUserData) {
+          const parsedUserData = JSON.parse(storedUserData);
+          const { userid } = parsedUserData;
+
+          if (userid) {
+            console.log("User ID found:", userid); // Debugging line
+            setUserID(userid);
+          } else {
+            console.error("User ID not found in stored data.");
+            Alert.alert("Error", "User ID not found. Please log in.");
+          }
+        } else {
+          console.error("No user data found in AsyncStorage.");
+          Alert.alert("Error", "User data not found. Please log in.");
+        }
+      } catch (error) {
+        console.error("Failed to fetch user ID:", error);
+      }
+    };
+
+    fetchUserID();
+  }, []);
+
   const [veterinarianName, setVeterinarianName] = useState("");
   const [colonyName, setColonyName] = useState("");
   const [ortConfirmed, setOrtConfirmed] = useState("");
 
-  const handleCheckout = () => {
-    // Pass the form data back to the parent component
-    onSubmit({ veterinarianName, colonyName, ortConfirmed });
+  const handleCheckout = async () => {
+    if (!userID) {
+      Alert.alert("Error", "User ID not found. Please log in.");
+      return;
+    }
+
+    try {
+      const orders = parsedCartItems.map((item) => ({
+        userID,
+        productID: item.productID,
+        quantity: item.quantity,
+        veterinarianName,
+        colonyName,
+        ortConfirmed,
+      }));
+
+      for (const order of orders) {
+        console.log("Sending order to:", `${backendUrl}/orders/addorders`);
+        console.log("Order data:", orders);
+
+        await axios.post(`${backendUrl}/orders/addorders`, order);
+      }
+
+      Alert.alert("Success", "Your order has been placed!", [
+        { text: "OK", onPress: () => router.push("/orderconfirmation") },
+      ]);
+    } catch (error) {
+      console.error("Error placing order:", error);
+      Alert.alert(
+        "Error",
+        "There was an issue placing your order. Please try again."
+      );
+    }
   };
 
   return (
@@ -73,7 +143,7 @@ const ProductForm = ({ onSubmit }) => {
           </View>
 
           <TouchableOpacity style={styles.button} onPress={handleCheckout}>
-            <Text style={styles.buttonText}>Checkout</Text>
+            <Text style={styles.buttonText}>Place Order</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -82,6 +152,8 @@ const ProductForm = ({ onSubmit }) => {
 };
 
 export default ProductForm;
+
+// Styles for ProductForm screen...
 
 const styles = StyleSheet.create({
   container: {

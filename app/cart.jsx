@@ -29,42 +29,45 @@ const Cart = () => {
     loadCartItems();
   }, []);
 
+  const saveCartItems = async (items) => {
+    try {
+      await AsyncStorage.setItem("cartItems", JSON.stringify(items));
+      setCartItems(items);
+    } catch (error) {
+      console.error("Failed to save cart items:", error);
+    }
+  };
+
+  const handleIncreaseQuantity = (index) => {
+    const updatedCart = [...cartItems];
+    updatedCart[index].quantity += 1;
+    saveCartItems(updatedCart);
+  };
+
+  const handleDecreaseQuantity = (index) => {
+    const updatedCart = [...cartItems];
+    if (updatedCart[index].quantity > 1) {
+      updatedCart[index].quantity -= 1;
+      saveCartItems(updatedCart);
+    } else {
+      handleRemoveItem(index);
+    }
+  };
+
+  const handleRemoveItem = (index) => {
+    const updatedCart = [...cartItems];
+    updatedCart.splice(index, 1);
+    saveCartItems(updatedCart);
+  };
+
   const handleCheckout = () => {
-    router.push("/checkout");
+    router.push({
+      pathname: "/productform",
+      params: { cartItems: JSON.stringify(cartItems) }, // Pass cart items as a parameter
+    });
   };
 
-  const handleClearCart = async () => {
-    Alert.alert(
-      "Clear Cart",
-      "Are you sure you want to clear the cart?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Clear",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await AsyncStorage.removeItem("cartItems");
-              setCartItems([]);
-              Alert.alert("Cart cleared!");
-            } catch (error) {
-              console.error("Failed to clear cart:", error);
-              Alert.alert(
-                "Error",
-                "Failed to clear the cart. Please try again."
-              );
-            }
-          },
-        },
-      ],
-      { cancelable: true }
-    );
-  };
-
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item, index }) => (
     <View style={styles.item}>
       <Image source={{ uri: item.imagePath }} style={styles.productImage} />
       <View style={styles.details}>
@@ -72,10 +75,30 @@ const Cart = () => {
         <Text style={styles.productPrice}>
           Price: ${item.productPrice.toFixed(2)}
         </Text>
-        <Text style={styles.quantity}>Quantity: {item.quantity}</Text>
+        <View style={styles.quantityContainer}>
+          <TouchableOpacity
+            style={styles.quantityButton}
+            onPress={() => handleDecreaseQuantity(index)}
+          >
+            <Text style={styles.quantityButtonText}>-</Text>
+          </TouchableOpacity>
+          <Text style={styles.quantityText}>{item.quantity}</Text>
+          <TouchableOpacity
+            style={styles.quantityButton}
+            onPress={() => handleIncreaseQuantity(index)}
+          >
+            <Text style={styles.quantityButtonText}>+</Text>
+          </TouchableOpacity>
+        </View>
         <Text style={styles.totalItemPrice}>
           Total: ${(item.productPrice * item.quantity).toFixed(2)}
         </Text>
+        <TouchableOpacity
+          style={styles.removeButton}
+          onPress={() => handleRemoveItem(index)}
+        >
+          <Text style={styles.removeButtonText}>Remove</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -92,7 +115,7 @@ const Cart = () => {
           <FlatList
             data={cartItems}
             renderItem={renderItem}
-            keyExtractor={(item) => item.productID}
+            keyExtractor={(item, index) => `${item.productID}-${index}`}
           />
           <View style={styles.totalContainer}>
             <Text style={styles.totalLabel}>Total Amount:</Text>
@@ -103,12 +126,6 @@ const Cart = () => {
             onPress={handleCheckout}
           >
             <Text style={styles.checkoutButtonText}>Proceed to Checkout</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.clearCartButton}
-            onPress={handleClearCart}
-          >
-            <Text style={styles.clearCartButtonText}>Clear Cart</Text>
           </TouchableOpacity>
         </>
       ) : (
@@ -158,16 +175,43 @@ const styles = StyleSheet.create({
     color: "#777",
     marginTop: 5,
   },
-  quantity: {
+  quantityContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  quantityButton: {
+    backgroundColor: "#00bcd4",
+    padding: 5,
+    borderRadius: 5,
+    marginHorizontal: 5,
+  },
+  quantityButtonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  quantityText: {
     fontSize: 16,
-    color: "#555",
-    marginTop: 5,
+    fontWeight: "bold",
+    color: "#333",
   },
   totalItemPrice: {
     fontSize: 16,
     color: "#00bcd4",
     marginTop: 5,
     fontWeight: "bold",
+  },
+  removeButton: {
+    marginTop: 10,
+    backgroundColor: "#ff5c5c",
+    padding: 5,
+    borderRadius: 5,
+  },
+  removeButtonText: {
+    color: "#fff",
+    fontSize: 14,
+    textAlign: "center",
   },
   totalContainer: {
     flexDirection: "row",

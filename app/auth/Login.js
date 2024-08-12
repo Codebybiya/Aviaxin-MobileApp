@@ -72,7 +72,6 @@ const Login = () => {
     }
   };
 
-  // Function to show popup message
   const showPopup = (message) => {
     Alert.alert("Login Error", message, [{ text: "OK" }], {
       cancelable: false,
@@ -100,31 +99,30 @@ const Login = () => {
     if (!isValid) return;
 
     const userData = { email, password };
-    console.log(userData);
-    console.log(`base url  ${baseUrl}`);
 
     try {
       const response = await axios.post(`${backendUrl}/users/login`, userData);
-      console.log(response);
-      if (response.data.status === "failed") {
+
+      if (response.data.status === "Failed") {
         showPopup(response.data.message);
         return;
       }
 
-      const { name, email, role } = response.data;
-      console.log(response.data);
+      const { userid, email, role } = response.data; // Assuming 'userid' is the field returned by the backend
 
-      const userToSave = { name, email, role };
+      const userToSave = { userid, email, role };
 
+      // Save user data, including userID, to AsyncStorage
       await AsyncStorage.setItem("userData", JSON.stringify(userToSave));
       navigateToRoleScreen(role);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error("Axios error:", error.message);
+        showPopup("An error occurred. Please try again.");
       } else {
         console.error("Unexpected error:", error);
+        showPopup("An unexpected error occurred. Please try again.");
       }
-      showPopup("An error occurred. Please try again.");
     }
   };
 

@@ -1,50 +1,83 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
   View,
   TouchableOpacity,
   FlatList,
-  ListRenderItem,
+  ListRenderItemInfo,
+  Alert,
 } from "react-native";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import config from "@/assets/config";
+
+const backendUrl = `${config.backendUrl}`;
 
 interface Order {
   id: string;
-  title: string;
+  productName: string;
+  productPrice: number;
   date: string;
 }
 
-const orders: Order[] = [
-  {
-    id: "1",
-    title: "ORT ISOLATION",
-    date: "Placed on 10 March",
-  },
-  {
-    id: "2",
-    title: "ORT Vaccine",
-    date: "Placed on 10 March",
-  },
-];
-
 const Placeorder: React.FC = () => {
-  const renderItem: ListRenderItem<Order> = ({ item }) => (
+  const [orders, setOrders] = useState<Order[]>([]);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const storedUserData = await AsyncStorage.getItem("userData");
+        if (storedUserData) {
+          const parsedUserData = JSON.parse(storedUserData);
+          const { userid } = parsedUserData;
+
+          if (userid) {
+            const response = await axios.get(
+              `${backendUrl}/orders/getallorders/${userid}`
+            );
+            const ordersData = response.data.data.map((order: any) => ({
+              id: order._id,
+              productName: order.productID.productName,
+              productPrice: order.productID.productPrice,
+              date: `Placed on ${new Date(
+                order.createdAt
+              ).toLocaleDateString()}`,
+            }));
+            setOrders(ordersData);
+          } else {
+            Alert.alert("Error", "User ID not found. Please log in.");
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch orders:", error);
+        Alert.alert("Error", "Unable to fetch orders. Please try again.");
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+  // Type the renderItem argument with ListRenderItemInfo<Order>
+  const renderItem = ({ item }: ListRenderItemInfo<Order>) => (
     <View style={styles.orderContainer}>
       <View style={styles.orderIconContainer}>
         <FontAwesome name="dollar" size={24} color="#ffffff" />
       </View>
       <View style={styles.orderTextContainer}>
-        <Text style={styles.orderTitle}>{item.title}</Text>
+        <Text style={styles.orderTitle}>{item.productName}</Text>
         <Text style={styles.orderDate}>{item.date}</Text>
-        <TouchableOpacity>
-          <Text
-            style={styles.orderDetails}
-            onPress={() => router.push("../../orderdetail")}
-          >
-            See Details
-          </Text>
+        <Text style={styles.productPrice}>${item.productPrice}</Text>
+
+        <TouchableOpacity
+          onPress={() =>
+            router.push({ pathname: "/orderdetail", params: { id: item.id } })
+          }
+        >
+          <Text style={styles.orderDetails}>See Details</Text>
         </TouchableOpacity>
       </View>
       <MaterialIcons name="keyboard-arrow-right" size={24} color="#00bcd4" />
@@ -58,7 +91,7 @@ const Placeorder: React.FC = () => {
         <MaterialIcons name="keyboard-arrow-down" size={24} color="#000" />
       </View>
 
-      <Text style={styles.ordersLabel}>orders</Text>
+      <Text style={styles.ordersLabel}>Orders</Text>
 
       <FlatList
         data={orders}
@@ -140,5 +173,10 @@ const styles = StyleSheet.create({
   orderDetails: {
     fontSize: 14,
     color: "#00bcd4",
+  },
+  productPrice: {
+    fontSize: 14,
+    color: "#999",
+    marginTop: 5,
   },
 });
