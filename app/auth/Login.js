@@ -50,7 +50,6 @@ const Login = () => {
         setLoading(false);
       }
     };
-
     checkLoginStatus();
   }, []);
 
@@ -81,15 +80,13 @@ const Login = () => {
   // Navigate to role-specific screen
   const navigateToRoleScreen = (role) => {
     if (role === "microbiologist") {
-      router.replace("/(tabs)/micro");
+      router.replace("../(tabs)/micro/index.tsx");
     } else if (role === "vetenarian") {
-      router.replace("/(tabs)/Vet");
+      router.replace("../(tabs)/Vet/index.tsx");
     } else if (role === "farmer") {
-      router.replace("/(tabs)/micro");
+      router.replace("../(tabs)/micro/index.tsx");
     } else if (role === "superadmin") {
-      router.replace("/(tabs)/admin");
-    } else {
-      router.push("/(tabs)/");
+      router.replace("../(tabs)/admin/index.tsx");
     }
   };
 
@@ -108,13 +105,13 @@ const Login = () => {
         return;
       }
 
-      const { userid, email, role } = response.data; // Assuming 'userid' is the field returned by the backend
+      const { userid, email, userrole } = response.data; // Assuming 'userid' is the field returned by the backend
 
-      const userToSave = { userid, email, role };
+      const userToSave = { userid, email, userrole };
 
       // Save user data, including userID, to AsyncStorage
       await AsyncStorage.setItem("userData", JSON.stringify(userToSave));
-      navigateToRoleScreen(role);
+      navigateToRoleScreen(userrole);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error("Axios error:", error.message);
