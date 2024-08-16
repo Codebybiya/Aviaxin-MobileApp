@@ -81,7 +81,7 @@ const Login = () => {
   const navigateToRoleScreen = (role) => {
     if (role === "microbiologist") {
       router.replace("../(tabs)/micro");
-    } else if (role === "vetenarian") {
+    } else if (role === "vetnarian") {
       router.replace("../(tabs)/Vet");
     } else if (role === "farmer") {
       router.replace("../(tabs)/micro");

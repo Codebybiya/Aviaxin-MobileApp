@@ -1,5 +1,5 @@
 import { Stack } from "expo-router";
-import { tabs } from "@/constants/constants";
+import { tabs } from "../constants/constants";
 export default function RootLayout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
@@ -9,7 +9,7 @@ export default function RootLayout() {
           options={{
             title: tab?.name === "Login" ? "" : tab.name,
             headerShown:
-              tab?.name !== "Login" || tab?.name !== "Home" ? true : false,
+              tab?.name !== "Login" && tab?.name !== "Home" ? true : false,
           }}
           key={index + tab.route}
         />
