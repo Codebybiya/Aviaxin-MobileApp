@@ -75,17 +75,17 @@ export const productInputs = [
 
 export const tabs=[
   {
-    title: "Home",
+    name: "Home",
     icon: "home",
     route: "index",
   },
   {
-    title: "Login",
+    name: "Login",
     icon: "login",
     route: "Login",
   },
   {
-    title: "Register Account",
+    name: "Register Account",
     icon: "register",
     route: "Register",
   },

@@ -80,13 +80,13 @@ const Login = () => {
   // Navigate to role-specific screen
   const navigateToRoleScreen = (role) => {
     if (role === "microbiologist") {
-      router.replace("../(tabs)/micro/index.tsx");
+      router.replace("../(tabs)/micro");
     } else if (role === "vetenarian") {
-      router.replace("../(tabs)/Vet/index.tsx");
+      router.replace("../(tabs)/Vet");
     } else if (role === "farmer") {
-      router.replace("../(tabs)/micro/index.tsx");
+      router.replace("../(tabs)/micro");
     } else if (role === "superadmin") {
-      router.replace("../(tabs)/admin/index.tsx");
+      router.replace("../(tabs)/admin");
     }
   };
 
