@@ -40,9 +40,15 @@ const Login = () => {
     const checkLoginStatus = async () => {
       try {
         const savedUserData = await AsyncStorage.getItem("userData");
+
         if (savedUserData) {
           const { role } = JSON.parse(savedUserData);
-          navigateToRoleScreen(role);
+
+          if (role) {
+            navigateToRoleScreen(role);
+          } else {
+            console.error("Role is undefined in savedUserData", savedUserData);
+          }
         }
       } catch (error) {
         console.log("Error retrieving user data", error);
@@ -99,6 +105,7 @@ const Login = () => {
 
     try {
       const response = await axios.post(`${backendUrl}/users/login`, userData);
+      console.log(response);
 
       if (response.data.status === "Failed") {
         showPopup(response.data.message);
@@ -109,7 +116,9 @@ const Login = () => {
 
       const userToSave = { userid, email, userrole };
 
-      // Save user data, including userID, to AsyncStorage
+      // const userToSave = { userid, email, role }; // Save role along with other data
+
+      // Save user data, including userID and role, to AsyncStorage
       await AsyncStorage.setItem("userData", JSON.stringify(userToSave));
       navigateToRoleScreen(userrole);
     } catch (error) {
