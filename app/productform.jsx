@@ -24,6 +24,7 @@ const ProductForm = () => {
   const router = useRouter();
 
   const [userID, setUserID] = useState(null);
+  const [Success, setSuccess] = useState(false);
 
   useEffect(() => {
     const fetchUserID = async () => {
@@ -82,6 +83,7 @@ const ProductForm = () => {
       Alert.alert("Success", "Your order has been placed!", [
         { text: "OK", onPress: () => router.push("/orderconfirmation") },
       ]);
+      setSuccess(true);
     } catch (error) {
       console.error("Error placing order:", error);
       Alert.alert(

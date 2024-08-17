@@ -56,7 +56,6 @@ const Login = () => {
         setLoading(false);
       }
     };
-
     checkLoginStatus();
   }, []);
 
@@ -86,24 +85,14 @@ const Login = () => {
 
   // Navigate to role-specific screen
   const navigateToRoleScreen = (role) => {
-    console.log("Role value:", role); // Debugging log
-    switch (role) {
-      case "microbiologist":
-        router.replace("/(tabs)/micro");
-        break;
-      case "veterinarian":
-        router.replace("/(tabs)/Vet");
-        break;
-      case "farmer":
-        router.replace("/(tabs)/farmer");
-        break;
-      case "superadmin":
-        router.replace("/(tabs)/admin");
-        break;
-      default:
-        console.error("Undefined route for role:", role);
-        router.replace("/auth/Register"); // Navigate to a safe default
-        break;
+    if (role === "microbiologist") {
+      router.replace("../(tabs)/micro");
+    } else if (role === "vetnarian") {
+      router.replace("../(tabs)/Vet");
+    } else if (role === "farmer") {
+      router.replace("../(tabs)/micro");
+    } else if (role === "superadmin") {
+      router.replace("../(tabs)/admin");
     }
   };
 
@@ -123,18 +112,15 @@ const Login = () => {
         return;
       }
 
-      const { userid, email, role } = response.data; // Extract role here
+      const { userid, email, userrole } = response.data; // Assuming 'userid' is the field returned by the backend
 
-      if (!role) {
-        console.error("Role is undefined in response:", response.data);
-        return;
-      }
+      const userToSave = { userid, email, userrole };
 
-      const userToSave = { userid, email, role }; // Save role along with other data
+      // const userToSave = { userid, email, role }; // Save role along with other data
 
       // Save user data, including userID and role, to AsyncStorage
       await AsyncStorage.setItem("userData", JSON.stringify(userToSave));
-      navigateToRoleScreen(role);
+      navigateToRoleScreen(userrole);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error("Axios error:", error.message);

@@ -72,3 +72,68 @@ export const productInputs = [
     
   },
 ];
+
+export const tabs=[
+  {
+    name: "Home",
+    icon: "home",
+    route: "index",
+  },
+  {
+    name: "Login",
+    icon: "login",
+    route: "Login",
+  },
+  {
+    name: "Register Account",
+    icon: "register",
+    route: "Register",
+  },
+  {
+    name: "Add New Admin",
+    icon: "addadmin",
+    route: "addadmin",
+  },
+  {
+    name: "Add New Product",
+    icon: "addproduct",
+    route: "addproduct",
+  },
+  {
+    name: "Product Detail",
+    icon: "productdetail",
+    route: "productdetail",
+  },
+  {
+    name: "Product Form",
+    icon: "productform",
+    route: "productform",
+  },
+  {
+    name: "Order Status",
+    icon: "orderstatus",
+    route: "orderstatus",
+  },
+  {
+    name: "All Placed Order",
+    icon: "placedorders",
+    route: "placedorders",
+  },
+  {
+    name: "Order Details",
+    icon: "orderdetail",
+    route: "orderdetail",
+  },
+  {
+    name: "All Products",
+    icon: "viewproducts",
+    route: "viewproducts",
+  },
+  {
+    name: "All Admins",
+    icon: "viewadmins",
+    route: "viewadmins",
+  },
+];
+
+
