@@ -104,10 +104,6 @@ const About = () => {
             darkMode && styles.darkProfileContainer,
           ]}
         >
-          <Image
-            source={{ uri: "https://via.placeholder.com/100" }} // Replace with actual image URL
-            style={styles.profileImage}
-          />
           <Text style={[styles.profileName, darkMode && styles.darkText]}>
             {user.name}
           </Text>

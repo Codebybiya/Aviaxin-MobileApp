@@ -68,7 +68,7 @@ const About = () => {
     }
   };
 
-  const handleChangePassword = async() => {
+  const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
       Alert.alert("Error", "Passwords do not match");
       return;
@@ -102,10 +102,6 @@ const About = () => {
             darkMode && styles.darkProfileContainer,
           ]}
         >
-          <Image
-            source={{ uri: "https://via.placeholder.com/100" }} // Replace with actual image URL
-            style={styles.profileImage}
-          />
           <Text style={[styles.profileName, darkMode && styles.darkText]}>
             {user.name}
           </Text>
