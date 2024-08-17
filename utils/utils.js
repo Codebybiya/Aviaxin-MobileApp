@@ -1,5 +1,9 @@
 import * as Yup from 'yup';
-
+import config from "@/assets/config";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { Alert } from 'react-native';
+const backendUrl = `${config.backendUrl}`;
 // Function to create Yup validation schema
 export const createValidationSchema = (fields) => {
   const shape = {};
@@ -31,5 +35,29 @@ export const createValidationSchema = (fields) => {
   });
   return Yup.object().shape(shape);
 };
+
+
+export const updateUserPassword=async(newPassword)=>{
+  try {
+    const savedUserData = await AsyncStorage.getItem("userData");
+    if (savedUserData) {
+      const userData = JSON.parse(savedUserData);
+      const updatedUserData = await axios.patch(
+        `${backendUrl}/users/updatePassword/${userData.userid}`,
+        { password: newPassword }
+      );
+      userData.password = newPassword;
+      await AsyncStorage.setItem("userData", JSON.stringify(userData));
+      if (updatedUserData.data.status === "Success") {
+        Alert.alert("Success", "Password changed successfully");
+      } else {
+        Alert.alert("Error", "An error occurred while changing password");
+      }
+    }
+  } catch (error) {
+    console.log(error)
+    Alert.alert("Error", "An error occurred while changing password");
+  }
+}
 
 

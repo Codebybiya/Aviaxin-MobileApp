@@ -14,6 +14,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { updateUserPassword } from "@/utils/utils";
 
 const About = () => {
   const [user, setUser] = useState({ name: "", email: "" });
@@ -67,14 +68,14 @@ const About = () => {
     }
   };
 
-  const handleChangePassword = () => {
+  const handleChangePassword = async() => {
     if (newPassword !== confirmPassword) {
       Alert.alert("Error", "Passwords do not match");
       return;
     }
 
     // Here you would call your API to change the password
-    console.log("Password changed to:", newPassword);
+    await updateUserPassword(newPassword);
     setModalVisible(false);
   };
 

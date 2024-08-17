@@ -14,8 +14,8 @@ import axios from "axios";
 import * as Yup from "yup";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import config from "../../assets/config";
-const baseUrl = `${config.baseUrl}`;
 const backendUrl = `${config.backendUrl}`;
+const baseUrl = `${config.baseUrl}`;
 
 const Login = () => {
   const router = useRouter();
