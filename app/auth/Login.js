@@ -40,9 +40,15 @@ const Login = () => {
     const checkLoginStatus = async () => {
       try {
         const savedUserData = await AsyncStorage.getItem("userData");
+
         if (savedUserData) {
           const { role } = JSON.parse(savedUserData);
-          navigateToRoleScreen(role);
+
+          if (role) {
+            navigateToRoleScreen(role);
+          } else {
+            console.error("Role is undefined in savedUserData", savedUserData);
+          }
         }
       } catch (error) {
         console.log("Error retrieving user data", error);
@@ -80,16 +86,24 @@ const Login = () => {
 
   // Navigate to role-specific screen
   const navigateToRoleScreen = (role) => {
-    if (role === "microbiologist") {
-      router.replace("/(tabs)/micro");
-    } else if (role === "vetenarian") {
-      router.replace("/(tabs)/Vet");
-    } else if (role === "farmer") {
-      router.replace("/(tabs)/micro");
-    } else if (role === "superadmin") {
-      router.replace("/(tabs)/admin");
-    } else {
-      router.push("/(tabs)/");
+    console.log("Role value:", role); // Debugging log
+    switch (role) {
+      case "microbiologist":
+        router.replace("/(tabs)/micro");
+        break;
+      case "veterinarian":
+        router.replace("/(tabs)/Vet");
+        break;
+      case "farmer":
+        router.replace("/(tabs)/farmer");
+        break;
+      case "superadmin":
+        router.replace("/(tabs)/admin");
+        break;
+      default:
+        console.error("Undefined route for role:", role);
+        router.replace("/auth/Register"); // Navigate to a safe default
+        break;
     }
   };
 
@@ -102,17 +116,23 @@ const Login = () => {
 
     try {
       const response = await axios.post(`${backendUrl}/users/login`, userData);
+      console.log(response);
 
       if (response.data.status === "Failed") {
         showPopup(response.data.message);
         return;
       }
 
-      const { userid, email, role } = response.data; // Assuming 'userid' is the field returned by the backend
+      const { userid, email, role } = response.data; // Extract role here
 
-      const userToSave = { userid, email, role };
+      if (!role) {
+        console.error("Role is undefined in response:", response.data);
+        return;
+      }
 
-      // Save user data, including userID, to AsyncStorage
+      const userToSave = { userid, email, role }; // Save role along with other data
+
+      // Save user data, including userID and role, to AsyncStorage
       await AsyncStorage.setItem("userData", JSON.stringify(userToSave));
       navigateToRoleScreen(role);
     } catch (error) {
