@@ -48,30 +48,18 @@ const HomeTab = () => {
   };
 
   const fetchUserData = async () => {
-    try {
-      const storedUserData = await AsyncStorage.getItem("userData");
-      if (storedUserData) {
-        const parsedUserData = JSON.parse(storedUserData);
-        const { userid } = parsedUserData;
+    const storedUserData = await AsyncStorage.getItem("userData");
+    if (storedUserData) {
+      const parsedUserData = JSON.parse(storedUserData);
+      const {  userrole, name } = parsedUserData;
 
-        const response = await axios.get(
-          `${backendUrl}/users/getuserbyid/${userid}`
-        );
-        if (response.status === 200 && response.data.data) {
-          const { firstname, lastname } = response.data.data.details;
-          const { role } = response.data.data.user;
+      setUserName(name);
 
-          setUserName(`${firstname} ${lastname}`);
-
-          if (role === "veterinarian") {
-            setVeterinarianName(`${firstname} ${lastname}`);
-          }
-        } else {
-          console.error("Unexpected response:", response);
-        }
+      if (userrole === "veterinarian") {
+        setVeterinarianName(name);
       }
-    } catch (error) {
-      console.error("Failed to fetch user data:", error);
+    } else {
+      console.error("Unexpected response from AsyncStorage");
     }
   };
 
@@ -85,7 +73,7 @@ const HomeTab = () => {
         const response = await axios.get(
           `${backendUrl}/orders/getallorders/${userid}`
         );
-        setCartItemCount(response?.data?.items.length);
+        setCartItemCount(response?.data?.items?.length);
       }
     } catch (error) {
       console.error("Failed to fetch cart items:", error);

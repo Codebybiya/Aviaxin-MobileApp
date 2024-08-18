@@ -14,8 +14,8 @@ import axios from "axios";
 import * as Yup from "yup";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import config from "../../assets/config";
-const baseUrl = `${config.baseUrl}`;
 const backendUrl = `${config.backendUrl}`;
+const baseUrl = `${config.baseUrl}`;
 
 const Login = () => {
   const router = useRouter();
@@ -107,18 +107,19 @@ const Login = () => {
 
     try {
       const response = await axios.post(`${backendUrl}/users/login`, userData);
+      console.log(response);
 
       if (response.data.status === "Failed") {
         showPopup(response.data.message);
         return;
       }
 
-      const { userid, email, userrole } = response.data;
+      const { userid, email, userrole } = response.data; // Assuming 'userid' is the field returned by the backend
 
-      const userToSave = { userid, email, userrole };
+      const userToSave = response?.data?.data;
 
       await AsyncStorage.setItem("userData", JSON.stringify(userToSave));
-      navigateToRoleScreen(userrole);
+      navigateToRoleScreen(userToSave?.userrole);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error("Axios error:", error.message);

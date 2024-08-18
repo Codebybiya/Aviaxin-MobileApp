@@ -58,7 +58,7 @@ const Register = () => {
       .then((res) => {
         console.log(res.data);
 
-        router.push("/auth/login");
+        router.push("/auth/Login");
       })
       .catch((e) => console.log(e));
   };
