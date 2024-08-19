@@ -51,7 +51,7 @@ const HomeTab = () => {
     const storedUserData = await AsyncStorage.getItem("userData");
     if (storedUserData) {
       const parsedUserData = JSON.parse(storedUserData);
-      const {  userrole, name } = parsedUserData;
+      const { userrole, name } = parsedUserData;
 
       setUserName(name);
 

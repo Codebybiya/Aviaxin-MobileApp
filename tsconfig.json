@@ -19,6 +19,9 @@
     "app/productdetail.js",
     "app/orderstatus.js",
     "app/placedorders.js",
-    "app/orderdetail.js"
+    "app/orderdetail.tsxxx",
+    "app/(tabs)/Vet/notifications.js",
+    "app/(tabs)/Vet/notifications.js",
+    "app/(tabs)/Vet/notifications.js"
   ]
 }

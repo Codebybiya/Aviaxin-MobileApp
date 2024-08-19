@@ -15,6 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { updateUserPassword } from "@/utils/utils";
+import Placeorder from "@/app/placedorders";
 
 const About = () => {
   const [user, setUser] = useState({ name: "", email: "" });
@@ -87,6 +88,9 @@ const About = () => {
       console.error("Error saving dark mode", error);
     }
   };
+  const handlePress2 = () => {
+    router.push("../../placedorders"); // Replace with your target route
+  };
 
   return (
     <ScrollView
@@ -126,7 +130,7 @@ const About = () => {
           <Text style={[styles.sectionTitle, darkMode && styles.darkText]}>
             General Settings
           </Text>
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity style={styles.menuItem} onPress={handlePress2}>
             <FontAwesome
               name="history"
               size={24}
