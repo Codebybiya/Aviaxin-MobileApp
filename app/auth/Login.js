@@ -6,6 +6,7 @@ import {
   TextInput,
   Alert,
   ActivityIndicator,
+  Dimensions,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { FontAwesome } from "@expo/vector-icons";
@@ -206,6 +207,9 @@ const Login = () => {
 
 export default Login;
 
+// Get device width and height
+const { width, height } = Dimensions.get("window");
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -221,21 +225,27 @@ const styles = StyleSheet.create({
   content: {
     alignItems: "center",
     justifyContent: "center",
-    marginTop: "60%",
+    marginTop: height * 0.1, // Responsive marginTop
+    marginBottom: height * 0.05, // Added marginBottom for better spacing
   },
   whitecon: {
     backgroundColor: "white",
-    paddingVertical: 20,
-    paddingHorizontal: 30,
+    paddingVertical: height * 0.03, // Responsive paddingVertical
+    paddingHorizontal: width * 0.07, // Responsive paddingHorizontal
     borderRadius: 10,
-    width: "80%",
-    marginTop: 20,
+    width: width * 0.85, // Responsive width
+    marginTop: height * 0.02, // Responsive marginTop
+    shadowColor: "#000", // Added shadow for better visual
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2, // Android shadow
   },
   button: {
     backgroundColor: "#00bcd4",
-    padding: 10,
+    paddingVertical: height * 0.015, // Responsive paddingVertical
     borderRadius: 5,
-    marginTop: 20,
+    marginTop: height * 0.02, // Responsive marginTop
   },
   buttonText: {
     color: "white",
@@ -246,13 +256,13 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 24,
     fontWeight: "bold",
-    paddingBottom: 20,
+    paddingBottom: height * 0.02, // Responsive paddingBottom
   },
   whiteText1: {
     color: "white",
     fontSize: 44,
     fontWeight: "bold",
-    paddingBottom: 50,
+    paddingBottom: height * 0.03, // Responsive paddingBottom
   },
   inputContainer: {
     flexDirection: "row",
@@ -260,23 +270,27 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 5,
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    marginBottom: 15,
+    paddingHorizontal: width * 0.03, // Responsive paddingHorizontal
+    paddingVertical: height * 0.015, // Responsive paddingVertical
+    marginBottom: height * 0.02, // Responsive marginBottom
   },
   icon: {
-    marginRight: 10,
+    marginRight: width * 0.03, // Responsive marginRight
   },
   textInput: {
     flex: 1,
+    fontSize: 16,
   },
   errorText: {
     color: "red",
     fontSize: 12,
+    marginTop: -height * 0.01, // Adjust errorText position
+    marginBottom: height * 0.01, // Responsive marginBottom
   },
   label1: {
-    padding: 10,
-    alignItems: "center",
+    padding: height * 0.015, // Responsive padding
     textAlign: "center",
+    fontSize: 16,
+    color: "#00bcd4", // Consistent color with button
   },
 });

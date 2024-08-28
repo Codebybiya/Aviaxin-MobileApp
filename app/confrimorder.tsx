@@ -1,17 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
 import axios from "axios";
 import config from "@/assets/config";
+import { useLocalSearchParams } from "expo-router";
 
 const backendUrl = `${config.backendUrl}`;
 
-const OrderDetail = () => {
+const Confrimorder = () => {
   const { id } = useLocalSearchParams(); // Get the order ID from the route
 
   const [order, setOrder] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isolateNumber, setIsolateNumber] = useState("");
+  const [batchNumber, setBatchNumber] = useState("");
 
   useEffect(() => {
     const fetchOrderDetails = async () => {
@@ -33,6 +41,27 @@ const OrderDetail = () => {
     }
   }, [id]);
 
+  const handleConfirmOrder = async () => {
+    try {
+      await axios.patch(`${backendUrl}/orders/confirm-order/${id}`, {
+        isolateNumber,
+        batchNumber,
+        userId: order.userID, // Assuming userID is part of the order data
+        status: "confirmed",
+      });
+      setOrder((prevOrder: any) => ({
+        ...prevOrder,
+        status: "confirmed",
+        isolateNumber,
+        batchNumber,
+        confirmedBy: order.userID,
+      }));
+    } catch (error) {
+      console.error("Failed to confirm order:", error);
+      setError("Failed to confirm order.");
+    }
+  };
+
   if (loading) {
     return <Text>Loading...</Text>;
   }
@@ -46,24 +75,15 @@ const OrderDetail = () => {
   }
 
   const getStatusText = (status: string) => {
-    if (!order.confirmedBy) {
-      return "Order not yet confirmed"; // Handle case where confirmedBy is null
-    }
-
-    const name =
-      order.confirmedBy.name || order.confirmedBy.email || "Unknown Name"; // Fallback to email if name is undefined
-
     switch (status) {
       case "pending":
         return "Order Placed";
       case "shipped":
         return "Shipped";
-      case "delivered":
-        return "Delivered";
+      case "confirmed":
+        return "Confirmed";
       case "cancelled":
         return "Cancelled";
-      case "confirmed":
-        return `Order Confirmed`; // Use the name from the API response
       default:
         return "Unknown Status";
     }
@@ -75,18 +95,14 @@ const OrderDetail = () => {
         return styles.statusPending;
       case "shipped":
         return styles.statusShipped;
-      case "delivered":
-        return styles.statusDelivered;
-      case "cancelled":
-        return styles.statusCancelled;
       case "confirmed":
         return styles.statusConfirmed;
+      case "cancelled":
+        return styles.statusCancelled;
       default:
         return styles.statusDefault;
     }
   };
-
-  const confirmedByName = order.confirmedBy?.name || "Microbiologist"; // Fallback if name is missing
 
   return (
     <View style={styles.container}>
@@ -120,21 +136,50 @@ const OrderDetail = () => {
         </Text>
       </View>
 
-      {order.status === "confirmed" && (
-        <View style={styles.detailContainer}>
-          <Text style={styles.label}>Confirmed By:</Text>
-          <Text style={styles.value}>{confirmedByName}</Text>
-        </View>
-      )}
+      {/* New Fields for Isolate Number and Batch Number */}
+      <Text style={styles.sectionTitle}>Confirm Order</Text>
 
-      <TouchableOpacity style={styles.button}>
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Isolate Number:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter isolation no"
+          value={isolateNumber}
+          onChangeText={setIsolateNumber}
+        />
+      </View>
+
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Batch Number:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter batch no"
+          value={batchNumber}
+          onChangeText={setBatchNumber}
+        />
+      </View>
+
+      <Text style={styles.note}>
+        After clicking save, the vet can see the details Cultured By:
+      </Text>
+
+      <TouchableOpacity
+        style={styles.confirmButton}
+        onPress={handleConfirmOrder}
+      >
+        <Text style={styles.buttonText}>Confirm</Text>
+      </TouchableOpacity>
+
+      <Text style={styles.signatureText}>Clicked to sign this product</Text>
+
+      <TouchableOpacity style={styles.invoiceButton}>
         <Text style={styles.buttonText}>View Invoice</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
-export default OrderDetail;
+export default Confrimorder;
 
 const styles = StyleSheet.create({
   container: {
@@ -172,18 +217,55 @@ const styles = StyleSheet.create({
     color: "#666",
     flex: 1,
   },
-  button: {
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#888",
+    marginTop: 20,
+    textAlign: "center",
+  },
+  inputContainer: {
+    marginBottom: 10,
+  },
+  input: {
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 10,
+    backgroundColor: "#f0f0f0",
+    marginTop: 5,
+  },
+  note: {
+    fontSize: 14,
+    color: "#999",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  confirmButton: {
     backgroundColor: "#00bcd4",
     paddingVertical: 15,
     paddingHorizontal: 40,
     borderRadius: 30,
     alignSelf: "center",
-    marginTop: 30,
+  },
+  signatureText: {
+    marginTop: 10,
+    color: "#888",
+    textAlign: "center",
+  },
+  invoiceButton: {
+    backgroundColor: "#00bcd4",
+    paddingVertical: 15,
+    paddingHorizontal: 40,
+    borderRadius: 30,
+    alignSelf: "center",
+    marginTop: 20,
   },
   buttonText: {
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
+    textAlign: "center",
   },
   statusPending: {
     color: "orange",
@@ -191,14 +273,11 @@ const styles = StyleSheet.create({
   statusShipped: {
     color: "blue",
   },
-  statusDelivered: {
+  statusConfirmed: {
     color: "green",
   },
   statusCancelled: {
     color: "red",
-  },
-  statusConfirmed: {
-    color: "purple",
   },
   statusDefault: {
     color: "#666",

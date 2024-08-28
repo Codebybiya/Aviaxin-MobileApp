@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
+  Dimensions,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -92,34 +93,15 @@ const HomeTab = () => {
     <View style={styles.wrapper}>
       <View style={styles.headerContainer}>
         <Text style={styles.header}>Welcome, {userName}</Text>
-        <View style={styles.cartContainer}>
-          <TouchableOpacity
-            style={styles.cartIcon}
-            onPress={() => router.push("../../cart")}
-          >
-            <FontAwesome name="shopping-cart" size={24} color="#00bcd4" />
-            {cartItemCount > 0 && (
-              <View style={styles.cartBadge}>
-                <Text style={styles.cartBadgeText}>{cartItemCount}</Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.container}>
-        {veterinarianName && (
-          <Text style={styles.vetnarianName}>
-            Veterinarian: {veterinarianName}
-          </Text>
-        )}
-
         <TouchableOpacity
           style={styles.promoCard}
           onPress={() => router.push("../../placedorders")}
         >
           <Image
-            source={{ uri: "https://via.placeholder.com/150" }}
+            source={require("@/assets/images/micb.png")}
             style={styles.promoImage}
           />
           <View style={styles.promoTextContainer}>
@@ -131,17 +113,6 @@ const HomeTab = () => {
         </TouchableOpacity>
 
         <Text style={styles.heade}>Our Products</Text>
-        <View style={styles.searchContainer}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search Products"
-            value={searchQuery}
-            onChangeText={(text) => setSearchQuery(text)}
-          />
-          <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
-            <Text style={styles.searchButtonText}>🔍</Text>
-          </TouchableOpacity>
-        </View>
 
         <View style={styles.productGrid}>
           {filteredProducts.map((item, index) => (
@@ -173,6 +144,9 @@ const HomeTab = () => {
 };
 
 export default HomeTab;
+
+const { width } = Dimensions.get("window");
+const productCardWidth = width / 3 - 20; // Width calculation to fit three items per row with margins
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -220,7 +194,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: "#fafafa",
+    backgroundColor: "white",
   },
   vetnarianName: {
     fontSize: 18,
@@ -232,11 +206,11 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
-    color: "#00bcd4",
+    color: "#32CD32",
   },
   promoCard: {
     flexDirection: "row",
-    backgroundColor: "#ffefd5",
+    backgroundColor: "#f8c471",
     borderRadius: 15,
     padding: 20,
     marginBottom: 20,
@@ -287,7 +261,7 @@ const styles = StyleSheet.create({
   searchButton: {
     marginLeft: 10,
     padding: 10,
-    backgroundColor: "#00bcd4",
+    backgroundColor: "#32CD32",
     borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
@@ -302,10 +276,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   productCard: {
-    width: "48%",
+    width: productCardWidth,
     backgroundColor: "#fff",
     borderRadius: 15,
-    padding: 20,
+    padding: 10,
     marginBottom: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
@@ -315,38 +289,38 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   productImage: {
-    width: 120,
-    height: 120,
+    width: 80,
+    height: 80,
     borderRadius: 10,
-    marginBottom: 15,
+    marginBottom: 10,
   },
   productName: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "bold",
     color: "#333",
     marginBottom: 5,
     textAlign: "center",
   },
   productTag: {
-    fontSize: 12,
+    fontSize: 10,
     color: "#f39c12",
-    marginBottom: 10,
+    marginBottom: 5,
   },
   productPrice: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: "bold",
     color: "#e74c3c",
     marginBottom: 10,
   },
   detailButton: {
-    backgroundColor: "#00bcd4",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
+    backgroundColor: "#32CD32",
+    paddingVertical: 7,
+    paddingHorizontal: 10,
+    borderRadius: 10,
   },
   detailButtonText: {
     color: "#fff",
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "bold",
   },
 });

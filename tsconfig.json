@@ -22,6 +22,7 @@
     "app/orderdetail.tsxxx",
     "app/(tabs)/Vet/notifications.js",
     "app/(tabs)/Vet/notifications.js",
-    "app/(tabs)/Vet/notifications.js"
+    "app/(tabs)/Vet/notifications.js",
+    "app/(tabs)/micro/notifications.js"
   ]
 }

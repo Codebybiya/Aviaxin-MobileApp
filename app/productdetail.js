@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   priceValue: {
-    color: "#00bcd4",
+    color: "#4a90e2",
   },
   counterContainer: {
     flexDirection: "row",
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   counterButton: {
-    backgroundColor: "#00bcd4",
+    backgroundColor: "#4a90e2",
     padding: 12,
     borderRadius: 5,
     marginHorizontal: 10,
@@ -226,10 +226,10 @@ const styles = StyleSheet.create({
   totalPrice: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#00bcd4",
+    color: "#4a90e2",
   },
   orderButton: {
-    backgroundColor: "#00bcd4",
+    backgroundColor: "#4a90e2",
     paddingVertical: 15,
     paddingHorizontal: 60,
     borderRadius: 8,

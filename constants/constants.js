@@ -39,7 +39,6 @@ export const productInputs = [
     validation: {
       required: "true",
     },
-    
   },
   {
     name: "productPrice",
@@ -49,7 +48,6 @@ export const productInputs = [
     validation: {
       required: "true",
     },
-    
   },
   {
     name: "productDescription",
@@ -59,7 +57,6 @@ export const productInputs = [
     validation: {
       required: "true",
     },
-    
   },
   {
     name: "imagePath",
@@ -69,11 +66,10 @@ export const productInputs = [
     validation: {
       required: "true",
     },
-    
   },
 ];
 
-export const tabs=[
+export const tabs = [
   {
     name: "Home",
     icon: "home",
@@ -134,6 +130,19 @@ export const tabs=[
     icon: "viewadmins",
     route: "viewadmins",
   },
+  {
+    name: "All New Placed Order",
+    icon: "Pendingplaceorder",
+    route: "Pendingplaceorder",
+  },
+  {
+    name: "Order Detail",
+    icon: "Confrimorder",
+    route: "confrimorder",
+  },
+  {
+    name: "Confrimed Orders",
+    icon: "Confrimorder",
+    route: "newconfrimedorder",
+  },
 ];
-
-

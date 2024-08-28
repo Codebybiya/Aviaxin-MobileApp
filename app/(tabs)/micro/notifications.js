@@ -9,17 +9,10 @@ import {
 import axios from "axios";
 import { FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import config from "@/assets/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import config from "@/assets/config";
 
 const backendUrl = `${config.backendUrl}`;
-
-const isNewNotification = (createdAt) => {
-  const ONE_DAY = 24 * 60 * 60 * 1000;
-  const now = new Date();
-  const notificationTime = new Date(createdAt);
-  return now - notificationTime < ONE_DAY;
-};
 
 const formatDate = (dateString) => {
   const options = {
@@ -37,7 +30,6 @@ const NotificationItem = ({
   description,
   icon,
   createdAt,
-  isNew,
   orderID,
   read,
   onMarkAsRead,
@@ -45,11 +37,10 @@ const NotificationItem = ({
   const router = useRouter();
 
   const handlePress = async () => {
-    console.log("Navigating to OrderDetail with orderID:", orderID);
-
     try {
+      // Mark notification as read in the backend
       await axios.put(`${backendUrl}/notifications/mark-as-read/${orderID}`);
-      onMarkAsRead(orderID);
+      onMarkAsRead(orderID); // Update the frontend state to mark as read and decrease the unread count
 
       router.push(`/orderdetailnotif?orderID=${orderID}`);
     } catch (error) {
@@ -62,23 +53,21 @@ const NotificationItem = ({
       <View
         style={[
           styles.notificationItem,
-          !read && styles.newNotification,
-          read && styles.readNotification,
+          !read ? styles.newNotification : styles.readNotification, // Correctly apply styles based on read status
         ]}
       >
         <View style={styles.iconContainer}>
           <FontAwesome
             name={icon}
             size={24}
-            color={!read ? "#fff" : "#32CD32"}
+            color={!read ? "#fff" : "#4a90e2"}
           />
         </View>
         <View style={styles.textContainer}>
           <Text
             style={[
               styles.notificationTitle,
-              !read && styles.newNotificationText,
-              read && styles.readNotificationText,
+              !read ? styles.newNotificationText : styles.readNotificationText,
             ]}
           >
             {title}
@@ -86,8 +75,7 @@ const NotificationItem = ({
           <Text
             style={[
               styles.notificationDescription,
-              !read && styles.newNotificationText,
-              read && styles.readNotificationText,
+              !read ? styles.newNotificationText : styles.readNotificationText,
             ]}
           >
             {description}
@@ -102,6 +90,7 @@ const NotificationItem = ({
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -114,7 +103,12 @@ const Notifications = () => {
           const { userid } = JSON.parse(storedUserData);
           const url = `${backendUrl}/notifications/notifications/${userid}`;
           const response = await axios.get(url);
-          setNotifications(response.data.data);
+          const allNotifications = response.data.data;
+
+          setNotifications(allNotifications);
+          setUnreadCount(
+            allNotifications.filter((notification) => !notification.read).length
+          ); // Calculate the unread count
         }
       } catch (error) {
         setError("Failed to load notifications.");
@@ -125,6 +119,8 @@ const Notifications = () => {
     };
 
     fetchNotifications();
+
+    // Set an interval to refresh notifications
     const intervalId = setInterval(fetchNotifications, 60000);
     return () => clearInterval(intervalId);
   }, []);
@@ -137,6 +133,8 @@ const Notifications = () => {
           : notification
       )
     );
+
+    setUnreadCount((prevCount) => Math.max(prevCount - 1, 0)); // Decrease unread count without going below 0
   };
 
   const onRefresh = async () => {
@@ -147,7 +145,12 @@ const Notifications = () => {
         const { userid } = JSON.parse(storedUserData);
         const url = `${backendUrl}/notifications/notifications/${userid}`;
         const response = await axios.get(url);
-        setNotifications(response.data.data);
+        const allNotifications = response.data.data;
+
+        setNotifications(allNotifications);
+        setUnreadCount(
+          allNotifications.filter((notification) => !notification.read).length
+        ); // Update unread count on refresh
       }
     } catch (error) {
       console.error("Error fetching notifications:", error);
@@ -179,10 +182,9 @@ const Notifications = () => {
             description={item.message}
             icon="bell"
             createdAt={item.createdAt}
-            isNew={isNewNotification(item.createdAt)}
             orderID={item.orderID}
             read={item.read}
-            onMarkAsRead={handleMarkAsRead}
+            onMarkAsRead={handleMarkAsRead} // Pass the handler to mark as read
           />
         )}
         refreshing={refreshing}
@@ -219,7 +221,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   newNotification: {
-    backgroundColor: "#32CD32",
+    backgroundColor: "#4a90e2",
   },
   readNotification: {
     backgroundColor: "#fff",
