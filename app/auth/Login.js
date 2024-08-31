@@ -6,6 +6,7 @@ import {
   TextInput,
   Alert,
   ActivityIndicator,
+  Dimensions,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { FontAwesome } from "@expo/vector-icons";
@@ -14,7 +15,9 @@ import axios from "axios";
 import * as Yup from "yup";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import config from "../../assets/config";
+const backendUrl = `${config.backendUrl}`;
 const baseUrl = `${config.baseUrl}`;
+
 const Login = () => {
   const router = useRouter();
 
@@ -38,9 +41,15 @@ const Login = () => {
     const checkLoginStatus = async () => {
       try {
         const savedUserData = await AsyncStorage.getItem("userData");
+
         if (savedUserData) {
-          const { role } = JSON.parse(savedUserData);
-          navigateToRoleScreen(role);
+          const { userrole } = JSON.parse(savedUserData);
+
+          if (userrole) {
+            navigateToRoleScreen(userrole);
+          } else {
+            console.error("Role is undefined in savedUserData", savedUserData);
+          }
         }
       } catch (error) {
         console.log("Error retrieving user data", error);
@@ -70,7 +79,6 @@ const Login = () => {
     }
   };
 
-  // Function to show popup message
   const showPopup = (message) => {
     Alert.alert("Login Error", message, [{ text: "OK" }], {
       cancelable: false,
@@ -80,15 +88,14 @@ const Login = () => {
   // Navigate to role-specific screen
   const navigateToRoleScreen = (role) => {
     if (role === "microbiologist") {
-      router.replace("/(tabs)/micro");
-    } else if (role === "vetenarian") {
-      router.replace("/(tabs)/Vet");
+      router.replace("../(tabs)/micro");
+    } else if (role === "veterinarian") {
+      // Fixed typo
+      router.replace("../(tabs)/Vet");
     } else if (role === "farmer") {
-      router.replace("/(tabs)/micro");
+      router.replace("../(tabs)/micro");
     } else if (role === "superadmin") {
-      router.replace("/(tabs)/admin");
-    } else {
-      router.push("/(tabs)/");
+      router.replace("../(tabs)/admin");
     }
   };
 
@@ -100,28 +107,28 @@ const Login = () => {
     const userData = { email, password };
 
     try {
-      const response = await axios.post(`${baseUrl}/users/login`, userData);
-      console.log(`base url  ${baseUrl}`);
+      const response = await axios.post(`${backendUrl}/users/login`, userData);
+      console.log(response);
 
-      if (response.data.status === "failed") {
+      if (response.data.status === "Failed") {
         showPopup(response.data.message);
         return;
       }
 
-      const { name, email, role } = response.data;
-      console.log(response.data);
+      const { userid, email, userrole } = response.data; // Assuming 'userid' is the field returned by the backend
 
-      const userToSave = { name, email, role };
+      const userToSave = response?.data?.data;
 
       await AsyncStorage.setItem("userData", JSON.stringify(userToSave));
-      navigateToRoleScreen(role);
+      navigateToRoleScreen(userToSave?.userrole);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error("Axios error:", error.message);
+        showPopup("An error occurred. Please try again.");
       } else {
         console.error("Unexpected error:", error);
+        showPopup("An unexpected error occurred. Please try again.");
       }
-      showPopup("An error occurred. Please try again.");
     }
   };
 
@@ -200,6 +207,9 @@ const Login = () => {
 
 export default Login;
 
+// Get device width and height
+const { width, height } = Dimensions.get("window");
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -215,21 +225,27 @@ const styles = StyleSheet.create({
   content: {
     alignItems: "center",
     justifyContent: "center",
-    marginTop: "60%",
+    marginTop: height * 0.1, // Responsive marginTop
+    marginBottom: height * 0.05, // Added marginBottom for better spacing
   },
   whitecon: {
     backgroundColor: "white",
-    paddingVertical: 20,
-    paddingHorizontal: 30,
+    paddingVertical: height * 0.03, // Responsive paddingVertical
+    paddingHorizontal: width * 0.07, // Responsive paddingHorizontal
     borderRadius: 10,
-    width: "80%",
-    marginTop: 20,
+    width: width * 0.85, // Responsive width
+    marginTop: height * 0.02, // Responsive marginTop
+    shadowColor: "#000", // Added shadow for better visual
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2, // Android shadow
   },
   button: {
     backgroundColor: "#00bcd4",
-    padding: 10,
+    paddingVertical: height * 0.015, // Responsive paddingVertical
     borderRadius: 5,
-    marginTop: 20,
+    marginTop: height * 0.02, // Responsive marginTop
   },
   buttonText: {
     color: "white",
@@ -240,13 +256,13 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 24,
     fontWeight: "bold",
-    paddingBottom: 20,
+    paddingBottom: height * 0.02, // Responsive paddingBottom
   },
   whiteText1: {
     color: "white",
     fontSize: 44,
     fontWeight: "bold",
-    paddingBottom: 50,
+    paddingBottom: height * 0.03, // Responsive paddingBottom
   },
   inputContainer: {
     flexDirection: "row",
@@ -254,23 +270,27 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 5,
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    marginBottom: 15,
+    paddingHorizontal: width * 0.03, // Responsive paddingHorizontal
+    paddingVertical: height * 0.015, // Responsive paddingVertical
+    marginBottom: height * 0.02, // Responsive marginBottom
   },
   icon: {
-    marginRight: 10,
+    marginRight: width * 0.03, // Responsive marginRight
   },
   textInput: {
     flex: 1,
+    fontSize: 16,
   },
   errorText: {
     color: "red",
     fontSize: 12,
+    marginTop: -height * 0.01, // Adjust errorText position
+    marginBottom: height * 0.01, // Responsive marginBottom
   },
   label1: {
-    padding: 10,
-    alignItems: "center",
+    padding: height * 0.015, // Responsive padding
     textAlign: "center",
+    fontSize: 16,
+    color: "#00bcd4", // Consistent color with button
   },
 });

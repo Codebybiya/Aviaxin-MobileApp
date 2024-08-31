@@ -1,5 +1,6 @@
+import axios from "axios";
 import { router } from "expo-router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -8,69 +9,195 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
+  Dimensions,
 } from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import config from "@/assets/config";
+
+const backendUrl = `${config.backendUrl}`;
+
+interface Products {
+  _id: string;
+  productName: string;
+  productPrice: string;
+  imagePath: string;
+}
 
 const HomeTab = () => {
+  const [products, setProducts] = useState<Products[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Products[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [veterinarianName, setVeterinarianName] = useState<string>("");
+  const [cartItemCount, setCartItemCount] = useState<number>(0);
+  const [userName, setUserName] = useState<string>("");
+
+  useEffect(() => {
+    fetchProducts();
+    fetchUserData();
+    fetchCartItems();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get(`${backendUrl}/products/allproduct`);
+      setProducts(response?.data?.data);
+      setFilteredProducts(response?.data?.data); // Set initial filtered products
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+    }
+  };
+
+  const fetchUserData = async () => {
+    const storedUserData = await AsyncStorage.getItem("userData");
+    if (storedUserData) {
+      const parsedUserData = JSON.parse(storedUserData);
+      const { userrole, name } = parsedUserData;
+
+      setUserName(name);
+
+      if (userrole === "veterinarian") {
+        setVeterinarianName(name);
+      }
+    } else {
+      console.error("Unexpected response from AsyncStorage");
+    }
+  };
+
+  const fetchCartItems = async () => {
+    try {
+      const storedUserData = await AsyncStorage.getItem("userData");
+      if (storedUserData) {
+        const parsedUserData = JSON.parse(storedUserData);
+        const { userid } = parsedUserData;
+
+        const response = await axios.get(
+          `${backendUrl}/orders/getallorders/${userid}`
+        );
+        setCartItemCount(response?.data?.items?.length);
+      }
+    } catch (error) {
+      console.error("Failed to fetch cart items:", error);
+    }
+  };
+
+  const handleSearch = () => {
+    const lowercasedQuery = searchQuery.toLowerCase();
+    const filtered = products.filter((product) =>
+      product.productName.toLowerCase().includes(lowercasedQuery)
+    );
+    setFilteredProducts(filtered);
+  };
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>Vetnarian Name </Text>
-
-      <TouchableOpacity
-        style={styles.promoCard}
-        onPress={() => router.push("../../placedorders")}
-      >
-        <Image
-          source={{ uri: "https://via.placeholder.com/150" }} // Placeholder image, replace with actual image URL
-          style={styles.promoImage}
-        />
-        <View style={styles.promoTextContainer}>
-          <Text style={styles.promoTitle}>Previously Placed Orders!!!</Text>
-          <Text style={styles.promoSubtitle}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-          </Text>
-        </View>
-      </TouchableOpacity>
-      <Text style={styles.heade}>Our Products</Text>
-      <View style={styles.searchContainer}>
-        <TextInput style={styles.searchInput} placeholder="Search Products" />
-        <TouchableOpacity style={styles.searchButton}>
-          <Text style={styles.searchButtonText}>🔍</Text>
-        </TouchableOpacity>
+    <View style={styles.wrapper}>
+      <View style={styles.headerContainer}>
+        <Text style={styles.header}>Welcome, {userName}</Text>
       </View>
 
-      <View style={styles.productGrid}>
-        {Array.from({ length: 2 }).map((_, index) => (
-          <View key={index} style={styles.productCard}>
-            <Image
-              source={{ uri: "https://via.placeholder.com/150" }} // Placeholder image, replace with actual product image URL
-              style={styles.productImage}
-            />
-            <Text style={styles.productName}>Nike Air Max 200</Text>
-            <Text style={styles.productTag}>Trending Now</Text>
-            <Text style={styles.productPrice}>$ 240.00</Text>
-            <TouchableOpacity
-              style={styles.detailButton}
-              onPress={() => router.push("../../productdetail")}
-            >
-              <Text style={styles.detailButtonText}>View Details</Text>
-            </TouchableOpacity>
+      <ScrollView contentContainerStyle={styles.container}>
+        <TouchableOpacity
+          style={styles.promoCard}
+          onPress={() => router.push("../../placedorders")}
+        >
+          <Image
+            source={require("@/assets/images/micb.png")}
+            style={styles.promoImage}
+          />
+          <View style={styles.promoTextContainer}>
+            <Text style={styles.promoTitle}>Previously Placed Orders!!!</Text>
+            <Text style={styles.promoSubtitle}>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            </Text>
           </View>
-        ))}
-      </View>
-    </ScrollView>
+        </TouchableOpacity>
+
+        <Text style={styles.heade}>Our Products</Text>
+
+        <View style={styles.productGrid}>
+          {filteredProducts.map((item, index) => (
+            <View key={index} style={styles.productCard}>
+              <Image
+                source={{ uri: `${backendUrl}/${item.imagePath}` }}
+                style={styles.productImage}
+              />
+              <Text style={styles.productName}>{item.productName}</Text>
+              <Text style={styles.productTag}>Trending Now</Text>
+              <Text style={styles.productPrice}>${item.productPrice}</Text>
+              <TouchableOpacity
+                style={styles.detailButton}
+                onPress={() =>
+                  router.push({
+                    pathname: "/productdetail",
+                    params: { productId: item._id },
+                  })
+                }
+              >
+                <Text style={styles.detailButtonText}>View Details</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 
 export default HomeTab;
 
+const { width } = Dimensions.get("window");
+const productCardWidth = width / 3 - 20; // Width calculation to fit three items per row with margins
+
 const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    backgroundColor: "#fafafa",
+  },
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingTop: 40,
+    paddingBottom: 10,
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  header: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  cartContainer: {
+    position: "relative",
+  },
+  cartIcon: {
+    padding: 10,
+  },
+  cartBadge: {
+    position: "absolute",
+    right: 5,
+    top: 5,
+    backgroundColor: "#ff0000",
+    borderRadius: 10,
+    padding: 5,
+  },
+  cartBadgeText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
   container: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: "#fafafa",
+    backgroundColor: "white",
   },
-  header: {
-    fontSize: 28,
+  vetnarianName: {
+    fontSize: 18,
     fontWeight: "bold",
     marginBottom: 20,
     color: "#333",
@@ -79,11 +206,11 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
-    color: "#00bcd4",
+    color: "#32CD32",
   },
   promoCard: {
     flexDirection: "row",
-    backgroundColor: "#ffefd5",
+    backgroundColor: "#f8c471",
     borderRadius: 15,
     padding: 20,
     marginBottom: 20,
@@ -134,7 +261,7 @@ const styles = StyleSheet.create({
   searchButton: {
     marginLeft: 10,
     padding: 10,
-    backgroundColor: "#00bcd4",
+    backgroundColor: "#32CD32",
     borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
@@ -149,10 +276,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   productCard: {
-    width: "48%",
+    width: productCardWidth,
     backgroundColor: "#fff",
     borderRadius: 15,
-    padding: 20,
+    padding: 10,
     marginBottom: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
@@ -162,38 +289,38 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   productImage: {
-    width: 120,
-    height: 120,
+    width: 80,
+    height: 80,
     borderRadius: 10,
-    marginBottom: 15,
+    marginBottom: 10,
   },
   productName: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "bold",
     color: "#333",
     marginBottom: 5,
     textAlign: "center",
   },
   productTag: {
-    fontSize: 12,
+    fontSize: 10,
     color: "#f39c12",
-    marginBottom: 10,
+    marginBottom: 5,
   },
   productPrice: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: "bold",
     color: "#e74c3c",
     marginBottom: 10,
   },
   detailButton: {
-    backgroundColor: "#00bcd4",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
+    backgroundColor: "#32CD32",
+    paddingVertical: 7,
+    paddingHorizontal: 10,
+    borderRadius: 10,
   },
   detailButtonText: {
     color: "#fff",
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "bold",
   },
 });

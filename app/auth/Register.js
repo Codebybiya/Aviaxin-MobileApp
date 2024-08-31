@@ -12,6 +12,9 @@ import { useRouter } from "expo-router";
 import * as Yup from "yup";
 import { Formik } from "formik";
 import axios from "axios";
+import config from "@/assets/config"; // Import your config file
+
+const backendUrl = `${config.backendUrl}`; // Use backendUrl from the config
 
 const Register = () => {
   const router = useRouter();
@@ -51,7 +54,7 @@ const Register = () => {
     };
 
     axios
-      .post("http://192.168.253.110:8080/aviaxin/user/signup", userData)
+      .post(`${backendUrl}/users/register`, userData)
       .then((res) => {
         console.log(res.data);
 
@@ -63,7 +66,6 @@ const Register = () => {
   return (
     <View style={styles.container}>
       <View style={styles.whitecon}>
-        {/* Formik configuration */}
         <Formik
           initialValues={{
             firstName: "",

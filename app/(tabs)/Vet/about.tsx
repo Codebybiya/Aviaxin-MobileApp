@@ -7,13 +7,13 @@ import {
   Alert,
   TextInput,
   Modal,
-  Image,
   ScrollView,
   Switch,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { updateUserPassword } from "@/utils/utils";
 
 const About = () => {
   const [user, setUser] = useState({ name: "", email: "" });
@@ -67,14 +67,13 @@ const About = () => {
     }
   };
 
-  const handleChangePassword = () => {
+  const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
       Alert.alert("Error", "Passwords do not match");
       return;
     }
 
-    // Here you would call your API to change the password
-    console.log("Password changed to:", newPassword);
+    await updateUserPassword(newPassword);
     setModalVisible(false);
   };
 
@@ -85,6 +84,10 @@ const About = () => {
     } catch (error) {
       console.error("Error saving dark mode", error);
     }
+  };
+
+  const handlePress2 = () => {
+    router.push("../../placedorders");
   };
 
   return (
@@ -101,10 +104,6 @@ const About = () => {
             darkMode && styles.darkProfileContainer,
           ]}
         >
-          <Image
-            source={{ uri: "https://via.placeholder.com/100" }} // Replace with actual image URL
-            style={styles.profileImage}
-          />
           <Text style={[styles.profileName, darkMode && styles.darkText]}>
             {user.name}
           </Text>
@@ -120,7 +119,7 @@ const About = () => {
           <Switch
             value={darkMode}
             onValueChange={toggleDarkMode}
-            thumbColor={darkMode ? "#00bcd4" : "#ccc"}
+            thumbColor={darkMode ? "#32CD32" : "#ccc"}
             trackColor={{ false: "#767577", true: "#81b0ff" }}
           />
         </View>
@@ -129,7 +128,7 @@ const About = () => {
           <Text style={[styles.sectionTitle, darkMode && styles.darkText]}>
             General Settings
           </Text>
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity style={styles.menuItem} onPress={handlePress2}>
             <FontAwesome
               name="history"
               size={24}
@@ -256,78 +255,73 @@ export default About;
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
-    backgroundColor: "#f7f8fa",
+    backgroundColor: "#f5f5f5",
   },
   darkScrollContainer: {
     backgroundColor: "#121212",
   },
   container: {
     flex: 1,
-    backgroundColor: "#f7f8fa",
+    backgroundColor: "#ffffff",
     padding: 20,
   },
   darkContainer: {
-    backgroundColor: "#121212",
+    backgroundColor: "#181818",
   },
   profileContainer: {
     alignItems: "center",
     paddingVertical: 30,
     paddingHorizontal: 20,
-    backgroundColor: "#fff",
-    borderRadius: 10,
+    backgroundColor: "#f9f9f9",
+    borderRadius: 12,
     marginBottom: 20,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 6,
   },
   darkProfileContainer: {
     backgroundColor: "#1f1f1f",
   },
-  profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 10,
-  },
   profileName: {
-    fontSize: 22,
-    fontWeight: "bold",
+    fontSize: 24,
+    fontWeight: "700",
     color: "#333",
   },
   profileEmail: {
     fontSize: 16,
     color: "#777",
+    marginTop: 4,
   },
   darkText: {
     color: "#fff",
   },
   section: {
     paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: "#fff",
-    borderRadius: 10,
+    paddingVertical: 15,
+    backgroundColor: "#f9f9f9",
+    borderRadius: 12,
     marginBottom: 20,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 6,
   },
   darkSection: {
-    backgroundColor: "#1f1f1f",
+    backgroundColor: "#242424",
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: 20,
+    fontWeight: "600",
     color: "#666",
-    marginBottom: 10,
+    marginBottom: 15,
   },
   menuItem: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 15,
+    paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
   },
@@ -345,41 +339,42 @@ const styles = StyleSheet.create({
   },
   modalView: {
     margin: 20,
-    backgroundColor: "white",
-    borderRadius: 10,
+    backgroundColor: "#fff",
+    borderRadius: 15,
     padding: 35,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 3,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 10,
   },
   modalText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 15,
+    fontSize: 20,
+    fontWeight: "600",
+    marginBottom: 20,
     textAlign: "center",
+    color: "#333",
   },
   input: {
-    width: 250,
+    width: 260,
     height: 40,
     borderColor: "#ccc",
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: 10,
     padding: 10,
     marginVertical: 10,
   },
   modalButton: {
-    backgroundColor: "#00bcd4",
-    padding: 10,
+    backgroundColor: "#32CD32",
+    padding: 12,
     borderRadius: 8,
-    marginVertical: 5,
+    marginVertical: 10,
     alignItems: "center",
-    width: 100,
+    width: 120,
   },
   buttonText: {
     color: "#fff",
@@ -390,9 +385,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 25,
   },
   switchLabel: {
     fontSize: 16,
+    color: "#333",
   },
 });

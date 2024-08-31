@@ -3,15 +3,26 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"]
     }
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
-, "app/about.js", "app/(tabs)/admin/notifications.js", "app/(tabs)/admin/about.js", "app/(tabs)/admin/addadmin.js", "app/(tabs)/admin/index.js"  ]
+    "expo-env.d.ts",
+    "app/about.js",
+    "app/(tabs)/admin/notifications.js",
+    "app/(tabs)/admin/about.js",
+    "app/(tabs)/admin/.js",
+    "app/(tabs)/admin/index.js",
+    "app/productdetail.js",
+    "app/orderstatus.js",
+    "app/placedorders.js",
+    "app/orderdetail.tsxxx",
+    "app/(tabs)/Vet/notifications.js",
+    "app/(tabs)/Vet/notifications.js",
+    "app/(tabs)/Vet/notifications.js",
+    "app/(tabs)/micro/notifications.js"
+  ]
 }
