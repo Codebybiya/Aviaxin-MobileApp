@@ -8,8 +8,8 @@ const config = {
       : "http://192.168.100.10:8081/aviaxin",
   backendUrl:
     Platform.OS === "web"
-      ? "http://localhost:8080/aviaxin"
-      : "http://192.168.100.10:8080/aviaxin",
+      ? "https://aviaxin-api.vercel.app/aviaxin"
+      : "https://aviaxin-api.vercel.app/aviaxin",
 };
 
 export default config;
