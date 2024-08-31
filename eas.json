@@ -9,7 +9,7 @@
         "buildType": "app-bundle"
       },
       "ios": {
-        "buildType": "app-store"
+        "simulator": false
       }
     },
     "development": {
