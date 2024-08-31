@@ -13,13 +13,20 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "runtimeVersion": "1.0.0"
     },
     "web": {
       "bundler": "webpack",
@@ -46,6 +53,9 @@
         "projectId": "c7e30c93-0064-42e3-9da3-a3fb337afbb7"
       }
     },
-    "owner": "codebybiya"
+    "owner": "codebybiya",
+    "updates": {
+      "url": "https://u.expo.dev/c7e30c93-0064-42e3-9da3-a3fb337afbb7"
+    }
   }
 }
