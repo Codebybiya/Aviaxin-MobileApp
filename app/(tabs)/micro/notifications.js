@@ -53,21 +53,21 @@ const NotificationItem = ({
       <View
         style={[
           styles.notificationItem,
-          !read ? styles.newNotification : styles.readNotification, // Correctly apply styles based on read status
+          read ? styles.readNotification : styles.newNotification, // Apply styles based on read status
         ]}
       >
         <View style={styles.iconContainer}>
           <FontAwesome
             name={icon}
             size={24}
-            color={!read ? "#fff" : "#4a90e2"}
+            color={read ? "#4a90e2" : "#fff"}
           />
         </View>
         <View style={styles.textContainer}>
           <Text
             style={[
               styles.notificationTitle,
-              !read ? styles.newNotificationText : styles.readNotificationText,
+              read ? styles.readNotificationText : styles.newNotificationText,
             ]}
           >
             {title}
@@ -75,7 +75,7 @@ const NotificationItem = ({
           <Text
             style={[
               styles.notificationDescription,
-              !read ? styles.newNotificationText : styles.readNotificationText,
+              read ? styles.readNotificationText : styles.newNotificationText,
             ]}
           >
             {description}
@@ -98,17 +98,36 @@ const Notifications = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const storedUserData = await AsyncStorage.getItem("userData");
-        if (storedUserData) {
-          const { userid } = JSON.parse(storedUserData);
-          const url = `${backendUrl}/notifications/notifications/${userid}`;
-          const response = await axios.get(url);
-          const allNotifications = response.data.data;
-
-          setNotifications(allNotifications);
+        // Load from AsyncStorage first
+        const storedNotifications = await AsyncStorage.getItem("notifications");
+        if (storedNotifications) {
+          const parsedNotifications = JSON.parse(storedNotifications);
+          setNotifications(parsedNotifications);
           setUnreadCount(
-            allNotifications.filter((notification) => !notification.read).length
-          ); // Calculate the unread count
+            parsedNotifications.filter((notification) => !notification.read)
+              .length
+          );
+        } else {
+          // If not available in AsyncStorage, fetch from backend
+          const storedUserData = await AsyncStorage.getItem("userData");
+          if (storedUserData) {
+            const { userid } = JSON.parse(storedUserData);
+            const url = `${backendUrl}/notifications/notifications/${userid}`;
+            const response = await axios.get(url);
+            const allNotifications = response.data.data;
+
+            setNotifications(allNotifications);
+            setUnreadCount(
+              allNotifications.filter((notification) => !notification.read)
+                .length
+            );
+
+            // Save fetched notifications to AsyncStorage
+            await AsyncStorage.setItem(
+              "notifications",
+              JSON.stringify(allNotifications)
+            );
+          }
         }
       } catch (error) {
         setError("Failed to load notifications.");
@@ -125,16 +144,22 @@ const Notifications = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  const handleMarkAsRead = (orderID) => {
-    setNotifications((prevNotifications) =>
-      prevNotifications.map((notification) =>
-        notification.orderID === orderID
-          ? { ...notification, read: true }
-          : notification
-      )
+  const handleMarkAsRead = async (orderID) => {
+    // Update state immediately
+    const updatedNotifications = notifications.map((notification) =>
+      notification.orderID === orderID
+        ? { ...notification, read: true }
+        : notification
     );
 
+    setNotifications(updatedNotifications);
     setUnreadCount((prevCount) => Math.max(prevCount - 1, 0)); // Decrease unread count without going below 0
+
+    // Persist the updated state to AsyncStorage
+    await AsyncStorage.setItem(
+      "notifications",
+      JSON.stringify(updatedNotifications)
+    );
   };
 
   const onRefresh = async () => {
@@ -151,6 +176,12 @@ const Notifications = () => {
         setUnreadCount(
           allNotifications.filter((notification) => !notification.read).length
         ); // Update unread count on refresh
+
+        // Save refreshed notifications to AsyncStorage
+        await AsyncStorage.setItem(
+          "notifications",
+          JSON.stringify(allNotifications)
+        );
       }
     } catch (error) {
       console.error("Error fetching notifications:", error);
@@ -221,7 +252,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   newNotification: {
-    backgroundColor: "#4a90e2",
+    backgroundColor: "#32CD32",
   },
   readNotification: {
     backgroundColor: "#fff",

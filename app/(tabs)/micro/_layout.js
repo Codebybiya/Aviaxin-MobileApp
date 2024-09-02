@@ -26,7 +26,7 @@ import About from "./about";
 import Pendingplaceorder from "../../Pendingplaceorder";
 import Confrimorder from "../../confrimorder";
 import Newconfrimedorder from "../../newconfrimedorder";
-
+import Login from "../../auth/Login";
 const Stack = createStackNavigator();
 const Tabs = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -172,7 +172,7 @@ function RootTabs() {
             </View>
           );
         },
-        tabBarActiveTintColor: "#4a90e2",
+        tabBarActiveTintColor: "#32CD32",
         tabBarInactiveTintColor: "#b0bec5",
         tabBarStyle: {
           backgroundColor: "#ffffff",
@@ -180,15 +180,17 @@ function RootTabs() {
           shadowColor: "#000",
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: 0.1,
-          shadowRadius: 10,
-          elevation: 10,
+          shadowRadius: 5,
+          elevation: 5,
           height: 70,
-          paddingBottom: 10,
+          paddingBottom: 5,
+          paddingTop: 7,
         },
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: "600",
         },
+        headerShown: false,
       })}
     >
       <Tabs.Screen name="Microbiologist" component={MicrobiologistStack} />
@@ -198,9 +200,9 @@ function RootTabs() {
   );
 }
 
-// Custom Drawer Content
 function CustomDrawerContent(props) {
   const [user, setUser] = useState({ name: "", email: "" });
+  const navigation = useNavigation(); // Use navigation hook to navigate
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -224,7 +226,7 @@ function CustomDrawerContent(props) {
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem("userData");
-      props.navigation.navigate("Login");
+      navigation.navigate("Login"); // Ensure this route name matches your navigator setup
     } catch (error) {
       console.error("Error during logout", error);
       Alert.alert(
@@ -236,38 +238,115 @@ function CustomDrawerContent(props) {
 
   return (
     <DrawerContentScrollView {...props}>
-      <SafeAreaView style={{ flex: 1, paddingTop: 0, paddingHorizontal: 0 }}>
-        <View style={styles.profileContainer}>
-          <Image
-            source={require("@/assets/images/micb.png")}
-            style={styles.profileImage}
-          />
-          <Text style={styles.profileName}>{user.name}</Text>
-          <Text style={styles.profileEmail}>{user.email}</Text>
-        </View>
-        <DrawerItem
-          label="Logout"
-          icon={({ color, size }) => (
-            <FontAwesome name="sign-out" size={size} color={color} />
-          )}
-          onPress={handleLogout}
-          labelStyle={{ fontSize: 16, fontWeight: "bold", color: "#FF5252" }}
+      {/* Custom Drawer Header */}
+      <View style={styles.drawerHeader}>
+        <Image
+          source={require("@/assets/images/micb.png")}
+          style={styles.drawerLogo}
         />
-      </SafeAreaView>
+        <Text style={styles.drawerUserName}>{user.name}</Text>
+      </View>
+
+      {/* Drawer Items */}
+
+      <DrawerItem
+        label="Term & Conditions"
+        icon={({ color, size }) => (
+          <FontAwesome name="list-alt" size={size} color={color} />
+        )}
+        onPress={() => props.navigation.navigate("Orders")}
+      />
+
+      <DrawerItem
+        label="About App"
+        icon={({ color, size }) => (
+          <FontAwesome name="question-circle" size={size} color={color} />
+        )}
+        onPress={() => props.navigation.navigate("FAQs")}
+      />
+
+      <DrawerItem
+        label="Privacy Policy"
+        icon={({ color, size }) => (
+          <FontAwesome name="lock" size={size} color={color} />
+        )}
+        onPress={() => props.navigation.navigate("PrivacyPolicy")}
+      />
+      <DrawerItem
+        label="Return Policy"
+        icon={({ color, size }) => (
+          <FontAwesome name="undo" size={size} color={color} />
+        )}
+        onPress={() => props.navigation.navigate("ReturnPolicy")}
+      />
+      <DrawerItem
+        label="Logout"
+        icon={({ color, size }) => (
+          <FontAwesome name="sign-out" size={size} color={color} />
+        )}
+        onPress={handleLogout}
+        labelStyle={{ fontSize: 16, fontWeight: "bold", color: "#FF5252" }}
+      />
     </DrawerContentScrollView>
   );
 }
 
-// Drawer Navigator wrapping Bottom Tabs
 function RootDrawer() {
   return (
     <Drawer.Navigator
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
         headerShown: false,
+        drawerStyle: {
+          backgroundColor: "#ffffff",
+          borderTopRightRadius: 50,
+          borderBottomRightRadius: 50,
+          height: 500,
+          marginTop: 120,
+        },
       }}
     >
-      <Drawer.Screen name="Home" component={RootTabs} />
+      <Drawer.Screen
+        name="Home"
+        component={RootTabs}
+        options={{
+          drawerLabel: () => null,
+          drawerIcon: ({ color, size }) => (
+            <FontAwesome name="home" size={size} color={color} />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Notifications"
+        component={NotificationStack}
+        options={{
+          drawerLabel: () => null,
+          drawerIcon: ({ color, size }) => (
+            <FontAwesome name="bell" size={size} color={color} />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="About"
+        component={AboutStack}
+        options={{
+          drawerLabel: () => null,
+          drawerIcon: ({ color, size }) => (
+            <FontAwesome name="info-circle" size={size} color={color} />
+          ),
+        }}
+      />
+      {/* Ensure the Login route is defined */}
+      <Drawer.Screen
+        name="Login"
+        component={Login}
+        options={{
+          drawerLabel: () => null,
+          drawerIcon: ({ color, size }) => (
+            <FontAwesome name="sign-in" size={size} color={color} />
+          ),
+        }}
+      />
     </Drawer.Navigator>
   );
 }
@@ -281,6 +360,24 @@ export default function RootLayout() {
 }
 
 const styles = StyleSheet.create({
+  drawerHeader: {
+    backgroundColor: "#32CD3280",
+    height: 150,
+    justifyContent: "center",
+    alignItems: "center",
+    borderTopRightRadius: 50,
+    borderBottomRightRadius: 50,
+  },
+  drawerLogo: {
+    width: 100,
+    height: 80,
+    marginBottom: 10,
+  },
+  drawerUserName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#ffffff",
+  },
   profileContainer: {
     marginBottom: 20,
     paddingBottom: 20,
@@ -301,5 +398,32 @@ const styles = StyleSheet.create({
   profileEmail: {
     fontSize: 14,
     color: "#666",
+  },
+  iconContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginBottom: 5,
+  },
+  badgeContainer: {
+    position: "absolute",
+    right: -6,
+    top: -6,
+    backgroundColor: "#FF5252",
+    minWidth: 20,
+    height: 20,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+  },
+  badgeText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });

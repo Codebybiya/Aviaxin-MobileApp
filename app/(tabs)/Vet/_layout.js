@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   FlatList,
   Image,
+  Alert,
 } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -23,7 +24,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import config from "@/assets/config";
 
 import HomeTab from "./index";
-import NotificationScreen from "./notifications"; // Changed from Notification to NotificationScreen to avoid naming conflict
+import NotificationScreen from "./notifications";
 import About from "./about";
 import Productdetail from "../../productdetail";
 import Productform from "../../productform";
@@ -31,14 +32,15 @@ import Orderstatus from "../../orderstatus";
 import Placeorder from "../../placedorders";
 import Orderdetail from "../../orderdetail";
 import OrderDetailNotif from "../../orderdetailnotif";
-import Cart from "../../cart"; // Assuming you have a Cart component
+import Cart from "./cart";
+// Importing Login screen correctly
+import Login from "../../auth/Login";
 
 const Stack = createStackNavigator();
 const Tabs = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 const backendUrl = `${config.backendUrl}`;
 
-// Custom Drawer Button Component
 function DrawerButton() {
   const navigation = useNavigation();
 
@@ -54,7 +56,6 @@ function DrawerButton() {
   );
 }
 
-// Create Stack Navigator for Home with Drawer Button
 function HomeStack() {
   return (
     <Stack.Navigator>
@@ -80,13 +81,12 @@ function HomeStack() {
   );
 }
 
-// Create Stack Navigator for Notifications with Drawer Button
 function NotificationStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen
         name="Notifications"
-        component={NotificationScreen} // Use the NotificationScreen component
+        component={NotificationScreen}
         options={{
           headerLeft: () => <DrawerButton />,
           headerTitle: "Notification",
@@ -97,7 +97,6 @@ function NotificationStack() {
   );
 }
 
-// Create Stack Navigator for About with Drawer Button
 function AboutStack() {
   return (
     <Stack.Navigator>
@@ -114,7 +113,6 @@ function AboutStack() {
   );
 }
 
-// Create Stack Navigator for Cart with Drawer Button
 function CartStack() {
   return (
     <Stack.Navigator>
@@ -131,10 +129,9 @@ function CartStack() {
   );
 }
 
-// Bottom Tab Navigator with Stacks
 function RootTabs() {
   const [unreadCount, setUnreadCount] = useState(0);
-  const [cartItemCount, setCartItemCount] = useState(0); // State for cart item count
+  const [cartItemCount, setCartItemCount] = useState(0);
 
   const fetchUnreadNotifications = async () => {
     const storedUserData = await AsyncStorage.getItem("userData");
@@ -169,15 +166,15 @@ function RootTabs() {
 
     socket.on("newNotification", () => {
       console.log("New notification received");
-      fetchUnreadNotifications(); // Fetch updated count from the server
+      fetchUnreadNotifications();
     });
 
     socket.on("disconnect", () => {
       console.log("Socket disconnected");
     });
 
-    fetchUnreadNotifications(); // Initial fetch when component mounts
-    fetchCartItemCount(); // Initial fetch of cart items count
+    fetchUnreadNotifications();
+    fetchCartItemCount();
 
     return () => {
       socket.disconnect();
@@ -186,8 +183,8 @@ function RootTabs() {
 
   useFocusEffect(
     React.useCallback(() => {
-      fetchUnreadNotifications(); // Refetch unread count when the screen is focused
-      fetchCartItemCount(); // Refetch cart items count when the screen is focused
+      fetchUnreadNotifications();
+      fetchCartItemCount();
     }, [])
   );
 
@@ -196,8 +193,8 @@ function RootTabs() {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
-          let iconColor = focused ? "#ffffff" : "#b0bec5"; // Set icon color based on focus state
-          let iconBackgroundColor = focused ? "#32CD32" : "transparent"; // Set background color for active tab
+          let iconColor = focused ? "#ffffff" : "#b0bec5";
+          let iconBackgroundColor = focused ? "#32CD32" : "transparent";
 
           if (route.name === "HomeTab") {
             iconName = "home";
@@ -206,7 +203,7 @@ function RootTabs() {
           } else if (route.name === "About") {
             iconName = focused ? "user" : "user-o";
           } else if (route.name === "CartTab") {
-            iconName = "shopping-cart"; // Cart icon
+            iconName = "shopping-cart";
           }
 
           return (
@@ -217,13 +214,11 @@ function RootTabs() {
               ]}
             >
               <FontAwesome name={iconName} size={size} color={iconColor} />
-              {/* Badge for Notifications */}
               {route.name === "Notifications" && unreadCount > 0 && (
                 <View style={styles.badgeContainer}>
                   <Text style={styles.badgeText}>{unreadCount}</Text>
                 </View>
               )}
-              {/* Badge for Cart Items */}
               {route.name === "CartTab" && cartItemCount > 0 && (
                 <View style={styles.badgeContainer}>
                   <Text style={styles.badgeText}>{cartItemCount}</Text>
@@ -285,9 +280,9 @@ function RootTabs() {
   );
 }
 
-// Custom Drawer Content
 function CustomDrawerContent(props) {
   const [user, setUser] = useState({ name: "", email: "" });
+  const navigation = useNavigation(); // Use navigation hook to navigate
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -311,7 +306,7 @@ function CustomDrawerContent(props) {
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem("userData");
-      props.navigation.navigate("Login");
+      navigation.navigate("Login"); // Ensure this route name matches your navigator setup
     } catch (error) {
       console.error("Error during logout", error);
       Alert.alert(
@@ -323,38 +318,72 @@ function CustomDrawerContent(props) {
 
   return (
     <DrawerContentScrollView {...props}>
-      <SafeAreaView style={{ flex: 1, paddingTop: 30, paddingHorizontal: 20 }}>
-        {/* Display Profile Picture */}
-        <View style={styles.profileContainer}>
-          <Image
-            source={require("@/assets/images/micb.png")}
-            style={styles.profileImage}
-          />
-          <Text style={styles.profileName}>{user.name}</Text>
-          <Text style={styles.profileEmail}>{user.email}</Text>
-        </View>
-
-        {/* Logout Button */}
-        <DrawerItem
-          label="Logout"
-          icon={({ color, size }) => (
-            <FontAwesome name="sign-out" size={size} color={color} />
-          )}
-          onPress={handleLogout}
-          labelStyle={{ fontSize: 16, fontWeight: "bold", color: "#FF5252" }}
+      {/* Custom Drawer Header */}
+      <View style={styles.drawerHeader}>
+        <Image
+          source={require("@/assets/images/micb.png")}
+          style={styles.drawerLogo}
         />
-      </SafeAreaView>
+        <Text style={styles.drawerUserName}>{user.name}</Text>
+      </View>
+
+      {/* Drawer Items */}
+
+      <DrawerItem
+        label="Term & Conditions"
+        icon={({ color, size }) => (
+          <FontAwesome name="list-alt" size={size} color={color} />
+        )}
+        onPress={() => props.navigation.navigate("Orders")}
+      />
+
+      <DrawerItem
+        label="About App"
+        icon={({ color, size }) => (
+          <FontAwesome name="question-circle" size={size} color={color} />
+        )}
+        onPress={() => props.navigation.navigate("FAQs")}
+      />
+
+      <DrawerItem
+        label="Privacy Policy"
+        icon={({ color, size }) => (
+          <FontAwesome name="lock" size={size} color={color} />
+        )}
+        onPress={() => props.navigation.navigate("PrivacyPolicy")}
+      />
+      <DrawerItem
+        label="Return Policy"
+        icon={({ color, size }) => (
+          <FontAwesome name="undo" size={size} color={color} />
+        )}
+        onPress={() => props.navigation.navigate("ReturnPolicy")}
+      />
+      <DrawerItem
+        label="Logout"
+        icon={({ color, size }) => (
+          <FontAwesome name="sign-out" size={size} color={color} />
+        )}
+        onPress={handleLogout}
+        labelStyle={{ fontSize: 16, fontWeight: "bold", color: "#FF5252" }}
+      />
     </DrawerContentScrollView>
   );
 }
 
-// Drawer Navigator
 function RootDrawer() {
   return (
     <Drawer.Navigator
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
         headerShown: false,
+        drawerStyle: {
+          backgroundColor: "#ffffff",
+          borderTopRightRadius: 50,
+          borderBottomRightRadius: 50,
+          height: 500,
+          marginTop: 120,
+        },
       }}
     >
       <Drawer.Screen
@@ -387,19 +416,48 @@ function RootDrawer() {
           ),
         }}
       />
+      {/* Ensure the Login route is defined */}
+      <Drawer.Screen
+        name="Login"
+        component={Login}
+        options={{
+          drawerLabel: () => null,
+          drawerIcon: ({ color, size }) => (
+            <FontAwesome name="sign-in" size={size} color={color} />
+          ),
+        }}
+      />
     </Drawer.Navigator>
   );
 }
 
 export default function RootLayout() {
   return (
-    <SafeAreaView style={{ flex: 1, paddingTop: 30 }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <RootDrawer />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  drawerHeader: {
+    backgroundColor: "#32CD3280",
+    height: 150,
+    justifyContent: "center",
+    alignItems: "center",
+    borderTopRightRadius: 50,
+    borderBottomRightRadius: 50,
+  },
+  drawerLogo: {
+    width: 100,
+    height: 80,
+    marginBottom: 10,
+  },
+  drawerUserName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#ffffff",
+  },
   profileContainer: {
     marginBottom: 20,
     paddingBottom: 20,
@@ -426,7 +484,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: 50,
     height: 50,
-    borderRadius: 25, // Circular shape
+    borderRadius: 25,
     marginBottom: 5,
   },
   badgeContainer: {

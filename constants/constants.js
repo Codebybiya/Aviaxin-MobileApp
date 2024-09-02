@@ -145,4 +145,14 @@ export const tabs = [
     icon: "Confrimorder",
     route: "newconfrimedorder",
   },
+  {
+    name: "Cart",
+    icon: "Cart",
+    route: "cart",
+  },
+  {
+    name: "Order Deatil",
+    icon: "Order",
+    route: "orderdetailnotif",
+  },
 ];

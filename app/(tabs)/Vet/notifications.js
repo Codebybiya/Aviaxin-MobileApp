@@ -5,6 +5,7 @@ import {
   View,
   FlatList,
   TouchableOpacity,
+  ActivityIndicator, // Import the ActivityIndicator component
 } from "react-native";
 import axios from "axios";
 import { FontAwesome } from "@expo/vector-icons";
@@ -103,7 +104,7 @@ const NotificationItem = ({
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // Initial loading state
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
@@ -120,7 +121,7 @@ const Notifications = () => {
         setError("Failed to load notifications.");
         console.error("Error fetching notifications:", error);
       } finally {
-        setLoading(false);
+        setLoading(false); // Stop loading after data is fetched
       }
     };
 
@@ -157,7 +158,8 @@ const Notifications = () => {
   };
 
   if (loading) {
-    return <Text>Loading...</Text>;
+    // Show loading indicator when loading
+    return <ActivityIndicator size="large" color="#32CD32" />;
   }
 
   if (error) {

@@ -8,9 +8,10 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import config from "@/assets/config";
 
 const backendUrl = `${config.backendUrl}`;
@@ -20,6 +21,7 @@ const ProductDetail = () => {
   const router = useRouter();
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (productId) {
@@ -29,6 +31,7 @@ const ProductDetail = () => {
 
   const fetchProductDetails = async (id) => {
     try {
+      setLoading(true);
       const response = await axios.get(`${backendUrl}/products/products/${id}`);
       if (response.status === 200 && response.data.data) {
         setProduct(response.data.data);
@@ -40,6 +43,8 @@ const ProductDetail = () => {
       alert(
         "An error occurred while fetching the product details. Please try again later."
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -67,8 +72,8 @@ const ProductDetail = () => {
           text: "OK",
           onPress: () =>
             router.push({
-              pathname: "/cart",
-              params: { cartItems: JSON.stringify(cartItems) }, // Pass the cart items as a parameter
+              pathname: "./Vet/cart",
+              params: { cartItems: JSON.stringify(cartItems) },
             }),
         },
       ]);
@@ -78,10 +83,19 @@ const ProductDetail = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#32CD32" />
+        <Text style={styles.loadingText}>Loading product details...</Text>
+      </View>
+    );
+  }
+
   if (!product) {
     return (
       <View style={styles.container}>
-        <Text style={styles.loadingText}>Loading...</Text>
+        <Text style={styles.errorText}>Product not found.</Text>
       </View>
     );
   }
@@ -91,38 +105,50 @@ const ProductDetail = () => {
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.card}>
-        <Image
-          source={{ uri: `${backendUrl}/${product.imagePath}` }}
-          style={styles.productImage}
-        />
+        <View style={styles.imageContainer}>
+          <Image
+            source={{ uri: `${backendUrl}/${product.imagePath}` }}
+            style={styles.productImage}
+          />
+        </View>
+        {/* Aligning the product name, description, and price to the left */}
         <Text style={styles.productTitle}>{product.productName}</Text>
+
+        {/* Added Description Heading */}
+        <Text style={styles.descriptionHeading}>Description</Text>
         <Text style={styles.description}>{product.productDescription}</Text>
+
         <Text style={styles.price}>
           Price:{" "}
           <Text style={styles.priceValue}>
             ${product.productPrice.toFixed(2)}
           </Text>
         </Text>
+
         <View style={styles.counterContainer}>
           <TouchableOpacity
-            style={styles.counterButton}
+            style={[styles.counterButton, { backgroundColor: "#e4b05d" }]}
             onPress={() => setQuantity((prev) => Math.max(prev - 1, 1))}
           >
             <Text style={styles.counterButtonText}>-</Text>
           </TouchableOpacity>
           <Text style={styles.counterText}>{quantity}</Text>
           <TouchableOpacity
-            style={styles.counterButton}
+            style={[styles.counterButton, { backgroundColor: "#e4b05d" }]}
             onPress={() => setQuantity((prev) => prev + 1)}
           >
             <Text style={styles.counterButtonText}>+</Text>
           </TouchableOpacity>
         </View>
+
         <View style={styles.totalContainer}>
           <Text style={styles.totalLabel}>Total Price:</Text>
           <Text style={styles.totalPrice}>${totalPrice.toFixed(2)}</Text>
         </View>
-        <TouchableOpacity style={styles.orderButton} onPress={handleAddToCart}>
+        <TouchableOpacity
+          style={[styles.orderButton, styles.orderButtonGreen]}
+          onPress={handleAddToCart}
+        >
           <Text style={styles.orderButtonText}>Add to Cart</Text>
         </TouchableOpacity>
       </View>
@@ -139,9 +165,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f0f0f0",
+  },
   loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#32CD32",
+  },
+  errorText: {
     fontSize: 18,
-    color: "#666",
+    color: "#ff0000",
   },
   scrollContainer: {
     flexGrow: 1,
@@ -152,43 +189,70 @@ const styles = StyleSheet.create({
   card: {
     width: "90%",
     backgroundColor: "#ffffff",
-    borderRadius: 12,
-    padding: 25,
+    borderRadius: 15,
+    padding: 20,
     alignItems: "center",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.1,
-    shadowRadius: 8,
+    shadowRadius: 10,
     elevation: 5,
+    marginVertical: 20,
+  },
+  imageContainer: {
+    width: 200, // Keep the image size as before
+    height: 200,
+    marginBottom: 20,
+    borderRadius: 15,
+    overflow: "hidden",
+    shadowColor: "#e4b05d",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 8,
   },
   productImage: {
-    width: 300,
-    height: 300,
-    marginBottom: 20,
-    borderRadius: 10,
+    width: "100%",
+    height: "100%",
   },
   productTitle: {
-    fontSize: 26,
-    fontWeight: "600",
+    fontSize: 24, // Reduced size to improve layout
+    fontWeight: "bold",
     marginBottom: 12,
-    textAlign: "center",
+    textAlign: "left", // Align to left
     color: "#333",
+    width: "100%", // Make text span full width for alignment
+    paddingHorizontal: 10, // Add some padding for alignment
+  },
+  descriptionHeading: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: 8,
+    textAlign: "left", // Align to left
+    width: "100%", // Make text span full width for alignment
+    paddingHorizontal: 10, // Add some padding for alignment
   },
   description: {
     fontSize: 16,
-    textAlign: "center",
+    textAlign: "left", // Align to left
     marginBottom: 20,
     color: "#777",
     lineHeight: 24,
+    width: "100%", // Make text span full width for alignment
+    paddingHorizontal: 10, // Add some padding for alignment
   },
   price: {
     fontSize: 18,
     fontWeight: "bold",
     color: "#333",
-    marginBottom: 20,
+    marginBottom: 10,
+    textAlign: "left", // Align to left
+    width: "100%", // Make text span full width for alignment
+    paddingHorizontal: 10, // Add some padding for alignment
   },
   priceValue: {
-    color: "#4a90e2",
+    color: "#e4b05d",
   },
   counterContainer: {
     flexDirection: "row",
@@ -196,10 +260,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   counterButton: {
-    backgroundColor: "#4a90e2",
-    padding: 12,
+    padding: 10,
     borderRadius: 5,
     marginHorizontal: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
   },
   counterButtonText: {
     color: "#fff",
@@ -226,14 +293,21 @@ const styles = StyleSheet.create({
   totalPrice: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#4a90e2",
+    color: "#e4b05d",
   },
   orderButton: {
-    backgroundColor: "#4a90e2",
     paddingVertical: 15,
-    paddingHorizontal: 60,
-    borderRadius: 8,
+    paddingHorizontal: 40,
+    borderRadius: 30,
     marginTop: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  orderButtonGreen: {
+    backgroundColor: "#32CD32",
   },
   orderButtonText: {
     color: "#fff",

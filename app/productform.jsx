@@ -155,8 +155,6 @@ const ProductForm = () => {
 
 export default ProductForm;
 
-// Styles for ProductForm screen...
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -172,7 +170,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "bold",
     color: "#333",
   },
@@ -184,14 +182,14 @@ const styles = StyleSheet.create({
   },
   form: {
     width: "100%",
-    backgroundColor: "#fff",
-    borderRadius: 10,
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
     padding: 20,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 5,
+    shadowRadius: 8,
+    elevation: 6,
   },
   inputContainer: {
     marginBottom: 20,
@@ -199,33 +197,39 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     color: "#333",
-    marginBottom: 5,
+    marginBottom: 8,
   },
   input: {
     width: "100%",
-    padding: 10,
+    padding: 12,
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 5,
-    backgroundColor: "#f7f7f7",
+    borderRadius: 8,
+    backgroundColor: "#f9f9f9",
     color: "#333",
   },
   pickerContainer: {
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 5,
-    backgroundColor: "#f7f7f7",
+    borderRadius: 8,
+    backgroundColor: "#f9f9f9",
+    marginTop: 5,
   },
   picker: {
     width: "100%",
     height: 50,
   },
   button: {
-    backgroundColor: "#4a90e2",
+    backgroundColor: "#32CD32",
     paddingVertical: 15,
-    borderRadius: 5,
+    borderRadius: 8,
     alignItems: "center",
-    marginTop: 10,
+    marginTop: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
   },
   buttonText: {
     color: "#fff",

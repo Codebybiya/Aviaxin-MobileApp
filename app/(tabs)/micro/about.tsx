@@ -119,7 +119,7 @@ const About = () => {
           <Switch
             value={darkMode}
             onValueChange={toggleDarkMode}
-            thumbColor={darkMode ? "#4A90E2" : "#ccc"}
+            thumbColor={darkMode ? "#32CD32" : "#ccc"}
             trackColor={{ false: "#767577", true: "#81b0ff" }}
           />
         </View>
@@ -129,29 +129,29 @@ const About = () => {
             General Settings
           </Text>
           <TouchableOpacity style={styles.menuItem} onPress={handlePress2}>
-            <FontAwesome
-              name="history"
-              size={24}
-              color={darkMode ? "#fff" : "#333"}
-            />
+            <FontAwesome name="history" size={24} color="#32CD32" />
             <Text style={[styles.menuItemText, darkMode && styles.darkText]}>
               Order History
             </Text>
-            <MaterialIcons name="keyboard-arrow-right" size={24} color="#ccc" />
+            <MaterialIcons
+              name="keyboard-arrow-right"
+              size={24}
+              color="#32CD32"
+            />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.menuItem}
             onPress={() => setModalVisible(true)}
           >
-            <FontAwesome
-              name="key"
-              size={24}
-              color={darkMode ? "#fff" : "#333"}
-            />
+            <FontAwesome name="key" size={24} color="#32CD32" />
             <Text style={[styles.menuItemText, darkMode && styles.darkText]}>
               Change Password
             </Text>
-            <MaterialIcons name="keyboard-arrow-right" size={24} color="#ccc" />
+            <MaterialIcons
+              name="keyboard-arrow-right"
+              size={24}
+              color="#32CD32"
+            />
           </TouchableOpacity>
         </View>
 
@@ -160,48 +160,48 @@ const About = () => {
             Information
           </Text>
           <TouchableOpacity style={styles.menuItem}>
-            <FontAwesome
-              name="info-circle"
-              size={24}
-              color={darkMode ? "#fff" : "#333"}
-            />
+            <FontAwesome name="info-circle" size={24} color="#32CD32" />
             <Text style={[styles.menuItemText, darkMode && styles.darkText]}>
               About App
             </Text>
-            <MaterialIcons name="keyboard-arrow-right" size={24} color="#ccc" />
+            <MaterialIcons
+              name="keyboard-arrow-right"
+              size={24}
+              color="#32CD32"
+            />
           </TouchableOpacity>
           <TouchableOpacity style={styles.menuItem}>
-            <FontAwesome
-              name="file-text"
-              size={24}
-              color={darkMode ? "#fff" : "#333"}
-            />
+            <FontAwesome name="file-text" size={24} color="#32CD32" />
             <Text style={[styles.menuItemText, darkMode && styles.darkText]}>
               Terms & Conditions
             </Text>
-            <MaterialIcons name="keyboard-arrow-right" size={24} color="#ccc" />
+            <MaterialIcons
+              name="keyboard-arrow-right"
+              size={24}
+              color="#32CD32"
+            />
           </TouchableOpacity>
           <TouchableOpacity style={styles.menuItem}>
-            <FontAwesome
-              name="shield"
-              size={24}
-              color={darkMode ? "#fff" : "#333"}
-            />
+            <FontAwesome name="shield" size={24} color="#32CD32" />
             <Text style={[styles.menuItemText, darkMode && styles.darkText]}>
               Privacy Policy
             </Text>
-            <MaterialIcons name="keyboard-arrow-right" size={24} color="#ccc" />
+            <MaterialIcons
+              name="keyboard-arrow-right"
+              size={24}
+              color="#32CD32"
+            />
           </TouchableOpacity>
           <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
-            <FontAwesome
-              name="sign-out"
-              size={24}
-              color={darkMode ? "#fff" : "#333"}
-            />
+            <FontAwesome name="sign-out" size={24} color="#32CD32" />
             <Text style={[styles.menuItemText, darkMode && styles.darkText]}>
               Logout
             </Text>
-            <MaterialIcons name="keyboard-arrow-right" size={24} color="#ccc" />
+            <MaterialIcons
+              name="keyboard-arrow-right"
+              size={24}
+              color="#32CD32"
+            />
           </TouchableOpacity>
         </View>
 
@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   modalButton: {
-    backgroundColor: "#4A90E2",
+    backgroundColor: "#32CD32",
     padding: 12,
     borderRadius: 8,
     marginVertical: 10,

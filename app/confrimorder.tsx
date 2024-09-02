@@ -5,6 +5,9 @@ import {
   View,
   TouchableOpacity,
   TextInput,
+  Modal,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import axios from "axios";
 import config from "@/assets/config";
@@ -12,18 +15,21 @@ import { useLocalSearchParams } from "expo-router";
 
 const backendUrl = `${config.backendUrl}`;
 
-const Confrimorder = () => {
+const ConfirmOrder = () => {
   const { id } = useLocalSearchParams(); // Get the order ID from the route
 
   const [order, setOrder] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // Loading state
   const [isolateNumber, setIsolateNumber] = useState("");
   const [batchNumber, setBatchNumber] = useState("");
+  const [modalVisible, setModalVisible] = useState(false); // State to control modal visibility
+  const [confirmingOrder, setConfirmingOrder] = useState(false); // Loading state for order confirmation
 
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
+        setLoading(true); // Start loader
         const response = await axios.get(
           `${backendUrl}/orders/orderdetail/${id}`
         );
@@ -32,7 +38,7 @@ const Confrimorder = () => {
         console.error("Failed to fetch order details:", error);
         setError("Failed to load order details.");
       } finally {
-        setLoading(false);
+        setLoading(false); // Stop loader
       }
     };
 
@@ -43,6 +49,7 @@ const Confrimorder = () => {
 
   const handleConfirmOrder = async () => {
     try {
+      setConfirmingOrder(true); // Start loader for order confirmation
       await axios.patch(`${backendUrl}/orders/confirm-order/${id}`, {
         isolateNumber,
         batchNumber,
@@ -56,14 +63,22 @@ const Confrimorder = () => {
         batchNumber,
         confirmedBy: order.userID,
       }));
+      setModalVisible(false); // Close the modal after confirmation
+      Alert.alert("Success", "Order confirmed successfully.");
     } catch (error) {
       console.error("Failed to confirm order:", error);
       setError("Failed to confirm order.");
+    } finally {
+      setConfirmingOrder(false); // Stop loader for order confirmation
     }
   };
 
   if (loading) {
-    return <Text>Loading...</Text>;
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#32CD32" />
+      </View>
+    );
   }
 
   if (error) {
@@ -81,7 +96,7 @@ const Confrimorder = () => {
       case "shipped":
         return "Shipped";
       case "confirmed":
-        return "Confirmed";
+        return "Isolation Completed";
       case "cancelled":
         return "Cancelled";
       default:
@@ -136,56 +151,76 @@ const Confrimorder = () => {
         </Text>
       </View>
 
-      {/* New Fields for Isolate Number and Batch Number */}
-      <Text style={styles.sectionTitle}>Confirm Order</Text>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Isolate Number:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter isolation no"
-          value={isolateNumber}
-          onChangeText={setIsolateNumber}
-        />
-      </View>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Batch Number:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter batch no"
-          value={batchNumber}
-          onChangeText={setBatchNumber}
-        />
-      </View>
-
-      <Text style={styles.note}>
-        After clicking save, the vet can see the details Cultured By:
-      </Text>
-
       <TouchableOpacity
         style={styles.confirmButton}
-        onPress={handleConfirmOrder}
+        onPress={() => setModalVisible(true)}
       >
-        <Text style={styles.buttonText}>Confirm</Text>
+        <Text style={styles.buttonText}>Confirm Order</Text>
       </TouchableOpacity>
 
-      <Text style={styles.signatureText}>Clicked to sign this product</Text>
+      <Text style={styles.signatureText}>
+        Click to Confirm this product Order
+      </Text>
 
-      <TouchableOpacity style={styles.invoiceButton}>
-        <Text style={styles.buttonText}>View Invoice</Text>
-      </TouchableOpacity>
+      {/* Confirmation Modal */}
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Confirm Order</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter isolation no"
+              value={isolateNumber}
+              onChangeText={setIsolateNumber}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Enter batch no"
+              value={batchNumber}
+              onChangeText={setBatchNumber}
+            />
+            {confirmingOrder ? ( // Loader for confirming order
+              <ActivityIndicator size="large" color="#32CD32" />
+            ) : (
+              <View style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={handleConfirmOrder}
+                >
+                  <Text style={styles.buttonText}>Confirm</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.cancelButton]}
+                  onPress={() => setModalVisible(false)}
+                >
+                  <Text style={styles.buttonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
 
-export default Confrimorder;
+export default ConfirmOrder;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f7f8fa",
     padding: 20,
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   title: {
     fontSize: 26,
@@ -206,6 +241,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 15,
     justifyContent: "space-between",
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
   },
   label: {
     fontSize: 16,
@@ -216,50 +260,38 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#666",
     flex: 1,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#888",
-    marginTop: 20,
-    textAlign: "center",
-  },
-  inputContainer: {
-    marginBottom: 10,
-  },
-  input: {
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
-    padding: 10,
-    backgroundColor: "#f0f0f0",
-    marginTop: 5,
-  },
-  note: {
-    fontSize: 14,
-    color: "#999",
-    marginBottom: 20,
-    textAlign: "center",
+    textAlign: "right",
   },
   confirmButton: {
-    backgroundColor: "#00bcd4",
+    backgroundColor: "#32CD32", // Changed color to green
     paddingVertical: 15,
     paddingHorizontal: 40,
     borderRadius: 30,
     alignSelf: "center",
+    marginTop: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  invoiceButton: {
+    backgroundColor: "#32CD32", // Changed color to green
+    paddingVertical: 15,
+    paddingHorizontal: 40,
+    borderRadius: 30,
+    alignSelf: "center",
+    marginTop: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
   },
   signatureText: {
     marginTop: 10,
     color: "#888",
     textAlign: "center",
-  },
-  invoiceButton: {
-    backgroundColor: "#00bcd4",
-    paddingVertical: 15,
-    paddingHorizontal: 40,
-    borderRadius: 30,
-    alignSelf: "center",
-    marginTop: 20,
   },
   buttonText: {
     color: "#fff",
@@ -267,11 +299,64 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContent: {
+    width: "85%", // Slightly increased width for better appearance
+    backgroundColor: "#fff",
+    borderRadius: 15,
+    padding: 25, // Increased padding for more space
+    alignItems: "center",
+    elevation: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 15,
+  },
+  input: {
+    width: "100%",
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 10,
+    backgroundColor: "#f7f8fa", // Light background color for inputs
+    marginBottom: 15,
+  },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    marginTop: 20,
+  },
+  modalButton: {
+    flex: 1,
+    backgroundColor: "#32CD32", // Changed color to green
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginHorizontal: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  cancelButton: {
+    backgroundColor: "#d9534f", // Red color for cancel button
+  },
   statusPending: {
     color: "orange",
   },
   statusShipped: {
-    color: "blue",
+    color: "#32CD32", // Changed color to green
   },
   statusConfirmed: {
     color: "green",

@@ -35,7 +35,7 @@ const Pendingplaceorder: React.FC = () => {
   const fetchOrders = async () => {
     try {
       const response = await axios.get(
-        `${backendUrl}/orders/getallordersbymic?page=${page}&limit=10`
+        `${backendUrl}/orders/getallordersbymic?page=${page}&limit=10&status=pending`
       );
 
       const ordersData = response.data.data.map((order: any) => ({
@@ -77,7 +77,7 @@ const Pendingplaceorder: React.FC = () => {
           <Text style={styles.orderDetails}>See Details</Text>
         </TouchableOpacity>
       </View>
-      <MaterialIcons name="keyboard-arrow-right" size={24} color="#4a90e2" />
+      <MaterialIcons name="keyboard-arrow-right" size={24} color="#32CD32" />
     </View>
   );
 
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: "#4a90e2",
+    backgroundColor: "#32CD32", // Changed color to green
     alignItems: "center",
     justifyContent: "center",
     marginRight: 15,
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   },
   orderDetails: {
     fontSize: 14,
-    color: "#4a90e2",
+    color: "#32CD32", // Changed color to green
     textDecorationLine: "underline",
   },
   productPrice: {
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
   },
   loadMoreButton: {
     padding: 15,
-    backgroundColor: "#4a90e2",
+    backgroundColor: "#32CD32", // Changed color to green
     borderRadius: 10,
     alignItems: "center",
     marginTop: 20,

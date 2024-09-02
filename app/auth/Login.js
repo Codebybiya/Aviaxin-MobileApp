@@ -15,6 +15,7 @@ import axios from "axios";
 import * as Yup from "yup";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import config from "../../assets/config";
+
 const backendUrl = `${config.backendUrl}`;
 const baseUrl = `${config.baseUrl}`;
 
@@ -25,7 +26,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({ email: "", password: "" });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Set initial state to false
 
   // Validation schema
   const validationSchema = Yup.object().shape({
@@ -90,7 +91,6 @@ const Login = () => {
     if (role === "microbiologist") {
       router.replace("../(tabs)/micro");
     } else if (role === "veterinarian") {
-      // Fixed typo
       router.replace("../(tabs)/Vet");
     } else if (role === "farmer") {
       router.replace("../(tabs)/micro");
@@ -101,8 +101,13 @@ const Login = () => {
 
   // Handle form submission
   const handleSubmit = async () => {
+    setLoading(true); // Show loader when starting the login process
+
     const isValid = await validateInputs();
-    if (!isValid) return;
+    if (!isValid) {
+      setLoading(false); // Hide loader if validation fails
+      return;
+    }
 
     const userData = { email, password };
 
@@ -112,10 +117,9 @@ const Login = () => {
 
       if (response.data.status === "Failed") {
         showPopup(response.data.message);
+        setLoading(false); // Hide loader on failure
         return;
       }
-
-      const { userid, email, userrole } = response.data; // Assuming 'userid' is the field returned by the backend
 
       const userToSave = response?.data?.data;
 
@@ -129,13 +133,17 @@ const Login = () => {
         console.error("Unexpected error:", error);
         showPopup("An unexpected error occurred. Please try again.");
       }
+    } finally {
+      setLoading(false); // Hide loader once the process is complete
     }
   };
 
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
+        {/* Stylish Loader */}
         <ActivityIndicator size="large" color="#00bcd4" />
+        <Text style={styles.loadingText}>Signing you in...</Text>
       </View>
     );
   }
@@ -187,13 +195,7 @@ const Login = () => {
             <Text style={styles.errorText}>{errors.password}</Text>
           ) : null}
 
-          <TouchableOpacity
-            style={styles.button}
-            // onPress={() => router.push("/(tabs)/Vet")}
-            onPress={() => {
-              handleSubmit();
-            }}
-          >
+          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
             <Text style={styles.buttonText}>Sign In</Text>
           </TouchableOpacity>
         </View>
@@ -221,6 +223,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#00bcd4",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#fff",
   },
   content: {
     alignItems: "center",

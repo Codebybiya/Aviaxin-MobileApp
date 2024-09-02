@@ -174,7 +174,7 @@ const HomeTab = () => {
       <View style={styles.wrapper}>
         {/* Move the Welcome section inside the ScrollView */}
         <LinearGradient
-          colors={["#6DD5FA", "#2980B9"]}
+          colors={["#98FB98", "#2980B9"]}
           style={styles.headerContainer}
         >
           <Text style={styles.header}>Welcome, {userName}</Text>

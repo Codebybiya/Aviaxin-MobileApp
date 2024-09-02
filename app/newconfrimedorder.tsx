@@ -7,6 +7,7 @@ import {
   FlatList,
   ListRenderItemInfo,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -22,10 +23,11 @@ interface Order {
   date: string;
 }
 
-const Newconfrimedorder: React.FC = () => {
+const NewConfirmedOrder: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false); // Single loader state for all fetches
   const router = useRouter();
 
   useEffect(() => {
@@ -33,6 +35,8 @@ const Newconfrimedorder: React.FC = () => {
   }, []);
 
   const fetchOrders = async () => {
+    setLoading(true); // Show loader for all fetches
+
     try {
       const response = await axios.get(
         `${backendUrl}/orders/getallconordersbymic?page=${page}&limit=10&status=confirmed`
@@ -56,6 +60,8 @@ const Newconfrimedorder: React.FC = () => {
     } catch (error) {
       console.error("Failed to fetch orders:", error);
       Alert.alert("Error", "Unable to fetch orders. Please try again.");
+    } finally {
+      setLoading(false); // Hide loader when fetch is complete
     }
   };
 
@@ -77,7 +83,7 @@ const Newconfrimedorder: React.FC = () => {
           <Text style={styles.orderDetails}>See Details</Text>
         </TouchableOpacity>
       </View>
-      <MaterialIcons name="keyboard-arrow-right" size={24} color="#4a90e2" />
+      <MaterialIcons name="keyboard-arrow-right" size={24} color="#32CD32" />
     </View>
   );
 
@@ -93,18 +99,24 @@ const Newconfrimedorder: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={orders}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.ordersList}
-        ListFooterComponent={renderFooter}
-      />
+      {loading ? ( // Show loader during any data fetch
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#32CD32" />
+        </View>
+      ) : (
+        <FlatList
+          data={orders}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.ordersList}
+          ListFooterComponent={renderFooter}
+        />
+      )}
     </View>
   );
 };
 
-export default Newconfrimedorder;
+export default NewConfirmedOrder;
 
 const styles = StyleSheet.create({
   container: {
@@ -116,7 +128,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   orderContainer: {
-    backgroundColor: "#ffffff", // White background for the order card
+    backgroundColor: "#f9f9f9", // Light grey background for the order card
     padding: 20,
     borderRadius: 15,
     flexDirection: "row",
@@ -132,7 +144,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: "#4a90e2",
+    backgroundColor: "#32CD32", // Changed color to green
     alignItems: "center",
     justifyContent: "center",
     marginRight: 15,
@@ -156,7 +168,7 @@ const styles = StyleSheet.create({
   },
   orderDetails: {
     fontSize: 14,
-    color: "#4a90e2",
+    color: "#32CD32", // Changed color to green
     textDecorationLine: "underline",
   },
   productPrice: {
@@ -166,7 +178,7 @@ const styles = StyleSheet.create({
   },
   loadMoreButton: {
     padding: 15,
-    backgroundColor: "#4a90e2",
+    backgroundColor: "#32CD32", // Changed color to green
     borderRadius: 10,
     alignItems: "center",
     marginTop: 20,
@@ -174,5 +186,11 @@ const styles = StyleSheet.create({
   loadMoreText: {
     color: "#fff",
     fontWeight: "bold",
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
   },
 });

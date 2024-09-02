@@ -10,6 +10,7 @@ import {
   ScrollView,
   TextInput,
   Dimensions,
+  ActivityIndicator, // Import the ActivityIndicator component
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -31,6 +32,7 @@ const HomeTab = () => {
   const [veterinarianName, setVeterinarianName] = useState<string>("");
   const [cartItemCount, setCartItemCount] = useState<number>(0);
   const [userName, setUserName] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(true); // Add loading state
 
   useEffect(() => {
     fetchProducts();
@@ -39,12 +41,15 @@ const HomeTab = () => {
   }, []);
 
   const fetchProducts = async () => {
+    setIsLoading(true); // Start loading
     try {
       const response = await axios.get(`${backendUrl}/products/allproduct`);
       setProducts(response?.data?.data);
       setFilteredProducts(response?.data?.data); // Set initial filtered products
     } catch (error) {
       console.error("Failed to fetch products:", error);
+    } finally {
+      setIsLoading(false); // Stop loading
     }
   };
 
@@ -114,30 +119,34 @@ const HomeTab = () => {
 
         <Text style={styles.heade}>Our Products</Text>
 
-        <View style={styles.productGrid}>
-          {filteredProducts.map((item, index) => (
-            <View key={index} style={styles.productCard}>
-              <Image
-                source={{ uri: `${backendUrl}/${item.imagePath}` }}
-                style={styles.productImage}
-              />
-              <Text style={styles.productName}>{item.productName}</Text>
-              <Text style={styles.productTag}>Trending Now</Text>
-              <Text style={styles.productPrice}>${item.productPrice}</Text>
-              <TouchableOpacity
-                style={styles.detailButton}
-                onPress={() =>
-                  router.push({
-                    pathname: "/productdetail",
-                    params: { productId: item._id },
-                  })
-                }
-              >
-                <Text style={styles.detailButtonText}>View Details</Text>
-              </TouchableOpacity>
-            </View>
-          ))}
-        </View>
+        {isLoading ? ( // Show loading indicator when fetching products
+          <ActivityIndicator size="large" color="#32CD32" />
+        ) : (
+          <View style={styles.productGrid}>
+            {filteredProducts.map((item, index) => (
+              <View key={index} style={styles.productCard}>
+                <Image
+                  source={{ uri: `${backendUrl}/${item.imagePath}` }}
+                  style={styles.productImage}
+                />
+                <Text style={styles.productName}>{item.productName}</Text>
+                <Text style={styles.productTag}>Trending Now</Text>
+                <Text style={styles.productPrice}>${item.productPrice}</Text>
+                <TouchableOpacity
+                  style={styles.detailButton}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/productdetail",
+                      params: { productId: item._id },
+                    })
+                  }
+                >
+                  <Text style={styles.detailButtonText}>View Details</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
+        )}
       </ScrollView>
     </View>
   );
