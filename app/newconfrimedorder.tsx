@@ -83,7 +83,7 @@ const NewConfirmedOrder: React.FC = () => {
           <Text style={styles.orderDetails}>See Details</Text>
         </TouchableOpacity>
       </View>
-      <MaterialIcons name="keyboard-arrow-right" size={24} color="#32CD32" />
+      <MaterialIcons name="keyboard-arrow-right" size={24} color="#7DDD51" />
     </View>
   );
 
@@ -101,7 +101,7 @@ const NewConfirmedOrder: React.FC = () => {
     <View style={styles.container}>
       {loading ? ( // Show loader during any data fetch
         <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#32CD32" />
+          <ActivityIndicator size="large" color="#7DDD51" />
         </View>
       ) : (
         <FlatList
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: "#32CD32", // Changed color to green
+    backgroundColor: "#7DDD51", // Changed color to green
     alignItems: "center",
     justifyContent: "center",
     marginRight: 15,
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
   },
   orderDetails: {
     fontSize: 14,
-    color: "#32CD32", // Changed color to green
+    color: "#7DDD51", // Changed color to green
     textDecorationLine: "underline",
   },
   productPrice: {
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
   },
   loadMoreButton: {
     padding: 15,
-    backgroundColor: "#32CD32", // Changed color to green
+    backgroundColor: "#7DDD51", // Changed color to green
     borderRadius: 10,
     alignItems: "center",
     marginTop: 20,

@@ -194,7 +194,7 @@ function RootTabs() {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
           let iconColor = focused ? "#ffffff" : "#b0bec5";
-          let iconBackgroundColor = focused ? "#32CD32" : "transparent";
+          let iconBackgroundColor = focused ? "#7DDD51" : "transparent";
 
           if (route.name === "HomeTab") {
             iconName = "home";
@@ -227,7 +227,7 @@ function RootTabs() {
             </View>
           );
         },
-        tabBarActiveTintColor: "#32CD32",
+        tabBarActiveTintColor: "#7DDD51",
         tabBarInactiveTintColor: "#b0bec5",
         tabBarStyle: {
           backgroundColor: "#ffffff",
@@ -321,7 +321,7 @@ function CustomDrawerContent(props) {
       {/* Custom Drawer Header */}
       <View style={styles.drawerHeader}>
         <Image
-          source={require("@/assets/images/micb.png")}
+          source={require("@/assets/images/logo2.png")}
           style={styles.drawerLogo}
         />
         <Text style={styles.drawerUserName}>{user.name}</Text>
@@ -441,7 +441,7 @@ export default function RootLayout() {
 
 const styles = StyleSheet.create({
   drawerHeader: {
-    backgroundColor: "#32CD3280",
+    backgroundColor: "#7DDD5180",
     height: 150,
     justifyContent: "center",
     alignItems: "center",
@@ -450,7 +450,7 @@ const styles = StyleSheet.create({
   },
   drawerLogo: {
     width: 100,
-    height: 80,
+    height: 100,
     marginBottom: 10,
   },
   drawerUserName: {

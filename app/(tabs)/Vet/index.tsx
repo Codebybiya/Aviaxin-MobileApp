@@ -120,7 +120,7 @@ const HomeTab = () => {
         <Text style={styles.heade}>Our Products</Text>
 
         {isLoading ? ( // Show loading indicator when fetching products
-          <ActivityIndicator size="large" color="#32CD32" />
+          <ActivityIndicator size="large" color="#7DDD51" />
         ) : (
           <View style={styles.productGrid}>
             {filteredProducts.map((item, index) => (
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
-    color: "#32CD32",
+    color: "#7DDD51",
   },
   promoCard: {
     flexDirection: "row",
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
   searchButton: {
     marginLeft: 10,
     padding: 10,
-    backgroundColor: "#32CD32",
+    backgroundColor: "#7DDD51",
     borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   detailButton: {
-    backgroundColor: "#32CD32",
+    backgroundColor: "#7DDD51",
     paddingVertical: 7,
     paddingHorizontal: 10,
     borderRadius: 10,

@@ -4,14 +4,78 @@ import {
   View,
   TouchableOpacity,
   Image,
-  TextInput,
+  ActivityIndicator,
 } from "react-native";
-import React from "react";
-import { FontAwesome } from "@expo/vector-icons";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Home = () => {
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    const splashTimeout = setTimeout(() => {
+      setShowSplash(false);
+      checkLoginStatus(); // Call login check function after splash delay
+    }, 3000);
+
+    const checkLoginStatus = async () => {
+      try {
+        const savedUserData = await AsyncStorage.getItem("userData");
+
+        if (savedUserData) {
+          const { userrole } = JSON.parse(savedUserData);
+          if (userrole) {
+            navigateToRoleScreen(userrole); // Navigate to the correct screen based on the role
+          } else {
+            console.error("Role is undefined in savedUserData", savedUserData);
+          }
+        }
+      } catch (error) {
+        console.log("Error retrieving user data", error);
+      } finally {
+        setLoading(false); // Hide loader once the process is complete
+      }
+    };
+
+    return () => clearTimeout(splashTimeout); // Clean up timeout on unmount
+  }, []);
+
+  // Function to navigate based on user role
+  const navigateToRoleScreen = (role) => {
+    if (role === "microbiologist") {
+      router.replace("../(tabs)/micro");
+    } else if (role === "veterinarian") {
+      router.replace("../(tabs)/Vet");
+    } else if (role === "farmer") {
+      router.replace("../(tabs)/micro");
+    } else if (role === "superadmin") {
+      router.replace("../(tabs)/admin");
+    }
+  };
+
+  // Splash screen component
+  if (showSplash) {
+    return (
+      <View style={styles.splashContainer}>
+        <Image
+          source={require("@/assets/images/logo.png")} // Add your splash logo here
+          style={styles.splashLogo}
+        />
+      </View>
+    );
+  }
+
+  // Loader while checking login status
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#ffffff" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -50,9 +114,26 @@ export default Home;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#00bcd4", // Primary color
+    backgroundColor: "#7DDD51", // Primary color
     justifyContent: "center",
     alignItems: "center",
+  },
+  splashContainer: {
+    flex: 1,
+    backgroundColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  splashLogo: {
+    width: 350,
+    height: 350,
+    resizeMode: "contain",
+  },
+  splashText: {
+    fontSize: 24,
+    color: "#ffffff",
+    marginTop: 20,
+    fontWeight: "bold",
   },
   logoContainer: {
     marginBottom: 40,
@@ -93,16 +174,16 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   buttonText: {
-    color: "#00bcd4",
+    color: "#7DDD51",
     fontSize: 18,
     fontWeight: "bold",
   },
   registerButton: {
     backgroundColor: "#ffffff",
-    borderColor: "#00bcd4",
+    borderColor: "#7DDD51",
     borderWidth: 2,
   },
   registerButtonText: {
-    color: "#00bcd4",
+    color: "#7DDD51",
   },
 });

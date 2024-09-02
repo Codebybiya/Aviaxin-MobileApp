@@ -86,7 +86,7 @@ const ProductDetail = () => {
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#32CD32" />
+        <ActivityIndicator size="large" color="#7DDD51" />
         <Text style={styles.loadingText}>Loading product details...</Text>
       </View>
     );
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: "#32CD32",
+    color: "#7DDD51",
   },
   errorText: {
     fontSize: 18,
@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   orderButtonGreen: {
-    backgroundColor: "#32CD32",
+    backgroundColor: "#7DDD51",
   },
   orderButtonText: {
     color: "#fff",

@@ -50,7 +50,7 @@ const OrderDetailNotif = () => {
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#32CD32" />
+        <ActivityIndicator size="large" color="#7DDD51" />
         <Text style={styles.loadingText}>Loading Order Details...</Text>
       </View>
     );
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: "#32CD32",
+    color: "#7DDD51",
   },
   errorContainer: {
     flex: 1,
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   button: {
-    backgroundColor: "#32CD32", // Primary button color
+    backgroundColor: "#7DDD51", // Primary button color
     paddingVertical: 15,
     paddingHorizontal: 40,
     borderRadius: 30,
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
     color: "red",
   },
   statusConfirmed: {
-    color: "#32CD32", // Use #32CD32 for confirmed status
+    color: "#7DDD51", // Use #7DDD51 for confirmed status
   },
   statusDefault: {
     color: "#666",

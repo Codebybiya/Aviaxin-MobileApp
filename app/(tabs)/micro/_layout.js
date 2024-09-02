@@ -172,7 +172,7 @@ function RootTabs() {
             </View>
           );
         },
-        tabBarActiveTintColor: "#32CD32",
+        tabBarActiveTintColor: "#7DDD51",
         tabBarInactiveTintColor: "#b0bec5",
         tabBarStyle: {
           backgroundColor: "#ffffff",
@@ -361,7 +361,7 @@ export default function RootLayout() {
 
 const styles = StyleSheet.create({
   drawerHeader: {
-    backgroundColor: "#32CD3280",
+    backgroundColor: "#7DDD5180",
     height: 150,
     justifyContent: "center",
     alignItems: "center",

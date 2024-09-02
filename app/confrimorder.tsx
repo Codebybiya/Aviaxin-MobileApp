@@ -76,7 +76,7 @@ const ConfirmOrder = () => {
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#32CD32" />
+        <ActivityIndicator size="large" color="#7DDD51" />
       </View>
     );
   }
@@ -185,7 +185,7 @@ const ConfirmOrder = () => {
               onChangeText={setBatchNumber}
             />
             {confirmingOrder ? ( // Loader for confirming order
-              <ActivityIndicator size="large" color="#32CD32" />
+              <ActivityIndicator size="large" color="#7DDD51" />
             ) : (
               <View style={styles.modalButtons}>
                 <TouchableOpacity
@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   confirmButton: {
-    backgroundColor: "#32CD32", // Changed color to green
+    backgroundColor: "#7DDD51", // Changed color to green
     paddingVertical: 15,
     paddingHorizontal: 40,
     borderRadius: 30,
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   invoiceButton: {
-    backgroundColor: "#32CD32", // Changed color to green
+    backgroundColor: "#7DDD51", // Changed color to green
     paddingVertical: 15,
     paddingHorizontal: 40,
     borderRadius: 30,
@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     flex: 1,
-    backgroundColor: "#32CD32", // Changed color to green
+    backgroundColor: "#7DDD51", // Changed color to green
     paddingVertical: 12,
     borderRadius: 8,
     marginHorizontal: 5,
@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
     color: "orange",
   },
   statusShipped: {
-    color: "#32CD32", // Changed color to green
+    color: "#7DDD51", // Changed color to green
   },
   statusConfirmed: {
     color: "green",

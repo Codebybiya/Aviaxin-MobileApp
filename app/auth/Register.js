@@ -93,7 +93,7 @@ const Register = () => {
                 <FontAwesome
                   name="user"
                   size={24}
-                  color="#A9A9A9"
+                  color="#7DDD51"
                   style={styles.icon}
                 />
                 <TextInput
@@ -102,6 +102,7 @@ const Register = () => {
                   onChangeText={handleChange("firstName")}
                   onBlur={handleBlur("firstName")}
                   value={values.firstName}
+                  placeholderTextColor="#888"
                 />
               </View>
               {touched.firstName && errors.firstName && (
@@ -112,7 +113,7 @@ const Register = () => {
                 <FontAwesome
                   name="user"
                   size={24}
-                  color="#A9A9A9"
+                  color="#7DDD51"
                   style={styles.icon}
                 />
                 <TextInput
@@ -121,6 +122,7 @@ const Register = () => {
                   onChangeText={handleChange("lastName")}
                   onBlur={handleBlur("lastName")}
                   value={values.lastName}
+                  placeholderTextColor="#888"
                 />
               </View>
               {touched.lastName && errors.lastName && (
@@ -131,7 +133,7 @@ const Register = () => {
                 <FontAwesome
                   name="phone"
                   size={24}
-                  color="#A9A9A9"
+                  color="#7DDD51"
                   style={styles.icon}
                 />
                 <TextInput
@@ -141,6 +143,7 @@ const Register = () => {
                   onBlur={handleBlur("phoneNumber")}
                   value={values.phoneNumber}
                   keyboardType="phone-pad"
+                  placeholderTextColor="#888"
                 />
               </View>
               {touched.phoneNumber && errors.phoneNumber && (
@@ -169,7 +172,7 @@ const Register = () => {
                 <FontAwesome
                   name="envelope"
                   size={24}
-                  color="#A9A9A9"
+                  color="#7DDD51"
                   style={styles.icon}
                 />
                 <TextInput
@@ -179,6 +182,7 @@ const Register = () => {
                   onBlur={handleBlur("email")}
                   value={values.email}
                   keyboardType="email-address"
+                  placeholderTextColor="#888"
                 />
               </View>
               {touched.email && errors.email && (
@@ -189,7 +193,7 @@ const Register = () => {
                 <FontAwesome
                   name="lock"
                   size={24}
-                  color="#A9A9A9"
+                  color="#7DDD51"
                   style={styles.icon}
                 />
                 <TextInput
@@ -199,6 +203,7 @@ const Register = () => {
                   onBlur={handleBlur("password")}
                   value={values.password}
                   secureTextEntry
+                  placeholderTextColor="#888"
                 />
               </View>
               {touched.password && errors.password && (
@@ -209,7 +214,7 @@ const Register = () => {
                 <FontAwesome
                   name="lock"
                   size={24}
-                  color="#A9A9A9"
+                  color="#7DDD51"
                   style={styles.icon}
                 />
                 <TextInput
@@ -219,6 +224,7 @@ const Register = () => {
                   onBlur={handleBlur("confirmPassword")}
                   value={values.confirmPassword}
                   secureTextEntry
+                  placeholderTextColor="#888"
                 />
               </View>
               {touched.confirmPassword && errors.confirmPassword && (
@@ -244,7 +250,7 @@ export default Register;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#00bcd4",
+    backgroundColor: "#7DDD51", // Updated background color to green
     justifyContent: "center",
     alignItems: "center",
   },
@@ -255,9 +261,14 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: "80%",
     marginTop: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
   },
   button: {
-    backgroundColor: "#00bcd4",
+    backgroundColor: "#7DDD51", // Updated button color to green
     padding: 10,
     borderRadius: 5,
     marginTop: 20,
@@ -303,5 +314,6 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: "center",
     textAlign: "center",
+    color: "#7DDD51", // Updated text color for better visibility
   },
 });

@@ -85,7 +85,7 @@ const Placeorder: React.FC = () => {
         </TouchableOpacity>
       </View>
       <TouchableOpacity onPress={() => handleOrderDetailNavigation(item.id)}>
-        <MaterialIcons name="keyboard-arrow-right" size={30} color="#32CD32" />
+        <MaterialIcons name="keyboard-arrow-right" size={30} color="#7DDD51" />
       </TouchableOpacity>
     </View>
   );
@@ -101,7 +101,7 @@ const Placeorder: React.FC = () => {
       <Text style={styles.ordersLabel}>Your Orders</Text>
 
       {isLoading ? ( // Show loader when loading
-        <ActivityIndicator size="large" color="#32CD32" style={styles.loader} />
+        <ActivityIndicator size="large" color="#7DDD51" style={styles.loader} />
       ) : (
         <FlatList
           data={orders}
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: "#32CD32",
+    backgroundColor: "#7DDD51",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 15,
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   },
   orderDetails: {
     fontSize: 14,
-    color: "#32CD32",
+    color: "#7DDD51",
     marginTop: 4,
   },
   productPrice: {

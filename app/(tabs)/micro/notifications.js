@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   newNotification: {
-    backgroundColor: "#32CD32",
+    backgroundColor: "#7DDD51",
   },
   readNotification: {
     backgroundColor: "#fff",

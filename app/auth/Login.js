@@ -142,7 +142,7 @@ const Login = () => {
     return (
       <View style={styles.loadingContainer}>
         {/* Stylish Loader */}
-        <ActivityIndicator size="large" color="#00bcd4" />
+        <ActivityIndicator size="large" color="#7DDD51" />
         <Text style={styles.loadingText}>Signing you in...</Text>
       </View>
     );
@@ -151,17 +151,17 @@ const Login = () => {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.whiteText1}>Aviaxin</Text>
-        <Text style={styles.whiteText}>Welcome Back</Text>
-        <Text style={styles.whiteText}>Continue to Sign In</Text>
+        <Text style={styles.logoText}>Aviaxin</Text>
+        <Text style={styles.welcomeText}>Welcome Back</Text>
+        <Text style={styles.subText}>Continue to Sign In</Text>
       </View>
-      <View style={styles.whitecon}>
+      <View style={styles.formContainer}>
         <View style={styles.form}>
           <View style={styles.inputContainer}>
             <FontAwesome
               name="envelope"
               size={24}
-              color="#A9A9A9"
+              color="#7DDD51" // Use a darker green color for better contrast
               style={styles.icon}
             />
             <TextInput
@@ -170,6 +170,7 @@ const Login = () => {
               onChangeText={setEmail}
               value={email}
               keyboardType="email-address"
+              placeholderTextColor="#888"
             />
           </View>
           {errors.email ? (
@@ -180,7 +181,7 @@ const Login = () => {
             <FontAwesome
               name="lock"
               size={24}
-              color="#A9A9A9"
+              color="#7DDD51" // Use a darker green color for better contrast
               style={styles.icon}
             />
             <TextInput
@@ -189,6 +190,7 @@ const Login = () => {
               onChangeText={setPassword}
               value={password}
               secureTextEntry
+              placeholderTextColor="#888"
             />
           </View>
           {errors.password ? (
@@ -200,7 +202,7 @@ const Login = () => {
           </TouchableOpacity>
         </View>
         <TouchableOpacity onPress={() => router.push("/auth/Register")}>
-          <Text style={styles.label1}>SignUp Account Request</Text>
+          <Text style={styles.signupText}>SignUp Account Request</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -215,7 +217,7 @@ const { width, height } = Dimensions.get("window");
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#00bcd4",
+    backgroundColor: "#7DDD51",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -223,7 +225,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#00bcd4",
+    backgroundColor: "#7DDD51",
   },
   loadingText: {
     marginTop: 10,
@@ -233,44 +235,41 @@ const styles = StyleSheet.create({
   content: {
     alignItems: "center",
     justifyContent: "center",
-    marginTop: height * 0.1, // Responsive marginTop
-    marginBottom: height * 0.05, // Added marginBottom for better spacing
+    marginTop: height * 0.1,
+    marginBottom: height * 0.05,
   },
-  whitecon: {
-    backgroundColor: "white",
-    paddingVertical: height * 0.03, // Responsive paddingVertical
-    paddingHorizontal: width * 0.07, // Responsive paddingHorizontal
-    borderRadius: 10,
-    width: width * 0.85, // Responsive width
-    marginTop: height * 0.02, // Responsive marginTop
-    shadowColor: "#000", // Added shadow for better visual
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2, // Android shadow
-  },
-  button: {
-    backgroundColor: "#00bcd4",
-    paddingVertical: height * 0.015, // Responsive paddingVertical
-    borderRadius: 5,
-    marginTop: height * 0.02, // Responsive marginTop
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-    textAlign: "center",
-  },
-  whiteText: {
-    color: "white",
-    fontSize: 24,
-    fontWeight: "bold",
-    paddingBottom: height * 0.02, // Responsive paddingBottom
-  },
-  whiteText1: {
+  logoText: {
     color: "white",
     fontSize: 44,
     fontWeight: "bold",
-    paddingBottom: height * 0.03, // Responsive paddingBottom
+    paddingBottom: height * 0.03,
+  },
+  welcomeText: {
+    color: "white",
+    fontSize: 24,
+    fontWeight: "bold",
+    paddingBottom: height * 0.02,
+  },
+  subText: {
+    color: "white",
+    fontSize: 18,
+    paddingBottom: height * 0.02,
+  },
+  formContainer: {
+    backgroundColor: "white",
+    paddingVertical: height * 0.03,
+    paddingHorizontal: width * 0.07,
+    borderRadius: 15,
+    width: width * 0.85,
+    marginTop: height * 0.02,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  form: {
+    alignItems: "center",
   },
   inputContainer: {
     flexDirection: "row",
@@ -278,27 +277,43 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 5,
-    paddingHorizontal: width * 0.03, // Responsive paddingHorizontal
-    paddingVertical: height * 0.015, // Responsive paddingVertical
-    marginBottom: height * 0.02, // Responsive marginBottom
+    paddingHorizontal: width * 0.03,
+    paddingVertical: height * 0.015,
+    marginBottom: height * 0.02,
+    backgroundColor: "#f9f9f9",
   },
   icon: {
-    marginRight: width * 0.03, // Responsive marginRight
+    marginRight: width * 0.03,
   },
   textInput: {
     flex: 1,
     fontSize: 16,
+    color: "#333",
   },
   errorText: {
     color: "red",
     fontSize: 12,
-    marginTop: -height * 0.01, // Adjust errorText position
-    marginBottom: height * 0.01, // Responsive marginBottom
+    marginTop: -height * 0.01,
+    marginBottom: height * 0.01,
   },
-  label1: {
-    padding: height * 0.015, // Responsive padding
+  button: {
+    backgroundColor: "#7DDD51",
+    paddingVertical: height * 0.015,
+    borderRadius: 5,
+    marginTop: height * 0.02,
+    width: "100%",
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  signupText: {
+    padding: height * 0.015,
     textAlign: "center",
-    fontSize: 16,
-    color: "#00bcd4", // Consistent color with button
+    fontSize: 14,
+    color: "black", // Use a slightly different green for a fresh look
+    marginTop: 10,
   },
 });

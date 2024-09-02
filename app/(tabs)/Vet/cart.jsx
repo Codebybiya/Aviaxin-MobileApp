@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   quantityButton: {
-    backgroundColor: "#32CD32",
+    backgroundColor: "#7DDD51",
     padding: 8,
     borderRadius: 5,
     marginHorizontal: 5,
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     color: "#e4b05d",
   },
   checkoutButton: {
-    backgroundColor: "#32CD32",
+    backgroundColor: "#7DDD51",
     paddingVertical: 15,
     borderRadius: 8,
     alignItems: "center",

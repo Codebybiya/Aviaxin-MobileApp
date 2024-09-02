@@ -71,7 +71,7 @@ const NotificationItem = ({
           <FontAwesome
             name={icon}
             size={24}
-            color={!read ? "#fff" : "#32CD32"}
+            color={!read ? "#fff" : "#7DDD51"}
           />
         </View>
         <View style={styles.textContainer}>
@@ -159,7 +159,7 @@ const Notifications = () => {
 
   if (loading) {
     // Show loading indicator when loading
-    return <ActivityIndicator size="large" color="#32CD32" />;
+    return <ActivityIndicator size="large" color="#7DDD51" />;
   }
 
   if (error) {
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   newNotification: {
-    backgroundColor: "#32CD32",
+    backgroundColor: "#7DDD51",
   },
   readNotification: {
     backgroundColor: "#fff",
