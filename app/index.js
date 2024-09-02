@@ -5,8 +5,9 @@ import {
   TouchableOpacity,
   Image,
   ActivityIndicator,
+  Animated,
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -14,12 +15,28 @@ const Home = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [showSplash, setShowSplash] = useState(true);
+  const logoScale = useRef(new Animated.Value(0)).current; // Initialize scale animation
+  const logoOpacity = useRef(new Animated.Value(0)).current; // Initialize opacity animation
 
   useEffect(() => {
     const splashTimeout = setTimeout(() => {
       setShowSplash(false);
       checkLoginStatus(); // Call login check function after splash delay
     }, 3000);
+
+    // Start animation when component mounts
+    Animated.parallel([
+      Animated.spring(logoScale, {
+        toValue: 1,
+        friction: 4,
+        useNativeDriver: true,
+      }),
+      Animated.timing(logoOpacity, {
+        toValue: 1,
+        duration: 1500,
+        useNativeDriver: true,
+      }),
+    ]).start();
 
     const checkLoginStatus = async () => {
       try {
@@ -60,9 +77,12 @@ const Home = () => {
   if (showSplash) {
     return (
       <View style={styles.splashContainer}>
-        <Image
+        <Animated.Image
           source={require("@/assets/images/logo.png")} // Add your splash logo here
-          style={styles.splashLogo}
+          style={[
+            styles.splashLogo,
+            { transform: [{ scale: logoScale }], opacity: logoOpacity },
+          ]}
         />
       </View>
     );
@@ -114,7 +134,7 @@ export default Home;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#7DDD51", // Primary color
+    backgroundColor: "white", // Primary color
     justifyContent: "center",
     alignItems: "center",
   },
@@ -128,12 +148,6 @@ const styles = StyleSheet.create({
     width: 350,
     height: 350,
     resizeMode: "contain",
-  },
-  splashText: {
-    fontSize: 24,
-    color: "#ffffff",
-    marginTop: 20,
-    fontWeight: "bold",
   },
   logoContainer: {
     marginBottom: 40,
@@ -174,16 +188,16 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   buttonText: {
-    color: "#7DDD51",
+    color: "#00bcd4",
     fontSize: 18,
     fontWeight: "bold",
   },
   registerButton: {
     backgroundColor: "#ffffff",
-    borderColor: "#7DDD51",
+    borderColor: "#00bcd4",
     borderWidth: 2,
   },
   registerButtonText: {
-    color: "#7DDD51",
+    color: "#00bcd4",
   },
 });
