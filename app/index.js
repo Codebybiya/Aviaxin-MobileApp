@@ -134,7 +134,7 @@ export default Home;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white", // Primary color
+    backgroundColor: "#7DDD51", // Primary color
     justifyContent: "center",
     alignItems: "center",
   },
@@ -188,16 +188,16 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   buttonText: {
-    color: "#00bcd4",
+    color: "#7DDD51",
     fontSize: 18,
     fontWeight: "bold",
   },
   registerButton: {
     backgroundColor: "#ffffff",
-    borderColor: "#00bcd4",
+    borderColor: "#7DDD51",
     borderWidth: 2,
   },
   registerButtonText: {
-    color: "#00bcd4",
+    color: "#7DDD51",
   },
 });
