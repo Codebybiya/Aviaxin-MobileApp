@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,24 +7,19 @@ import {
   Alert,
   TextInput,
   Modal,
-  Image,
   ScrollView,
   Switch,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import config from "@/assets/config";
-const backendUrl = `${config.backendUrl}`;
-import axios from "axios";
-import { updateUserPassword } from "@/utils/utils";
+import { captilizeFirstLetter, updateUserPassword } from "@/utils/utils";
 
 const About = () => {
-  const [user, setUser] = useState({ name: "", email: "" });
+  const [user, setUser] = useState({ name: "", email: "", phone: "" });
   const [modalVisible, setModalVisible] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [darkMode, setDarkMode] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -36,6 +31,7 @@ const About = () => {
           setUser({
             name: userData.name,
             email: userData.email,
+            phone: userData.phno,
           });
         }
       } catch (error) {
@@ -43,19 +39,7 @@ const About = () => {
       }
     };
 
-    const fetchDarkMode = async () => {
-      try {
-        const savedDarkMode = await AsyncStorage.getItem("darkMode");
-        if (savedDarkMode) {
-          setDarkMode(JSON.parse(savedDarkMode));
-        }
-      } catch (error) {
-        console.error("Error retrieving dark mode", error);
-      }
-    };
-
     fetchUserData();
-    fetchDarkMode();
   }, []);
 
   const handleLogout = async () => {
@@ -76,175 +60,130 @@ const About = () => {
       Alert.alert("Error", "Passwords do not match");
       return;
     }
+
     await updateUserPassword(newPassword);
-    // Here you would call your API to change the password
     setModalVisible(false);
   };
 
-  const toggleDarkMode = async () => {
-    setDarkMode(!darkMode);
-    try {
-      await AsyncStorage.setItem("darkMode", JSON.stringify(!darkMode));
-    } catch (error) {
-      console.error("Error saving dark mode", error);
-    }
+  const handlePress2 = () => {
+    router.push("../../placedorders");
+  };
+
+  const modelView = () => {
+    return (
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Change Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="New Password"
+              secureTextEntry
+              value={newPassword}
+              onChangeText={setNewPassword}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Confirm New Password"
+              secureTextEntry
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+            />
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={handleChangePassword}
+            >
+              <Text style={styles.buttonText}>Submit</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.modalButton, { backgroundColor: "#ccc" }]}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.buttonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    );
   };
 
   return (
-    <ScrollView
-      contentContainerStyle={[
-        styles.scrollContainer,
-        darkMode && styles.darkScrollContainer,
-      ]}
-    >
-      <View style={[styles.container, darkMode && styles.darkContainer]}>
+    <ScrollView contentContainerStyle={[styles.scrollContainer]}>
+      <View style={styles.container}>
+        <View style={styles.profileContainer}>
+          <View>
+            <Text style={styles.profileName}>
+              {captilizeFirstLetter(user.name)}
+            </Text>
+            <Text style={styles.profileEmail}>
+              {user.phone}
+            </Text>
+          </View>
+          <TouchableOpacity style={styles.btn} onPress={handlePress2}>
+            <Text style={styles.btnText}>
+              Verified
+            </Text>
+          </TouchableOpacity>
+        </View>
         <View
-          style={[
-            styles.profileContainer,
-            darkMode && styles.darkProfileContainer,
-          ]}
-        >
-          <Text style={[styles.profileName, darkMode && styles.darkText]}>
-            {user.name}
-          </Text>
-          <Text style={[styles.profileEmail, darkMode && styles.darkText]}>
-            {user.email}
-          </Text>
-        </View>
-
-        <View style={styles.switchContainer}>
-          <Text style={[styles.switchLabel, darkMode && styles.darkText]}>
-            Dark Mode
-          </Text>
-          <Switch
-            value={darkMode}
-            onValueChange={toggleDarkMode}
-            thumbColor={darkMode ? "#00bcd4" : "#ccc"}
-            trackColor={{ false: "#767577", true: "#81b0ff" }}
-          />
-        </View>
-
-        <View style={[styles.section, darkMode && styles.darkSection]}>
-          <Text style={[styles.sectionTitle, darkMode && styles.darkText]}>
-            General Settings
-          </Text>
-          <TouchableOpacity style={styles.menuItem}>
-            <FontAwesome
-              name="history"
-              size={24}
-              color={darkMode ? "#fff" : "#333"}
-            />
-            <Text style={[styles.menuItemText, darkMode && styles.darkText]}>
-              Order History
-            </Text>
-            <MaterialIcons name="keyboard-arrow-right" size={24} color="#ccc" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.menuItem}
-            onPress={() => setModalVisible(true)}
-          >
-            <FontAwesome
-              name="key"
-              size={24}
-              color={darkMode ? "#fff" : "#333"}
-            />
-            <Text style={[styles.menuItemText, darkMode && styles.darkText]}>
-              Change Password
-            </Text>
-            <MaterialIcons name="keyboard-arrow-right" size={24} color="#ccc" />
-          </TouchableOpacity>
-        </View>
-
-        <View style={[styles.section, darkMode && styles.darkSection]}>
-          <Text style={[styles.sectionTitle, darkMode && styles.darkText]}>
-            Information
-          </Text>
-          <TouchableOpacity style={styles.menuItem}>
-            <FontAwesome
-              name="info-circle"
-              size={24}
-              color={darkMode ? "#fff" : "#333"}
-            />
-            <Text style={[styles.menuItemText, darkMode && styles.darkText]}>
-              About App
-            </Text>
-            <MaterialIcons name="keyboard-arrow-right" size={24} color="#ccc" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
-            <FontAwesome
-              name="file-text"
-              size={24}
-              color={darkMode ? "#fff" : "#333"}
-            />
-            <Text style={[styles.menuItemText, darkMode && styles.darkText]}>
-              Terms & Conditions
-            </Text>
-            <MaterialIcons name="keyboard-arrow-right" size={24} color="#ccc" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
-            <FontAwesome
-              name="shield"
-              size={24}
-              color={darkMode ? "#fff" : "#333"}
-            />
-            <Text style={[styles.menuItemText, darkMode && styles.darkText]}>
-              Privacy Policy
-            </Text>
-            <MaterialIcons name="keyboard-arrow-right" size={24} color="#ccc" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
-            <FontAwesome
-              name="sign-out"
-              size={24}
-              color={darkMode ? "#fff" : "#333"}
-            />
-            <Text style={[styles.menuItemText, darkMode && styles.darkText]}>
-              Logout
-            </Text>
-            <MaterialIcons name="keyboard-arrow-right" size={24} color="#ccc" />
-          </TouchableOpacity>
-        </View>
-
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            setModalVisible(!modalVisible);
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 3,
+            width: 80,
           }}
         >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>Change Password</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="New Password"
-                secureTextEntry
-                value={newPassword}
-                onChangeText={setNewPassword}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Confirm New Password"
-                secureTextEntry
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-              />
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={handleChangePassword}
-              >
-                <Text style={styles.buttonText}>Submit</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalButton, { backgroundColor: "#ccc" }]}
-                onPress={() => setModalVisible(false)}
-              >
-                <Text style={styles.buttonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
+          <TouchableOpacity
+            style={styles.orderHistoryBtn}
+            onPress={handlePress2}
+          >
+            <MaterialIcons name="punch-clock" size={36} color="#7DDD51" />
+          </TouchableOpacity>
+          <Text style={styles.menuItemText}>
+            Order History
+          </Text>
+        </View>
+        <View>
+          <Text style={{ marginTop: 20, fontSize: 18 }}> Email</Text>
+          <TouchableOpacity style={[styles.menuItem]}>
+            <FontAwesome name="envelope" size={24} color="#7DDD51" />
+            <Text style={[styles.menuItemText]}>{user.email}</Text>
+            <MaterialIcons
+              name="keyboard-arrow-right"
+              size={24}
+              color="#7DDD51"
+            />
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity
+          style={[styles.menuItem, { marginTop: 10 }]}
+          onPress={() => setModalVisible(true)}
+        >
+          <FontAwesome name="key" size={24} color="#7DDD51" />
+          <Text style={[styles.menuItemText]}>Change Password</Text>
+          <MaterialIcons
+            name="keyboard-arrow-right"
+            size={24}
+            color="#7DDD51"
+          />
+        </TouchableOpacity>
+        {modelView()}
+        <TouchableOpacity
+          style={{ alignItems: "flex-end", marginTop: 30 }}
+          onPress={handleLogout}
+        >
+          <FontAwesome name="sign-out" size={36} color="#7DDD51" />
+          <Text> Logout</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -253,76 +192,66 @@ const About = () => {
 export default About;
 
 const styles = StyleSheet.create({
+  btnText: {
+    color: "#fff",
+    fontSize: 16,
+  },
+  btn: {
+    backgroundColor: "#7cb144",
+    borderRadius: 30,
+    paddingHorizontal: 22,
+    paddingVertical: 8,
+    width: 100,
+    height: 40,
+  },
+  orderHistoryBtn:{
+    backgroundColor: "white",
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+    width: 80,
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 2,
+  },
   scrollContainer: {
     flexGrow: 1,
-    backgroundColor: "#f7f8fa",
+    backgroundColor: "#f5f5f5",
   },
-  darkScrollContainer: {
-    backgroundColor: "#121212",
-  },
+
   container: {
     flex: 1,
-    backgroundColor: "#f7f8fa",
+    backgroundColor: "#ffffff",
     padding: 20,
   },
-  darkContainer: {
-    backgroundColor: "#121212",
-  },
+
   profileContainer: {
-    alignItems: "center",
+    display: "flex",
+    flexDirection: "row",
     paddingVertical: 30,
     paddingHorizontal: 20,
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    marginBottom: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 5,
+    borderRadius: 12,
+    marginBottom: 2,
+    justifyContent: "space-between",
   },
-  darkProfileContainer: {
-    backgroundColor: "#1f1f1f",
-  },
-  profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 10,
-  },
+
   profileName: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#333",
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#7cb144",
   },
   profileEmail: {
-    fontSize: 16,
-    color: "#777",
+    fontSize: 24,
+    color: "#7cb144",
+    marginTop: 4,
   },
   darkText: {
     color: "#fff",
   },
-  section: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    marginBottom: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 5,
-  },
-  darkSection: {
-    backgroundColor: "#1f1f1f",
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#666",
-    marginBottom: 10,
-  },
+
+
   menuItem: {
     flexDirection: "row",
     alignItems: "center",
@@ -344,54 +273,47 @@ const styles = StyleSheet.create({
   },
   modalView: {
     margin: 20,
-    backgroundColor: "white",
-    borderRadius: 10,
+    backgroundColor: "#fff",
+    borderRadius: 15,
     padding: 35,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 3,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 10,
   },
   modalText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 15,
+    fontSize: 20,
+    fontWeight: "600",
+    marginBottom: 20,
     textAlign: "center",
+    color: "#333",
   },
   input: {
-    width: 250,
+    width: 260,
     height: 40,
     borderColor: "#ccc",
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: 10,
     padding: 10,
     marginVertical: 10,
   },
   modalButton: {
-    backgroundColor: "#00bcd4",
-    padding: 10,
+    backgroundColor: "#7DDD51",
+    padding: 12,
     borderRadius: 8,
-    marginVertical: 5,
+    marginVertical: 10,
     alignItems: "center",
-    width: 100,
+    width: 120,
   },
   buttonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
   },
-  switchContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  switchLabel: {
-    fontSize: 16,
-  },
+ 
 });

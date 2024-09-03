@@ -1,8 +1,8 @@
-import * as Yup from 'yup';
+import * as Yup from "yup";
 import config from "@/assets/config";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import { Alert } from 'react-native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { Alert } from "react-native";
 const backendUrl = `${config.backendUrl}`;
 // Function to create Yup validation schema
 export const createValidationSchema = (fields) => {
@@ -16,19 +16,30 @@ export const createValidationSchema = (fields) => {
     }
 
     if (field.validation.minLength) {
-      validation = validation.min(field.validation.minLength, `${field.placeholder} must be at least ${field.validation.minLength} characters`);
+      validation = validation.min(
+        field.validation.minLength,
+        `${field.placeholder} must be at least ${field.validation.minLength} characters`
+      );
     }
 
     if (field.validation.maxLength) {
-      validation = validation.max(field.validation.maxLength, `${field.placeholder} must be at most ${field.validation.maxLength} characters`);
+      validation = validation.max(
+        field.validation.maxLength,
+        `${field.placeholder} must be at most ${field.validation.maxLength} characters`
+      );
     }
 
     if (field.validation.email) {
-      validation = validation.email(`${field.placeholder} must be a valid email`);
+      validation = validation.email(
+        `${field.placeholder} must be a valid email`
+      );
     }
 
     if (field.validation.match) {
-      validation = validation.oneOf([Yup.ref(field.validation.match)], 'Passwords must match');
+      validation = validation.oneOf(
+        [Yup.ref(field.validation.match)],
+        "Passwords must match"
+      );
     }
 
     shape[field.name] = validation;
@@ -36,8 +47,7 @@ export const createValidationSchema = (fields) => {
   return Yup.object().shape(shape);
 };
 
-
-export const updateUserPassword=async(newPassword)=>{
+export const updateUserPassword = async (newPassword) => {
   try {
     const savedUserData = await AsyncStorage.getItem("userData");
     if (savedUserData) {
@@ -55,9 +65,11 @@ export const updateUserPassword=async(newPassword)=>{
       }
     }
   } catch (error) {
-    console.log(error)
+    console.log(error);
     Alert.alert("Error", "An error occurred while changing password");
   }
-}
+};
 
-
+export const captilizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
