@@ -155,4 +155,193 @@ export const tabs = [
     icon: "Order",
     route: "orderdetailnotif",
   },
+  {
+    name: "Terms & Conditions",
+    icon: "list-alt",
+    route: "termsandconditions",
+  },
+  {
+    name: "About App",
+    icon: "question-circle",
+    route: "faqs",
+  },
+  {
+    name: "Privacy Policy",
+    icon: "lock",
+    route: "privacy-policy",
+  },
+  {
+    name: "Return Policy",
+    icon: "undo",
+    route: "return-policy",
+  },
+];
+
+export const menuItems = [
+  {
+    label: "Terms & Conditions",
+    icon: "list-alt",
+    route: "termsandconditions",
+  },
+  {
+    label: "About App",
+    icon: "question-circle",
+    route: "faqs",
+  },
+  {
+    label: "Privacy Policy",
+    icon: "lock",
+    route: "privacy-policy",
+  },
+  {
+    label: "Return Policy",
+    icon: "undo",
+    route: "return-policy",
+  },
+  {
+    label: "Logout",
+    icon: "sign-out",
+    route: "logout",
+  },
+];
+
+
+export const termsOfUse = [
+  {
+    title: "Acceptance of Terms",
+    content: "By downloading and using the Aviaxin mobile application ('App'), you agree to be bound by these Terms of Use ('Terms'). If you do not agree with all of these Terms, do not use the App."
+  },
+  {
+    title: "Use License",
+    content: "Aviaxin grants you a limited, non-exclusive, non-transferable license to use the App for your internal business use, specifically for veterinary services related to poultry health.",
+    restrictions: [
+      "Modify, copy, or create derivative works based on the App;",
+      "Use the App for any purpose that is illegal or prohibited by these Terms;",
+      "Use the App to send unauthorized advertising or spam;",
+      "Engage in any activity that interferes with or disrupts the App’s services."
+    ]
+  },
+  {
+    title: "Intellectual Property",
+    content: "The App and its original content, features, and functionality are owned by Aviaxin and are protected by international copyright, trademark, patent, trade secret, and other intellectual property or proprietary rights laws."
+  },
+  {
+    title: "Your Account",
+    content: "You are responsible for maintaining the confidentiality of your account and password, including but not limited to the restriction of access to your computer and/or account. You agree to accept responsibility for any and all activities or actions that occur under your account and/or password."
+  },
+  {
+    title: "Termination",
+    content: "We may terminate or suspend your account and bar access to the App immediately, without prior notice or liability, under our sole discretion, for any reason whatsoever and without limitation, including but not limited to a breach of the Terms."
+  },
+  {
+    title: "Links to Other Web Sites",
+    content: "Our App may contain links to third-party web sites or services that are not owned or controlled by Aviaxin. Aviaxin has no control over, and assumes no responsibility for, the content, privacy policies, or practices of any third party web sites or services."
+  },
+  {
+    title: "Changes to Terms",
+    content: "We reserve the right, at our sole discretion, to modify or replace these Terms at any time. If a revision is material, we will provide at least 30 days' notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion."
+  },
+  {
+    title: "Contact Us",
+    content: "If you have any questions about these Terms, please contact us at: info@aviaxin.com."
+  }
+];
+
+export const privacyPolicy = [
+  {
+    title: "Introduction",
+    content:
+      "Welcome to the Aviaxin mobile application ('App')! Aviaxin is committed to protecting your privacy and ensuring a transparent approach to data collection and usage. This Privacy Policy outlines our practices related to the collection, use, disclosure, and protection of your personal information.",
+  },
+  {
+    title: "1. Information We Collect",
+    content: "",
+    subPoints: [
+      "Personal Information: We collect personal information such as your name, email address, and phone number when you register an account on our App.",
+      "Usage Data: Information about your interactions within the App and any details of your orders are logged to improve service delivery.",
+      "Device Information: Technical details about the device including IP address, operating system, and device type are collected to troubleshoot and optimize our App performance.",
+    ],
+  },
+  {
+    title: "2. How We Use Your Information",
+    content: "",
+    subPoints: [
+      "Service Delivery: To manage your account, process your orders, and provide customer support.",
+      "App Improvements: We analyze usage to enhance app functionality and user experience.",
+      "Communication: To inform you about updates to the App or respond to your inquiries.",
+    ],
+  },
+  {
+    title: "3. Sharing Your Information",
+    content: "",
+    subPoints: [
+      "Service Providers: Information may be shared with third-party service providers who assist us in operating our App, such as payment processors and cloud hosting services.",
+      "Compliance and Safety: We may disclose information when required by law or to protect the safety and security of our users.",
+    ],
+  },
+  {
+    title: "4. Data Security",
+    content:
+      "We implement a variety of security measures to maintain the safety of your personal information but acknowledge that no system is completely secure. We strive to use commercially acceptable means to protect your personal information.",
+  },
+  {
+    title: "5. Your Rights",
+    content: "",
+    subPoints: [
+      "Access and Control: You can review, amend, or request deletion of your personal information through your account settings.",
+      "Opt-Out Options: You may opt out of receiving promotional communications by using the unsubscribe options within those communications.",
+    ],
+  },
+  {
+    title: "6. International Users",
+    content:
+      "The information we collect may be stored and processed in any country where we operate or where our service providers are located. By using the App, you consent to the transfer of information to countries outside of your country of residence, which may have different data protection rules than in your country.",
+  },
+  {
+    title: "7. Children’s Privacy",
+    content:
+      "Our App is not intended for children under the age of 13, and we do not knowingly collect personal information from children under this age.",
+  },
+  {
+    title: "8. Changes to This Privacy Policy",
+    content:
+      "We reserve the right to modify this policy at any time. Please review it periodically. If we make material changes, we will provide notice through the App or by other means to provide you the opportunity to review the changes before they become effective.",
+  },
+  {
+    title: "9. Contact Us",
+    content:
+      "If you have questions about this Privacy Policy, please contact us at info@aviaxin.com.",
+  },
+];
+
+export const aboutApp = [
+  {
+    title: "Who We Are",
+    content: "Welcome to Aviaxin, your premier partner in poultry health innovation. Through our mobile application, we extend our commitment to the poultry industry by providing veterinarians with the latest in diagnostic and microbial identification services directly at their fingertips.",
+  },
+  {
+    title: "Our Mission",
+    content: "At Aviaxin, we are driven by a single goal: to enhance the health and productivity of poultry globally. We achieve this by leveraging cutting-edge research, technological innovation, and comprehensive expertise in the field of poultry sciences.",
+  },
+  {
+    title: "Our Expertise",
+    content: "Founded by a team of leading poultry scientists and researchers, Aviaxin stands at the forefront of veterinary science. Our specialists bring decades of combined experience, having contributed to significant advancements in vaccine development, disease management, and poultry welfare.",
+  },
+  {
+    title: "Our Services",
+    content: "The Aviaxin app offers a streamlined, intuitive platform where poultry veterinarians can:",
+    bulletPoints: [
+      "Order Diagnostic Tests: Quickly request and receive results for a wide range of poultry diseases.",
+      "Culture and Isolation: Access services for the identification of microbes and disease-causing agents, critical for effective treatment planning.",
+      "Expert Consultation: Connect with our experts for guidance and advice on complex cases, ensuring the best outcomes for poultry care."
+    ],
+  },
+  {
+    title: "Our Commitment",
+    content: "We are committed to continuous improvement and innovation. The Aviaxin app is regularly updated to incorporate the latest scientific findings and user feedback, ensuring that our tools and services remain at the cutting edge of veterinary medicine.",
+  },
+  {
+    title: "Join Us",
+    content: "Embrace the future of poultry health with Aviaxin. Together, we can achieve healthier poultry populations and a more sustainable agricultural environment. For more information on how to get started with our app, visit www.aviaxin.com",
+  },
 ];

@@ -26,6 +26,7 @@ import About from "./about";
 import Pendingplaceorder from "../../Pendingplaceorder";
 import Confrimorder from "../../confrimorder";
 import Newconfrimedorder from "../../newconfrimedorder";
+import {menuItems} from "../../../constants/constants";
 import Login from "../../auth/Login";
 const Stack = createStackNavigator();
 const Tabs = createBottomTabNavigator();
@@ -246,47 +247,28 @@ function CustomDrawerContent(props) {
         />
         <Text style={styles.drawerUserName}>{user.name}</Text>
       </View>
-
-      {/* Drawer Items */}
-
-      <DrawerItem
-        label="Term & Conditions"
-        icon={({ color, size }) => (
-          <FontAwesome name="list-alt" size={size} color={color} />
-        )}
-        onPress={() => props.navigation.navigate("Orders")}
-      />
-
-      <DrawerItem
-        label="About App"
-        icon={({ color, size }) => (
-          <FontAwesome name="question-circle" size={size} color={color} />
-        )}
-        onPress={() => props.navigation.navigate("FAQs")}
-      />
-
-      <DrawerItem
-        label="Privacy Policy"
-        icon={({ color, size }) => (
-          <FontAwesome name="lock" size={size} color={color} />
-        )}
-        onPress={() => props.navigation.navigate("PrivacyPolicy")}
-      />
-      <DrawerItem
-        label="Return Policy"
-        icon={({ color, size }) => (
-          <FontAwesome name="undo" size={size} color={color} />
-        )}
-        onPress={() => props.navigation.navigate("ReturnPolicy")}
-      />
-      <DrawerItem
-        label="Logout"
-        icon={({ color, size }) => (
-          <FontAwesome name="sign-out" size={size} color={color} />
-        )}
-        onPress={handleLogout}
-        labelStyle={{ fontSize: 16, fontWeight: "bold", color: "#FF5252" }}
-      />
+      {menuItems?.map((item, index) => (
+        <DrawerItem
+          label={item.label}
+          icon={({ color, size }) => (
+            <FontAwesome name={item.icon} size={size} color={color} />
+          )}
+          onPress={
+            item.route === "logout"
+              ? handleLogout
+              : () => navigation.navigate(item.route)
+          }
+          labelStyle={
+            item.route === "logout" && {
+              fontSize: 16,
+              fontWeight: "bold",
+              color: "#FF5252",
+            }
+          }
+          key={index}
+        />
+      ))}
+      
     </DrawerContentScrollView>
   );
 }
