@@ -122,7 +122,7 @@ const Login = () => {
       }
 
       const userToSave = response?.data?.data;
-
+      
       await AsyncStorage.setItem("userData", JSON.stringify(userToSave));
       navigateToRoleScreen(userToSave?.userrole);
     } catch (error) {
