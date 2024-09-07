@@ -193,11 +193,7 @@ export const menuItems = [
     icon: "lock",
     route: "privacy-policy",
   },
-  {
-    label: "Return Policy",
-    icon: "undo",
-    route: "return-policy",
-  },
+
   {
     label: "Logout",
     icon: "sign-out",
@@ -205,46 +201,53 @@ export const menuItems = [
   },
 ];
 
-
 export const termsOfUse = [
   {
     title: "Acceptance of Terms",
-    content: "By downloading and using the Aviaxin mobile application ('App'), you agree to be bound by these Terms of Use ('Terms'). If you do not agree with all of these Terms, do not use the App."
+    content:
+      "By downloading and using the Aviaxin mobile application ('App'), you agree to be bound by these Terms of Use ('Terms'). If you do not agree with all of these Terms, do not use the App.",
   },
   {
     title: "Use License",
-    content: "Aviaxin grants you a limited, non-exclusive, non-transferable license to use the App for your internal business use, specifically for veterinary services related to poultry health.",
+    content:
+      "Aviaxin grants you a limited, non-exclusive, non-transferable license to use the App for your internal business use, specifically for veterinary services related to poultry health.",
     restrictions: [
       "Modify, copy, or create derivative works based on the App;",
       "Use the App for any purpose that is illegal or prohibited by these Terms;",
       "Use the App to send unauthorized advertising or spam;",
-      "Engage in any activity that interferes with or disrupts the App’s services."
-    ]
+      "Engage in any activity that interferes with or disrupts the App’s services.",
+    ],
   },
   {
     title: "Intellectual Property",
-    content: "The App and its original content, features, and functionality are owned by Aviaxin and are protected by international copyright, trademark, patent, trade secret, and other intellectual property or proprietary rights laws."
+    content:
+      "The App and its original content, features, and functionality are owned by Aviaxin and are protected by international copyright, trademark, patent, trade secret, and other intellectual property or proprietary rights laws.",
   },
   {
     title: "Your Account",
-    content: "You are responsible for maintaining the confidentiality of your account and password, including but not limited to the restriction of access to your computer and/or account. You agree to accept responsibility for any and all activities or actions that occur under your account and/or password."
+    content:
+      "You are responsible for maintaining the confidentiality of your account and password, including but not limited to the restriction of access to your computer and/or account. You agree to accept responsibility for any and all activities or actions that occur under your account and/or password.",
   },
   {
     title: "Termination",
-    content: "We may terminate or suspend your account and bar access to the App immediately, without prior notice or liability, under our sole discretion, for any reason whatsoever and without limitation, including but not limited to a breach of the Terms."
+    content:
+      "We may terminate or suspend your account and bar access to the App immediately, without prior notice or liability, under our sole discretion, for any reason whatsoever and without limitation, including but not limited to a breach of the Terms.",
   },
   {
     title: "Links to Other Web Sites",
-    content: "Our App may contain links to third-party web sites or services that are not owned or controlled by Aviaxin. Aviaxin has no control over, and assumes no responsibility for, the content, privacy policies, or practices of any third party web sites or services."
+    content:
+      "Our App may contain links to third-party web sites or services that are not owned or controlled by Aviaxin. Aviaxin has no control over, and assumes no responsibility for, the content, privacy policies, or practices of any third party web sites or services.",
   },
   {
     title: "Changes to Terms",
-    content: "We reserve the right, at our sole discretion, to modify or replace these Terms at any time. If a revision is material, we will provide at least 30 days' notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion."
+    content:
+      "We reserve the right, at our sole discretion, to modify or replace these Terms at any time. If a revision is material, we will provide at least 30 days' notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.",
   },
   {
     title: "Contact Us",
-    content: "If you have any questions about these Terms, please contact us at: info@aviaxin.com."
-  }
+    content:
+      "If you have any questions about these Terms, please contact us at: info@aviaxin.com.",
+  },
 ];
 
 export const privacyPolicy = [
@@ -317,31 +320,37 @@ export const privacyPolicy = [
 export const aboutApp = [
   {
     title: "Who We Are",
-    content: "Welcome to Aviaxin, your premier partner in poultry health innovation. Through our mobile application, we extend our commitment to the poultry industry by providing veterinarians with the latest in diagnostic and microbial identification services directly at their fingertips.",
+    content:
+      "Welcome to Aviaxin, your premier partner in poultry health innovation. Through our mobile application, we extend our commitment to the poultry industry by providing veterinarians with the latest in diagnostic and microbial identification services directly at their fingertips.",
   },
   {
     title: "Our Mission",
-    content: "At Aviaxin, we are driven by a single goal: to enhance the health and productivity of poultry globally. We achieve this by leveraging cutting-edge research, technological innovation, and comprehensive expertise in the field of poultry sciences.",
+    content:
+      "At Aviaxin, we are driven by a single goal: to enhance the health and productivity of poultry globally. We achieve this by leveraging cutting-edge research, technological innovation, and comprehensive expertise in the field of poultry sciences.",
   },
   {
     title: "Our Expertise",
-    content: "Founded by a team of leading poultry scientists and researchers, Aviaxin stands at the forefront of veterinary science. Our specialists bring decades of combined experience, having contributed to significant advancements in vaccine development, disease management, and poultry welfare.",
+    content:
+      "Founded by a team of leading poultry scientists and researchers, Aviaxin stands at the forefront of veterinary science. Our specialists bring decades of combined experience, having contributed to significant advancements in vaccine development, disease management, and poultry welfare.",
   },
   {
     title: "Our Services",
-    content: "The Aviaxin app offers a streamlined, intuitive platform where poultry veterinarians can:",
+    content:
+      "The Aviaxin app offers a streamlined, intuitive platform where poultry veterinarians can:",
     bulletPoints: [
       "Order Diagnostic Tests: Quickly request and receive results for a wide range of poultry diseases.",
       "Culture and Isolation: Access services for the identification of microbes and disease-causing agents, critical for effective treatment planning.",
-      "Expert Consultation: Connect with our experts for guidance and advice on complex cases, ensuring the best outcomes for poultry care."
+      "Expert Consultation: Connect with our experts for guidance and advice on complex cases, ensuring the best outcomes for poultry care.",
     ],
   },
   {
     title: "Our Commitment",
-    content: "We are committed to continuous improvement and innovation. The Aviaxin app is regularly updated to incorporate the latest scientific findings and user feedback, ensuring that our tools and services remain at the cutting edge of veterinary medicine.",
+    content:
+      "We are committed to continuous improvement and innovation. The Aviaxin app is regularly updated to incorporate the latest scientific findings and user feedback, ensuring that our tools and services remain at the cutting edge of veterinary medicine.",
   },
   {
     title: "Join Us",
-    content: "Embrace the future of poultry health with Aviaxin. Together, we can achieve healthier poultry populations and a more sustainable agricultural environment. For more information on how to get started with our app, visit www.aviaxin.com",
+    content:
+      "Embrace the future of poultry health with Aviaxin. Together, we can achieve healthier poultry populations and a more sustainable agricultural environment. For more information on how to get started with our app, visit www.aviaxin.com",
   },
 ];

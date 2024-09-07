@@ -111,9 +111,7 @@ const HomeTab = () => {
           />
           <View style={styles.promoTextContainer}>
             <Text style={styles.promoTitle}>Previously Placed Orders!!!</Text>
-            <Text style={styles.promoSubtitle}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-            </Text>
+            <Text style={styles.promoSubtitle}>List of all placed orders</Text>
           </View>
         </TouchableOpacity>
 

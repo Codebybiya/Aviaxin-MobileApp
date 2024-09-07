@@ -26,7 +26,7 @@ import About from "./about";
 import Pendingplaceorder from "../../Pendingplaceorder";
 import Confrimorder from "../../confrimorder";
 import Newconfrimedorder from "../../newconfrimedorder";
-import {menuItems} from "../../../constants/constants";
+import { menuItems } from "../../../constants/constants";
 import Login from "../../auth/Login";
 const Stack = createStackNavigator();
 const Tabs = createBottomTabNavigator();
@@ -242,7 +242,7 @@ function CustomDrawerContent(props) {
       {/* Custom Drawer Header */}
       <View style={styles.drawerHeader}>
         <Image
-          source={require("@/assets/images/micb.png")}
+          source={require("@/assets/images/icon.png")}
           style={styles.drawerLogo}
         />
         <Text style={styles.drawerUserName}>{user.name}</Text>
@@ -268,7 +268,6 @@ function CustomDrawerContent(props) {
           key={index}
         />
       ))}
-      
     </DrawerContentScrollView>
   );
 }
@@ -283,7 +282,7 @@ function RootDrawer() {
           backgroundColor: "#ffffff",
           borderTopRightRadius: 50,
           borderBottomRightRadius: 50,
-          height: 500,
+          height: 440,
           marginTop: 120,
         },
       }}
@@ -351,7 +350,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 50,
   },
   drawerLogo: {
-    width: 100,
+    width: 80,
     height: 80,
     marginBottom: 10,
   },

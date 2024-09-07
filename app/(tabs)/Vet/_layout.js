@@ -328,7 +328,7 @@ function CustomDrawerContent(props) {
         <Text style={styles.drawerUserName}>{user.name}</Text>
       </View>
 
-     {menuItems?.map((item, index) => (
+      {menuItems?.map((item, index) => (
         <DrawerItem
           label={item.label}
           icon={({ color, size }) => (
@@ -363,7 +363,7 @@ function RootDrawer() {
           backgroundColor: "#ffffff",
           borderTopRightRadius: 50,
           borderBottomRightRadius: 50,
-          height: 500,
+          height: 440,
           marginTop: 120,
         },
       }}
@@ -431,8 +431,8 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 50,
   },
   drawerLogo: {
-    width: 100,
-    height: 100,
+    width: 80,
+    height: 80,
     marginBottom: 10,
   },
   drawerUserName: {

@@ -5,7 +5,7 @@ const config = {
   baseUrl:
     Platform.OS === "web"
       ? "http://localhost:8081/aviaxin"
-      : "http://192.168.100.10:8081/aviaxin",
+      : "http://192.168.0.111:8081/aviaxin",
   backendUrl:
     Platform.OS === "web"
       ? "https://aviaxin-api.vercel.app/aviaxin"

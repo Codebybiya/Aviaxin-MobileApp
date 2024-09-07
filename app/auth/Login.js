@@ -90,11 +90,11 @@ const Login = () => {
   const navigateToRoleScreen = (role) => {
     if (role === "microbiologist") {
       router.replace("../(tabs)/micro");
-    } else if (role === "vetnarian") {
+    } else if (role === "veterinarian") {
       router.replace("../(tabs)/Vet");
     } else if (role === "farmer") {
       router.replace("../(tabs)/micro");
-    } else if (role === "superadmin") {
+    } else if (role === "admin") {
       router.replace("../(tabs)/admin");
     }
   };
@@ -122,7 +122,7 @@ const Login = () => {
       }
 
       const userToSave = response?.data?.data;
-      
+
       await AsyncStorage.setItem("userData", JSON.stringify(userToSave));
       navigateToRoleScreen(userToSave?.userrole);
     } catch (error) {
