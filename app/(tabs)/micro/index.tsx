@@ -89,9 +89,9 @@ const HomeTab = () => {
 
   useEffect(() => {
     fetchUserData();
-    setNewOrdersCount(5);
-    setSubmittedOrdersCount(3);
-    setCompletedOrdersCount(10);
+    setNewOrdersCount();
+    setSubmittedOrdersCount();
+    setCompletedOrdersCount();
 
     // Start the image floating animation
     Animated.loop(

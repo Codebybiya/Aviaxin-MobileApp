@@ -41,8 +41,8 @@ function DrawerButton() {
       <FontAwesome
         name="bars"
         size={24}
-        color="#000"
-        style={{ marginLeft: 15 }}
+        color="#7DDD51"
+        style={{ marginLeft: 20 }}
       />
     </TouchableOpacity>
   );

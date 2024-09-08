@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { FontAwesome } from "@expo/vector-icons";
+import { Picker } from "@react-native-picker/picker";
 import { useRouter } from "expo-router";
 import axios from "axios";
 import * as Yup from "yup";
@@ -22,11 +23,12 @@ const baseUrl = `${config.baseUrl}`;
 const Login = () => {
   const router = useRouter();
 
-  // State variables for input values and errors
+  // State variables for input values, errors, loading, and user role
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({ email: "", password: "" });
-  const [loading, setLoading] = useState(false); // Set initial state to false
+  const [loading, setLoading] = useState(false);
+  const [selectedRole, setSelectedRole] = useState("vet"); // Default role is veterinarian
 
   // Validation schema
   const validationSchema = Yup.object().shape({
@@ -94,7 +96,7 @@ const Login = () => {
       router.replace("../(tabs)/Vet");
     } else if (role === "farmer") {
       router.replace("../(tabs)/micro");
-    } else if (role === "admin" || role==="superadmin") {
+    } else if (role === "admin" || role === "superadmin") {
       router.replace("../(tabs)/admin");
     }
   };
@@ -109,7 +111,7 @@ const Login = () => {
       return;
     }
 
-    const userData = { email, password };
+    const userData = { email, password, role: selectedRole }; // Include the role in login data
 
     try {
       const response = await axios.post(`${backendUrl}/users/login`, userData);
@@ -155,13 +157,29 @@ const Login = () => {
         <Text style={styles.welcomeText}>Welcome Back</Text>
         <Text style={styles.subText}>Continue to Sign In</Text>
       </View>
+
       <View style={styles.formContainer}>
+        {/* Dropdown for selecting role */}
+        <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={selectedRole}
+            onValueChange={(itemValue) => setSelectedRole(itemValue)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Veterinarian" value="vet" />
+            {/* <Picker.Item
+              label="Microbiologist (Verified user by company)"
+              value="microbiologist"
+            /> */}
+          </Picker>
+        </View>
+
         <View style={styles.form}>
           <View style={styles.inputContainer}>
             <FontAwesome
               name="envelope"
               size={24}
-              color="#7DDD51" // Use a darker green color for better contrast
+              color="#7DDD51"
               style={styles.icon}
             />
             <TextInput
@@ -181,7 +199,7 @@ const Login = () => {
             <FontAwesome
               name="lock"
               size={24}
-              color="#7DDD51" // Use a darker green color for better contrast
+              color="#7DDD51"
               style={styles.icon}
             />
             <TextInput
@@ -268,6 +286,19 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
   },
+  pickerContainer: {
+    marginBottom: height * 0.02,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 5,
+    backgroundColor: "#f9f9f9",
+    overflow: "hidden",
+  },
+  picker: {
+    height: 50,
+    width: "100%",
+    color: "#333",
+  },
   form: {
     alignItems: "center",
   },
@@ -313,7 +344,7 @@ const styles = StyleSheet.create({
     padding: height * 0.015,
     textAlign: "center",
     fontSize: 14,
-    color: "black", // Use a slightly different green for a fresh look
+    color: "black",
     marginTop: 10,
   },
 });

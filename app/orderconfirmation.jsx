@@ -17,7 +17,8 @@ const OrderConfirmation = () => {
       />
       <Text style={styles.title}>Order Placed!</Text>
       <Text style={styles.message}>
-        Your order has been placed successfully. Please wait for confirmation.
+        Your order has been placed successfully. Please wait for
+        confirmation.You will recive a notification when order is confrimed.
       </Text>
       <TouchableOpacity style={styles.button} onPress={handleBackToHome}>
         <Text style={styles.buttonText}>Back to Home</Text>

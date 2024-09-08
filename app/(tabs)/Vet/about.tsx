@@ -131,10 +131,7 @@ const About = () => {
               <Text style={styles.profileEmail}>{user.phone}</Text>
             </View>
           </View>
-          <TouchableOpacity
-            style={styles.verifiedButton}
-            onPress={handlePress2}
-          >
+          <TouchableOpacity style={styles.verifiedButton}>
             <Text style={styles.verifiedButtonText}>Verified</Text>
           </TouchableOpacity>
         </View>

@@ -42,14 +42,17 @@ const Placeorder: React.FC = () => {
             const response = await axios.get(
               `${backendUrl}/orders/getallorders/${userid}`
             );
-            const ordersData = response.data.data.map((order: any) => ({
+            const ordersData = response.data.data.map((order) => ({
               id: order._id,
-              productName: order.productID.productName,
-              productPrice: order.productID.productPrice,
+              productName: order.productID
+                ? order.productID.productName
+                : "Unknown Product",
+              productPrice: order.productID ? order.productID.productPrice : 0,
               date: `Placed on ${new Date(
                 order.createdAt
               ).toLocaleDateString()}`,
             }));
+
             setOrders(ordersData);
           } else {
             Alert.alert("Error", "User ID not found. Please log in.");

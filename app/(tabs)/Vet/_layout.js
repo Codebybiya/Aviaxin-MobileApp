@@ -4,9 +4,9 @@ import {
   View,
   Text,
   TouchableOpacity,
-  FlatList,
   Image,
   Alert,
+  StatusBar,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -33,7 +33,6 @@ import Placeorder from "../../placedorders";
 import Orderdetail from "../../orderdetail";
 import OrderDetailNotif from "../../orderdetailnotif";
 import Cart from "./cart";
-// Importing Login screen correctly
 import Login from "../../auth/Login";
 import { menuItems } from "../../../constants/constants";
 
@@ -42,6 +41,7 @@ const Tabs = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 const backendUrl = `${config.backendUrl}`;
 
+// Drawer Button Component
 function DrawerButton() {
   const navigation = useNavigation();
 
@@ -50,8 +50,8 @@ function DrawerButton() {
       <FontAwesome
         name="bars"
         size={24}
-        color="#000"
-        style={{ marginLeft: 15 }}
+        color="#7DDD51"
+        style={{ marginLeft: 20 }}
       />
     </TouchableOpacity>
   );
@@ -64,7 +64,7 @@ function HomeStack() {
         name="Home"
         component={HomeTab}
         options={{
-          headerLeft: () => <DrawerButton />,
+          headerLeft: () => <DrawerButton />, // Ensure Drawer icon is present
           headerTitle: "Vet Dashboard",
           headerTitleAlign: "center",
         }}
@@ -89,8 +89,8 @@ function NotificationStack() {
         name="Notifications"
         component={NotificationScreen}
         options={{
-          headerLeft: () => <DrawerButton />,
-          headerTitle: "Notification",
+          headerLeft: () => <DrawerButton />, // Drawer icon for this stack
+          headerTitle: "Notifications",
           headerTitleAlign: "center",
         }}
       />
@@ -105,7 +105,7 @@ function AboutStack() {
         name="About"
         component={About}
         options={{
-          headerLeft: () => <DrawerButton />,
+          headerLeft: () => <DrawerButton />, // Drawer icon for this stack
           headerTitle: "About",
           headerTitleAlign: "center",
         }}
@@ -121,7 +121,7 @@ function CartStack() {
         name="Cart"
         component={Cart}
         options={{
-          headerLeft: () => <DrawerButton />,
+          headerLeft: () => <DrawerButton />, // Drawer icon for this stack
           headerTitle: "Cart",
           headerTitleAlign: "center",
         }}
@@ -130,6 +130,7 @@ function CartStack() {
   );
 }
 
+// Root Tabs with Unread Count and Cart Item Count
 function RootTabs() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [cartItemCount, setCartItemCount] = useState(0);
@@ -192,6 +193,7 @@ function RootTabs() {
   return (
     <Tabs.Navigator
       screenOptions={({ route }) => ({
+        headerShown: false,
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
           let iconColor = focused ? "#ffffff" : "#b0bec5";
@@ -249,38 +251,15 @@ function RootTabs() {
         headerShown: false,
       })}
     >
-      <Tabs.Screen
-        name="HomeTab"
-        component={HomeStack}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Tabs.Screen
-        name="CartTab"
-        component={CartStack}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Tabs.Screen
-        name="Notifications"
-        component={NotificationStack}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Tabs.Screen
-        name="About"
-        component={AboutStack}
-        options={{
-          headerShown: false,
-        }}
-      />
+      <Tabs.Screen name="HomeTab" component={HomeStack} />
+      <Tabs.Screen name="CartTab" component={CartStack} />
+      <Tabs.Screen name="Notifications" component={NotificationStack} />
+      <Tabs.Screen name="About" component={AboutStack} />
     </Tabs.Navigator>
   );
 }
 
+// Custom Drawer Content
 function CustomDrawerContent(props) {
   const [user, setUser] = useState({ name: "", email: "" });
   const navigation = useNavigation(); // Use navigation hook to navigate
@@ -353,6 +332,7 @@ function CustomDrawerContent(props) {
   );
 }
 
+// Root Drawer
 function RootDrawer() {
   return (
     <Drawer.Navigator
@@ -363,8 +343,7 @@ function RootDrawer() {
           backgroundColor: "#ffffff",
           borderTopRightRadius: 50,
           borderBottomRightRadius: 50,
-          height: 440,
-          marginTop: 120,
+          marginTop: 0, // Removed extra margin from top
         },
       }}
     >
@@ -398,7 +377,6 @@ function RootDrawer() {
           ),
         }}
       />
-      {/* Ensure the Login route is defined */}
       <Drawer.Screen
         name="Login"
         component={Login}
@@ -413,14 +391,17 @@ function RootDrawer() {
   );
 }
 
+// Main App Layout
 export default function RootLayout() {
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, marginTop: -60 }}>
+      <StatusBar barStyle="dark-content" hidden={false} />
       <RootDrawer />
     </SafeAreaView>
   );
 }
 
+// Styles
 const styles = StyleSheet.create({
   drawerHeader: {
     backgroundColor: "#7DDD5180",
@@ -439,27 +420,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "#ffffff",
-  },
-  profileContainer: {
-    marginBottom: 20,
-    paddingBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-    alignItems: "center",
-  },
-  profileImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    marginBottom: 10,
-  },
-  profileName: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  profileEmail: {
-    fontSize: 14,
-    color: "#666",
   },
   iconContainer: {
     alignItems: "center",

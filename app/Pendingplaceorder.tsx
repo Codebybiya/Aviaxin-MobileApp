@@ -40,8 +40,10 @@ const Pendingplaceorder: React.FC = () => {
 
       const ordersData = response.data.data.map((order: any) => ({
         id: order._id,
-        productName: order.productID.productName,
-        productPrice: order.productID.productPrice,
+        productName: order.productID
+          ? order.productID.productName
+          : "Unknown Product",
+        productPrice: order.productID ? order.productID.productPrice : 0,
         date: `Placed on ${new Date(order.createdAt).toLocaleDateString()}`,
       }));
 
