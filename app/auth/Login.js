@@ -94,7 +94,7 @@ const Login = () => {
       router.replace("../(tabs)/Vet");
     } else if (role === "farmer") {
       router.replace("../(tabs)/micro");
-    } else if (role === "admin") {
+    } else if (role === "admin" || role==="superadmin") {
       router.replace("../(tabs)/admin");
     }
   };

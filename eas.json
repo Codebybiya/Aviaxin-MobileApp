@@ -1,21 +1,18 @@
 {
   "cli": {
-    "version": ">= 0.43.0"
+    "version": ">= 12.1.0",
+    "appVersionSource": "remote"
   },
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal",
-      "android": {
-        "image": "ubuntu-18.04-jdk-11-ndk-r19c"
-      }
+      "distribution": "internal"
     },
     "preview": {
       "distribution": "internal"
     },
     "production": {
-      "android": {},
-      "ios": {}
+      "autoIncrement": true
     }
   },
   "submit": {

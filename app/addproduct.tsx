@@ -99,7 +99,7 @@ const ProductPage = () => {
         },
       }
     );
-    if (resp.data.status === "success") {
+    if (resp.data.status === "Success") {
       console.log("Produce Added!!!");
     } else {
       console.log("Product cannot be added");
