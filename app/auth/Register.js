@@ -161,7 +161,6 @@ const Register = () => {
                   <Picker.Item label="Sign In As" value="" color="#A9A9A9" />
                   <Picker.Item label="Veterinarian" value="veterinarian" />
                   <Picker.Item label="Microbiologist" value="microbiologist" />
-                  <Picker.Item label="Farmer" value="farmer" />
                 </Picker>
               </View>
               {touched.role && errors.role && (
