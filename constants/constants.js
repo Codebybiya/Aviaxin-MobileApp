@@ -175,6 +175,16 @@ export const tabs = [
     icon: "undo",
     route: "return-policy",
   },
+  {
+    label: "Add Member",
+    icon: "Add Member",
+    route: "addmember",
+  },
+  {
+    label: "Aviaxin Members",
+    icon: "Aviaxin Members",
+    route: "viewmembers",
+  },
 ];
 
 export const menuItems = [

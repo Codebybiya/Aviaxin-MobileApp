@@ -5,7 +5,7 @@ const config = {
   baseUrl:
     Platform.OS === "web"
       ? "http://localhost:8081/aviaxin"
-      : "http://192.168.100.7:8081/aviaxin",
+      : "http://192.168.100.3:8081/aviaxin",
   backendUrl:
     Platform.OS === "web"
       ? // ? "http://localhost:8080/aviaxin"

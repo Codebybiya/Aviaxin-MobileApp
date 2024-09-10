@@ -105,26 +105,23 @@ const ProductDetail = () => {
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.card}>
+        {/* Product Image */}
         <View style={styles.imageContainer}>
           <Image
             source={{ uri: `${backendUrl}/${product.imagePath}` }}
             style={styles.productImage}
           />
         </View>
-        {/* Aligning the product name, description, and price to the left */}
-        <Text style={styles.productTitle}>{product.productName}</Text>
 
-        {/* Added Description Heading */}
-        <Text style={styles.descriptionHeading}>Description</Text>
-        <Text style={styles.description}>{product.productDescription}</Text>
-
-        <Text style={styles.price}>
-          Price:{" "}
-          <Text style={styles.priceValue}>
+        {/* Product Title and Price */}
+        <View style={styles.headerContainer}>
+          <Text style={styles.productTitle}>{product.productName}</Text>
+          <Text style={styles.productPrice}>
             ${product.productPrice.toFixed(2)}
           </Text>
-        </Text>
+        </View>
 
+        {/* Quantity Selector */}
         <View style={styles.counterContainer}>
           <TouchableOpacity
             style={[styles.counterButton, { backgroundColor: "#e4b05d" }]}
@@ -141,10 +138,16 @@ const ProductDetail = () => {
           </TouchableOpacity>
         </View>
 
+        {/* Description */}
+        <Text style={styles.description}>{product.productDescription}</Text>
+
+        {/* Total Price */}
         <View style={styles.totalContainer}>
-          <Text style={styles.totalLabel}>Total Price:</Text>
+          <Text style={styles.totalLabel}>Total:</Text>
           <Text style={styles.totalPrice}>${totalPrice.toFixed(2)}</Text>
         </View>
+
+        {/* Add to Cart Button */}
         <TouchableOpacity
           style={[styles.orderButton, styles.orderButtonGreen]}
           onPress={handleAddToCart}
@@ -161,7 +164,7 @@ export default ProductDetail;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "white",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -188,7 +191,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: "90%",
-    backgroundColor: "#ffffff",
+    backgroundColor: "white",
     borderRadius: 15,
     padding: 20,
     alignItems: "center",
@@ -196,12 +199,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
-    elevation: 5,
+
     marginVertical: 20,
   },
   imageContainer: {
-    width: 200, // Keep the image size as before
-    height: 200,
+    width: 250,
+    height: 250,
     marginBottom: 20,
     borderRadius: 15,
     overflow: "hidden",
@@ -214,44 +217,23 @@ const styles = StyleSheet.create({
   productImage: {
     width: "100%",
     height: "100%",
+    resizeMode: "cover",
+  },
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    paddingHorizontal: 10,
+    marginBottom: 20,
   },
   productTitle: {
-    fontSize: 24, // Reduced size to improve layout
-    fontWeight: "bold",
-    marginBottom: 12,
-    textAlign: "left", // Align to left
-    color: "#333",
-    width: "100%", // Make text span full width for alignment
-    paddingHorizontal: 10, // Add some padding for alignment
-  },
-  descriptionHeading: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#333",
-    marginBottom: 8,
-    textAlign: "left", // Align to left
-    width: "100%", // Make text span full width for alignment
-    paddingHorizontal: 10, // Add some padding for alignment
-  },
-  description: {
-    fontSize: 16,
-    textAlign: "left", // Align to left
-    marginBottom: 20,
-    color: "#777",
-    lineHeight: 24,
-    width: "100%", // Make text span full width for alignment
-    paddingHorizontal: 10, // Add some padding for alignment
-  },
-  price: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: "bold",
     color: "#333",
-    marginBottom: 10,
-    textAlign: "left", // Align to left
-    width: "100%", // Make text span full width for alignment
-    paddingHorizontal: 10, // Add some padding for alignment
   },
-  priceValue: {
+  productPrice: {
+    fontSize: 24,
+    fontWeight: "bold",
     color: "#e4b05d",
   },
   counterContainer: {
@@ -278,6 +260,15 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#333",
   },
+  description: {
+    fontSize: 16,
+    color: "#777",
+    lineHeight: 24,
+    textAlign: "left",
+    width: "100%",
+    paddingHorizontal: 10,
+    marginBottom: 20,
+  },
   totalContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -298,7 +289,7 @@ const styles = StyleSheet.create({
   orderButton: {
     paddingVertical: 15,
     paddingHorizontal: 40,
-    borderRadius: 30,
+    borderRadius: 10,
     marginTop: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },

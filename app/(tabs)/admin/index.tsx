@@ -45,7 +45,7 @@ const HomeTab = () => {
 
         <TouchableOpacity
           style={styles.section}
-          onPress={() => router.push("/viewmembers")}
+          onPress={() => router.push("../../viewmembers")}
         >
           <FontAwesome name="users" size={24} color="#FFFFFF" />
           <Text style={styles.sectionText}>View Members</Text>
@@ -55,25 +55,17 @@ const HomeTab = () => {
       <View style={styles.row}>
         <TouchableOpacity
           style={styles.section}
-          onPress={() => router.push("/completeorders")}
+          onPress={() => router.push("../../newconfrimedorder")}
         >
           <FontAwesome name="check-square" size={24} color="#FFFFFF" />
           <Text style={styles.sectionText}>Complete Orders</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.section}
-          onPress={() => router.push("/processorders")}
-        >
-          <FontAwesome name="cogs" size={24} color="#FFFFFF" />
-          <Text style={styles.sectionText}>Process Order</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.row}>
         <TouchableOpacity
           style={styles.section}
-          onPress={() => router.push("/pendingorders")}
+          onPress={() => router.push("../../Pendingplaceorder")}
         >
           <FontAwesome name="hourglass-half" size={24} color="#FFFFFF" />
           <Text style={styles.sectionText}>Pending Orders</Text>
@@ -81,7 +73,7 @@ const HomeTab = () => {
 
         <TouchableOpacity
           style={styles.section}
-          onPress={() => router.push("/addmember")}
+          onPress={() => router.push("../../addmember")}
         >
           <FontAwesome name="user-plus" size={24} color="#FFFFFF" />
           <Text style={styles.sectionText}>Add Member</Text>
@@ -140,7 +132,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#00bcd4",
+    backgroundColor: "#7DDD51",
     padding: 16,
     borderRadius: 8,
     marginHorizontal: 8,

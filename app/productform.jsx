@@ -158,7 +158,7 @@ export default ProductForm;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f7f8fa",
+    backgroundColor: "white",
   },
   scrollContainer: {
     flexGrow: 1,
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#666",
+    color: "#7DDD51",
     marginTop: 5,
   },
   form: {
@@ -189,7 +189,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
-    elevation: 6,
+    elevation: 2,
+    borderWidth: 6,
+    borderColor: "#7DDD51",
   },
   inputContainer: {
     marginBottom: 20,
@@ -203,14 +205,14 @@ const styles = StyleSheet.create({
     width: "100%",
     padding: 12,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#7DDD51",
     borderRadius: 8,
     backgroundColor: "#f9f9f9",
     color: "#333",
   },
   pickerContainer: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#7DDD51",
     borderRadius: 8,
     backgroundColor: "#f9f9f9",
     marginTop: 5,

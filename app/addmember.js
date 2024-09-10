@@ -64,7 +64,7 @@ const Register = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.whitecon}>
+      <View style={styles.formContainer}>
         <Formik
           initialValues={{
             firstName: "",
@@ -92,7 +92,7 @@ const Register = () => {
                 <FontAwesome
                   name="user"
                   size={24}
-                  color="#7DDD51"
+                  color="#00bcd4"
                   style={styles.icon}
                 />
                 <TextInput
@@ -112,7 +112,7 @@ const Register = () => {
                 <FontAwesome
                   name="user"
                   size={24}
-                  color="#7DDD51"
+                  color="#00bcd4"
                   style={styles.icon}
                 />
                 <TextInput
@@ -132,7 +132,7 @@ const Register = () => {
                 <FontAwesome
                   name="phone"
                   size={24}
-                  color="#7DDD51"
+                  color="#00bcd4"
                   style={styles.icon}
                 />
                 <TextInput
@@ -159,6 +159,8 @@ const Register = () => {
                 >
                   <Picker.Item label="Sign In As" value="" color="#A9A9A9" />
                   <Picker.Item label="Veterinarian" value="veterinarian" />
+                  <Picker.Item label="Microbiologist" value="microbiologist" />
+                  <Picker.Item label="Farmer" value="farmer" />
                 </Picker>
               </View>
               {touched.role && errors.role && (
@@ -169,7 +171,7 @@ const Register = () => {
                 <FontAwesome
                   name="envelope"
                   size={24}
-                  color="#7DDD51"
+                  color="#00bcd4"
                   style={styles.icon}
                 />
                 <TextInput
@@ -190,7 +192,7 @@ const Register = () => {
                 <FontAwesome
                   name="lock"
                   size={24}
-                  color="#7DDD51"
+                  color="#00bcd4"
                   style={styles.icon}
                 />
                 <TextInput
@@ -211,7 +213,7 @@ const Register = () => {
                 <FontAwesome
                   name="lock"
                   size={24}
-                  color="#7DDD51"
+                  color="#00bcd4"
                   style={styles.icon}
                 />
                 <TextInput
@@ -229,14 +231,11 @@ const Register = () => {
               )}
 
               <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                <Text style={styles.buttonText}>Register Request</Text>
+                <Text style={styles.buttonText}>Add User</Text>
               </TouchableOpacity>
             </View>
           )}
         </Formik>
-        <TouchableOpacity onPress={() => router.push("/auth/Login")}>
-          <Text style={styles.label1}>Already have an account</Text>
-        </TouchableOpacity>
       </View>
     </View>
   );
@@ -247,76 +246,52 @@ export default Register;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff", // Set background to white
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  whitecon: {
-    backgroundColor: "white", // Green background for the card
-    paddingVertical: 20,
-    paddingHorizontal: 30,
-    borderRadius: 10,
-    width: "80%",
-    marginTop: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 5,
-    borderWidth: 6,
-    borderColor: "#7DDD51",
-  },
-  button: {
-    backgroundColor: "#7DDD51", // White button
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 20,
-  },
-  buttonText: {
-    color: "white", // Green text on button
-    fontSize: 16,
-    textAlign: "center",
+    padding: 16,
+    backgroundColor: "#fff",
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#7DDD51",
-    borderRadius: 5,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    marginBottom: 12,
     paddingHorizontal: 10,
-    paddingVertical: 5,
-    marginBottom: 15,
-    backgroundColor: "#fff", // White fields
+    backgroundColor: "#f9f9f9",
   },
-  pickerContainer: {
-    borderWidth: 1,
-    borderColor: "#7DDD51",
-    borderRadius: 5,
-    marginBottom: 15,
-    backgroundColor: "#fff", // White dropdown
-  },
-  picker: {
-    height: 60,
-    width: "100%",
-    borderRadius: 25,
-    backgroundColor: "#fff", // White background for picker
+  textInput: {
+    flex: 1,
+    padding: 8,
+    fontSize: 16,
   },
   icon: {
     marginRight: 10,
   },
-  textInput: {
-    flex: 1,
-    paddingVertical: 10,
-    backgroundColor: "#fff", // White input fields
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    marginBottom: 12,
   },
-  errorText: {
-    color: "red",
-    fontSize: 12,
+  picker: {
+    height: 50,
+    width: "100%",
   },
-  label1: {
-    padding: 10,
+  button: {
+    backgroundColor: "#00bcd4",
+    padding: 16,
+    borderRadius: 8,
     alignItems: "center",
-    textAlign: "center",
-    color: "#7DDD51", // White text for label
+    marginTop: 10,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  adminItem: {
+    padding: 10,
+    borderBottomColor: "#ccc",
+    borderBottomWidth: 1,
   },
 });

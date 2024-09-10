@@ -136,6 +136,16 @@ const About = () => {
           </TouchableOpacity>
         </View>
 
+        <View style={styles.menuContainer}>
+          <TouchableOpacity
+            style={styles.orderHistoryBtn}
+            onPress={handlePress2}
+          >
+            <MaterialIcons name="punch-clock" size={30} color="#7DDD51" />
+          </TouchableOpacity>
+          <Text style={styles.menuItemText}>Order History</Text>
+        </View>
+
         <View>
           <Text style={styles.sectionHeader}>Email</Text>
           <TouchableOpacity style={styles.menuItem}>

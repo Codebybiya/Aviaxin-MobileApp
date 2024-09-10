@@ -8,7 +8,7 @@ import {
   TextInput,
   Modal,
   ScrollView,
-  Switch,
+  Image,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
@@ -103,10 +103,10 @@ const About = () => {
               <Text style={styles.buttonText}>Submit</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.modalButton, { backgroundColor: "#ccc" }]}
+              style={[styles.modalButton, styles.cancelButton]}
               onPress={() => setModalVisible(false)}
             >
-              <Text style={styles.buttonText}>Cancel</Text>
+              <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -115,48 +115,42 @@ const About = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={[styles.scrollContainer]}>
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
         <View style={styles.profileContainer}>
-          <View>
-            <Text style={styles.profileName}>
-              {captilizeFirstLetter(user.name)}
-            </Text>
-            <Text style={styles.profileEmail}>
-              {user.phone}
-            </Text>
+          {/* Profile Picture and User Info Container */}
+          <View style={styles.userInfoContainer}>
+            <Image
+              source={require("../../../assets/images/icon.png")} // Replace with your user icon image path
+              style={styles.userIcon}
+            />
+            <View>
+              <Text style={styles.profileName}>
+                {captilizeFirstLetter(user.name)}
+              </Text>
+              <Text style={styles.profileEmail}>{user.phone}</Text>
+            </View>
           </View>
-          <TouchableOpacity style={styles.btn} onPress={handlePress2}>
-            <Text style={styles.btnText}>
-              Verified
-            </Text>
+          <TouchableOpacity style={styles.verifiedButton}>
+            <Text style={styles.verifiedButtonText}>Verified</Text>
           </TouchableOpacity>
         </View>
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: 3,
-            width: 80,
-          }}
-        >
+
+        <View style={styles.menuContainer}>
           <TouchableOpacity
             style={styles.orderHistoryBtn}
             onPress={handlePress2}
           >
-            <MaterialIcons name="punch-clock" size={36} color="#7DDD51" />
+            <MaterialIcons name="punch-clock" size={30} color="#7DDD51" />
           </TouchableOpacity>
-          <Text style={styles.menuItemText}>
-            Order History
-          </Text>
+          <Text style={styles.menuItemText}>Order History</Text>
         </View>
+
         <View>
-          <Text style={{ marginTop: 20, fontSize: 18 }}> Email</Text>
-          <TouchableOpacity style={[styles.menuItem]}>
+          <Text style={styles.sectionHeader}>Email</Text>
+          <TouchableOpacity style={styles.menuItem}>
             <FontAwesome name="envelope" size={24} color="#7DDD51" />
-            <Text style={[styles.menuItemText]}>{user.email}</Text>
+            <Text style={styles.menuItemText}>{user.email}</Text>
             <MaterialIcons
               name="keyboard-arrow-right"
               size={24}
@@ -164,25 +158,25 @@ const About = () => {
             />
           </TouchableOpacity>
         </View>
+
         <TouchableOpacity
-          style={[styles.menuItem, { marginTop: 10 }]}
+          style={styles.menuItem}
           onPress={() => setModalVisible(true)}
         >
           <FontAwesome name="key" size={24} color="#7DDD51" />
-          <Text style={[styles.menuItemText]}>Change Password</Text>
+          <Text style={styles.menuItemText}>Change Password</Text>
           <MaterialIcons
             name="keyboard-arrow-right"
             size={24}
             color="#7DDD51"
           />
         </TouchableOpacity>
+
         {modelView()}
-        <TouchableOpacity
-          style={{ alignItems: "flex-end", marginTop: 30 }}
-          onPress={handleLogout}
-        >
+
+        <TouchableOpacity style={styles.logoutContainer} onPress={handleLogout}>
           <FontAwesome name="sign-out" size={36} color="#7DDD51" />
-          <Text> Logout</Text>
+          <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -192,72 +186,84 @@ const About = () => {
 export default About;
 
 const styles = StyleSheet.create({
-  btnText: {
-    color: "#fff",
-    fontSize: 16,
-  },
-  btn: {
-    backgroundColor: "#7cb144",
-    borderRadius: 30,
-    paddingHorizontal: 22,
-    paddingVertical: 8,
-    width: 100,
-    height: 40,
-  },
-  orderHistoryBtn:{
-    backgroundColor: "white",
-    paddingHorizontal: 20,
-    paddingVertical: 20,
-    width: 80,
-    borderRadius: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 2,
-  },
   scrollContainer: {
     flexGrow: 1,
     backgroundColor: "#f5f5f5",
   },
-
   container: {
     flex: 1,
     backgroundColor: "#ffffff",
     padding: 20,
   },
-
   profileContainer: {
-    display: "flex",
     flexDirection: "row",
-    paddingVertical: 30,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    marginBottom: 2,
     justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 30,
+    paddingHorizontal: 15,
+    borderRadius: 12,
+    backgroundColor: "#e8f5e9",
+    marginBottom: 20,
   },
-
+  userInfoContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  userIcon: {
+    width: 80, // Adjust width as needed
+    height: 80, // Adjust height as needed
+    borderRadius: 25, // Makes the icon circular
+    marginRight: 10, // Space between icon and text
+  },
   profileName: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "700",
-    color: "#7cb144",
+    color: "#388e3c",
   },
   profileEmail: {
-    fontSize: 24,
-    color: "#7cb144",
+    fontSize: 18,
+    color: "#4caf50",
     marginTop: 4,
   },
-  darkText: {
-    color: "#fff",
+  verifiedButton: {
+    backgroundColor: "#388e3c",
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    alignItems: "center",
   },
-
-
+  verifiedButtonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  menuContainer: {
+    alignItems: "center",
+    marginBottom: 30,
+  },
+  orderHistoryBtn: {
+    backgroundColor: "#ffffff",
+    padding: 20,
+    borderRadius: 50,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+    marginBottom: 10,
+  },
+  sectionHeader: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginVertical: 10,
+    color: "#333",
+  },
   menuItem: {
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 15,
     borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+    borderBottomColor: "#ddd",
   },
   menuItemText: {
     fontSize: 16,
@@ -273,18 +279,15 @@ const styles = StyleSheet.create({
   },
   modalView: {
     margin: 20,
-    backgroundColor: "#fff",
+    backgroundColor: "#ffffff",
     borderRadius: 15,
     padding: 35,
     alignItems: "center",
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.3,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
     shadowRadius: 10,
-    elevation: 10,
+    elevation: 5,
   },
   modalText: {
     fontSize: 20,
@@ -303,17 +306,34 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   modalButton: {
-    backgroundColor: "#7DDD51",
+    backgroundColor: "#388e3c",
     padding: 12,
     borderRadius: 8,
     marginVertical: 10,
     alignItems: "center",
     width: 120,
   },
+  cancelButton: {
+    backgroundColor: "#ccc",
+  },
+  cancelButtonText: {
+    color: "#333",
+    fontSize: 16,
+    fontWeight: "600",
+  },
   buttonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
   },
- 
+  logoutContainer: {
+    alignItems: "center",
+    marginTop: 30,
+  },
+  logoutText: {
+    fontSize: 18,
+    color: "#FF6F61",
+    marginTop: 5,
+    fontWeight: "bold",
+  },
 });

@@ -153,12 +153,16 @@ const HomeTab = () => {
 export default HomeTab;
 
 const { width } = Dimensions.get("window");
-const productCardWidth = width / 3 - 20; // Width calculation to fit three items per row with margins
+const sidePadding = 20; // Padding on the left and right sides of the screen
+const marginBetweenCards = 10; // Margin between two cards
+
+// Calculate product card width
+const productCardWidth = (width - sidePadding * 2 - marginBetweenCards) / 2; // Width calculation to fit three items per row with margins
 
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: "#fafafa",
+    backgroundColor: "white",
   },
   headerContainer: {
     flexDirection: "row",
@@ -168,10 +172,10 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     paddingBottom: 10,
     backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
+    shadowColor: "white",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
     elevation: 5,
   },
   header: {
@@ -217,14 +221,14 @@ const styles = StyleSheet.create({
   },
   promoCard: {
     flexDirection: "row",
-    backgroundColor: "#f8c471",
-    borderRadius: 15,
-    padding: 20,
+    backgroundColor: "#7DDD51",
+    borderRadius: 25,
+    padding: 30,
     marginBottom: 20,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.1,
+    shadowColor: "#7DDD51",
+    shadowOffset: { width: 2, height: 5 },
+    shadowOpacity: 2,
     shadowRadius: 10,
     elevation: 5,
   },
@@ -240,12 +244,12 @@ const styles = StyleSheet.create({
   promoTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#333",
+    color: "white",
     marginBottom: 5,
   },
   promoSubtitle: {
     fontSize: 14,
-    color: "#666",
+    color: "white",
   },
   searchContainer: {
     flexDirection: "row",
@@ -294,6 +298,8 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 5,
     alignItems: "center",
+    borderWidth: 2,
+    borderColor: "#7DDD51",
   },
   productImage: {
     width: 80,

@@ -5,7 +5,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import AddAdmin from "../../addadmin";
 import HomeTab from "./index";
 import ProductPage from "../../addproduct";
-import Notification from "./notifications";
+
 import About from "./about";
 import { useTheme, ThemeProvider } from "../../../src/context/ThemeContext"; // Import the theme context
 
@@ -44,8 +44,6 @@ function RootLayout() {
           let iconName;
           if (route.name === "Dashboard") {
             iconName = focused ? "home" : "home";
-          } else if (route.name === "Notifications") {
-            iconName = focused ? "bell" : "bell-o";
           } else if (route.name === "Profile") {
             iconName = focused ? "user" : "user-o";
           }
@@ -55,7 +53,7 @@ function RootLayout() {
         tabBarActiveTintColor: "#00bcd4",
         tabBarInactiveTintColor: "gray",
         tabBarStyle: {
-          backgroundColor: darkMode ? "#121212" : "#fff",
+          backgroundColor: darkMode ? "#7DDD51" : "#fff",
           paddingBottom: 5,
         },
         tabBarLabelStyle: {
@@ -66,7 +64,7 @@ function RootLayout() {
         headerShown: true,
         headerTitleAlign: "center",
         headerStyle: {
-          backgroundColor: darkMode ? "#121212" : "#fff",
+          backgroundColor: darkMode ? "#7DDD51" : "#fff",
         },
         headerTitleStyle: {
           color: darkMode ? "#fff" : "#000",
@@ -87,20 +85,7 @@ function RootLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="Notifications"
-        component={Notification}
-        options={{
-          title: "Notification",
-          tabBarIcon: ({ color, size, focused }) => (
-            <FontAwesome
-              name={focused ? "bell" : "bell-o"}
-              size={size}
-              color={color}
-            />
-          ),
-        }}
-      />
+
       <Tabs.Screen
         name="Profile"
         component={About}

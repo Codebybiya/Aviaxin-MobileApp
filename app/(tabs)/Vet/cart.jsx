@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "white",
   },
   item: {
     flexDirection: "row",
@@ -154,6 +154,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
+    borderWidth: 2,
+    borderColor: "#7DDD51",
   },
   productImage: {
     width: 80,

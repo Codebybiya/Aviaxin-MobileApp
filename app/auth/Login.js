@@ -15,6 +15,7 @@ import { useRouter } from "expo-router";
 import axios from "axios";
 import * as Yup from "yup";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Svg, { Path } from "react-native-svg"; // To draw the curve shape
 import config from "../../assets/config";
 
 const backendUrl = `${config.backendUrl}`;
@@ -22,15 +23,12 @@ const baseUrl = `${config.baseUrl}`;
 
 const Login = () => {
   const router = useRouter();
-
-  // State variables for input values, errors, loading, and user role
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
-  const [selectedRole, setSelectedRole] = useState("vet"); // Default role is veterinarian
+  const [selectedRole, setSelectedRole] = useState("vet");
 
-  // Validation schema
   const validationSchema = Yup.object().shape({
     email: Yup.string().required("Email is required").email().label("Email"),
     password: Yup.string()
@@ -39,7 +37,6 @@ const Login = () => {
       .label("Password"),
   });
 
-  // Check for saved user data
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
@@ -47,11 +44,8 @@ const Login = () => {
 
         if (savedUserData) {
           const { userrole } = JSON.parse(savedUserData);
-
           if (userrole) {
             navigateToRoleScreen(userrole);
-          } else {
-            console.error("Role is undefined in savedUserData", savedUserData);
           }
         }
       } catch (error) {
@@ -60,11 +54,9 @@ const Login = () => {
         setLoading(false);
       }
     };
-
     checkLoginStatus();
   }, []);
 
-  // Function to validate inputs
   const validateInputs = async () => {
     try {
       await validationSchema.validate(
@@ -88,62 +80,58 @@ const Login = () => {
     });
   };
 
-  // Navigate to role-specific screen
   const navigateToRoleScreen = (role) => {
     if (role === "microbiologist") {
-      router.replace("../(tabs)/micro");
+      router.push("/micro");
     } else if (role === "veterinarian") {
-      router.replace("../(tabs)/Vet");
-    } else if (role === "farmer") {
-      router.replace("../(tabs)/micro");
+      router.push("/Vet");
     } else if (role === "admin" || role === "superadmin") {
-      router.replace("../(tabs)/admin");
+      router.push("/admin");
     }
   };
 
-  // Handle form submission
   const handleSubmit = async () => {
-    setLoading(true); // Show loader when starting the login process
-
+    setLoading(true);
     const isValid = await validateInputs();
     if (!isValid) {
-      setLoading(false); // Hide loader if validation fails
+      setLoading(false);
       return;
     }
 
-    const userData = { email, password, role: selectedRole }; // Include the role in login data
+    const userData = { email, password, role: selectedRole };
 
     try {
       const response = await axios.post(`${backendUrl}/users/login`, userData);
-      console.log(response);
 
       if (response.data.status === "Failed") {
         showPopup(response.data.message);
-        setLoading(false); // Hide loader on failure
+        setLoading(false);
         return;
       }
 
       const userToSave = response?.data?.data;
+      if (!userToSave?.userrole) {
+        showPopup("User role is missing. Please try again.");
+        setLoading(false);
+        return;
+      }
 
       await AsyncStorage.setItem("userData", JSON.stringify(userToSave));
       navigateToRoleScreen(userToSave?.userrole);
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        console.error("Axios error:", error.message);
         showPopup("An error occurred. Please try again.");
       } else {
-        console.error("Unexpected error:", error);
         showPopup("An unexpected error occurred. Please try again.");
       }
     } finally {
-      setLoading(false); // Hide loader once the process is complete
+      setLoading(false);
     }
   };
 
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        {/* Stylish Loader */}
         <ActivityIndicator size="large" color="#7DDD51" />
         <Text style={styles.loadingText}>Signing you in...</Text>
       </View>
@@ -152,6 +140,19 @@ const Login = () => {
 
   return (
     <View style={styles.container}>
+      {/* Yellow Curve in Top-Right Corner */}
+      <Svg
+        height="40%"
+        width="100%"
+        viewBox="0 100 1140 260"
+        style={styles.curve}
+      >
+        <Path
+          fill="#7DDD51"
+          d="M0,192L60,176C120,160,240,128,360,144C480,160,600,224,720,224C840,224,960,160,1080,128C1200,96,1320,96,1380,96L1440,96L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"
+        />
+      </Svg>
+
       <View style={styles.content}>
         <Text style={styles.logoText}>Aviaxin</Text>
         <Text style={styles.welcomeText}>Welcome Back</Text>
@@ -159,7 +160,6 @@ const Login = () => {
       </View>
 
       <View style={styles.formContainer}>
-        {/* Dropdown for selecting role */}
         <View style={styles.pickerContainer}>
           <Picker
             selectedValue={selectedRole}
@@ -167,10 +167,6 @@ const Login = () => {
             style={styles.picker}
           >
             <Picker.Item label="Veterinarian" value="vet" />
-            {/* <Picker.Item
-              label="Microbiologist (Verified user by company)"
-              value="microbiologist"
-            /> */}
           </Picker>
         </View>
 
@@ -229,15 +225,19 @@ const Login = () => {
 
 export default Login;
 
-// Get device width and height
 const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#7DDD51",
+    backgroundColor: "white",
     justifyContent: "center",
     alignItems: "center",
+  },
+  curve: {
+    position: "absolute",
+    top: 0,
+    right: 0,
   },
   loadingContainer: {
     flex: 1,
@@ -257,19 +257,19 @@ const styles = StyleSheet.create({
     marginBottom: height * 0.05,
   },
   logoText: {
-    color: "white",
+    color: "#7DDD51",
     fontSize: 44,
     fontWeight: "bold",
     paddingBottom: height * 0.03,
   },
   welcomeText: {
-    color: "white",
+    color: "#7DDD51",
     fontSize: 24,
     fontWeight: "bold",
     paddingBottom: height * 0.02,
   },
   subText: {
-    color: "white",
+    color: "#7DDD51",
     fontSize: 18,
     paddingBottom: height * 0.02,
   },
@@ -285,10 +285,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 4,
+    borderWidth: 6,
+    borderColor: "#7DDD51",
   },
   pickerContainer: {
     marginBottom: height * 0.02,
-    borderColor: "#ccc",
+    borderColor: "#7DDD51",
     borderWidth: 1,
     borderRadius: 5,
     backgroundColor: "#f9f9f9",
@@ -306,7 +308,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#7DDD51",
     borderRadius: 5,
     paddingHorizontal: width * 0.03,
     paddingVertical: height * 0.015,
@@ -344,7 +346,7 @@ const styles = StyleSheet.create({
     padding: height * 0.015,
     textAlign: "center",
     fontSize: 14,
-    color: "black",
+    color: "#7DDD51",
     marginTop: 10,
   },
 });

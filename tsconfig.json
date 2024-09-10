@@ -23,6 +23,11 @@
     "app/(tabs)/Vet/notifications.js",
     "app/(tabs)/Vet/notifications.js",
     "app/(tabs)/Vet/notifications.js",
-    "app/(tabs)/micro/notifications.js"
+    "app/(tabs)/micro/notifications.js",
+    "app/productform.jsx",
+    "app/viewmembers.js",
+    "app/viewmembers.js",
+    "app/viewmembers.js",
+    "app/addmember.js"
   ]
 }

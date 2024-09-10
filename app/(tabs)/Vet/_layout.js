@@ -235,11 +235,7 @@ function RootTabs() {
         tabBarStyle: {
           backgroundColor: "#ffffff",
           borderTopColor: "transparent",
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.1,
-          shadowRadius: 5,
-          elevation: 5,
+
           height: 70,
           paddingBottom: 5,
           paddingTop: 7,
@@ -394,7 +390,7 @@ function RootDrawer() {
 // Main App Layout
 export default function RootLayout() {
   return (
-    <SafeAreaView style={{ flex: 1, marginTop: -60 }}>
+    <SafeAreaView style={{ flex: 1, marginTop: 0 }}>
       <StatusBar barStyle="dark-content" hidden={false} />
       <RootDrawer />
     </SafeAreaView>

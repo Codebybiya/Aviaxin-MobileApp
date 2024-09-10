@@ -8,7 +8,7 @@ import {
   Image,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-// import ImageCropPicker from "react-native-image-crop-picker";
+import { FontAwesome } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
 import axios from "axios";
@@ -22,38 +22,8 @@ const ProductPage = () => {
   const [imageUri, setImageUri] = useState<any>(null);
 
   const handleProductChange = (itemValue: string) => {
-    if (!isNaN(parseFloat(itemValue))) setProduct(itemValue);
+    setProduct(itemValue);
   };
-  const handlePriceChange = (itemValue: string) => {
-    setPrice(itemValue);
-  };
-
-  const handleDescriptionChange = (text: string) => {
-    setDescription(text);
-  };
-
-  // const handleSubmit = () => {
-  //   console.log("Product:", product, "Description:", description);
-  // };
-
-  // const pickImage = () => {
-  //   ImageCropPicker.openPicker({
-  //     width: 300,
-  //     height: 300,
-  //     cropping: true,
-  //     mediaType: "photo",
-  //     compressImageMaxWidth: 300, // Maximum width of the image
-  //     compressImageMaxHeight: 300, // Maximum height of the image
-  //     compressImageQuality: 0.7, // Image quality (0.0 to 1.0)
-  //   })
-  //     .then((image) => {
-  //       setImageUri(image.path);
-  //       console.log(image.path)
-  //     })
-  //     .catch((error) => {
-  //       console.log("Image path error: ", error);
-  //     });
-  // };
 
   const pickImage = async () => {
     let res = await ImagePicker.launchImageLibraryAsync({
@@ -69,12 +39,10 @@ const ProductPage = () => {
         { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
       );
       setImageUri(manipulatorResult.uri);
-      console.log(manipulatorResult.uri);
     }
   };
 
   const handleSubmit = async () => {
-    // try {
     const formData = new FormData();
     formData.append("productName", product);
     formData.append("productDescription", description);
@@ -83,66 +51,87 @@ const ProductPage = () => {
     if (imageUri) {
       formData.append("image", {
         uri: imageUri,
-        type: "image/jpeg", // Adjust this based on the file type
-        name: "photo.jpg", // Provide a name for the file
+        type: "image/jpeg",
+        name: "photo.jpg",
       } as any);
     }
 
-    console.log(formData);
-    console.log(`${backendUrl}/products/addproduct`);
-    const resp = await axios.post(
-      `${backendUrl}/products/addproduct`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+    try {
+      const resp = await axios.post(
+        `${backendUrl}/products/addproduct`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      if (resp.data.status === "Success") {
+        console.log("Product Added!!!");
+      } else {
+        console.log("Product cannot be added");
       }
-    );
-    if (resp.data.status === "Success") {
-      console.log("Produce Added!!!");
-    } else {
-      console.log("Product cannot be added");
+    } catch (error) {
+      console.log(error);
     }
-    // } catch (error) {
-    // }
   };
 
   return (
     <View style={styles.container}>
-      {/* <Text style={styles.title}></Text> */}
       <TouchableOpacity onPress={pickImage} style={styles.imageContainer}>
         {imageUri ? (
           <Image source={{ uri: imageUri }} style={styles.image} />
         ) : (
-          <Text style={styles.uploadText}>Upload Photo</Text>
+          <FontAwesome name="camera" size={50} color="#ccc" />
         )}
       </TouchableOpacity>
 
-      <Picker
-        selectedValue={product}
-        style={styles.picker}
-        onValueChange={handleProductChange}
-      >
-        <Picker.Item label="ORT ISOLATION" value="ORT ISOLATION" />
-        <Picker.Item label="ORT VACCINE" value="ORT VACCINE" />
-      </Picker>
+      <View style={styles.inputContainer}>
+        <FontAwesome name="tag" size={24} color="#00bcd4" style={styles.icon} />
+        <Picker
+          selectedValue={product}
+          style={styles.picker}
+          onValueChange={handleProductChange}
+        >
+          <Picker.Item label="ORT ISOLATION" value="ORT ISOLATION" />
+          <Picker.Item label="ORT VACCINE" value="ORT VACCINE" />
+        </Picker>
+      </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Price"
-        keyboardType="phone-pad"
-        onChangeText={handlePriceChange}
-        value={price}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Description"
-        multiline
-        numberOfLines={4}
-        value={description}
-        onChangeText={handleDescriptionChange}
-      />
+      <View style={styles.inputContainer}>
+        <FontAwesome
+          name="dollar"
+          size={24}
+          color="#00bcd4"
+          style={styles.icon}
+        />
+        <TextInput
+          style={styles.textInput}
+          placeholder="Enter Price"
+          keyboardType="phone-pad"
+          value={price}
+          onChangeText={setPrice}
+          placeholderTextColor="#888"
+        />
+      </View>
+
+      <View style={styles.inputContainer}>
+        <FontAwesome
+          name="align-left"
+          size={24}
+          color="#00bcd4"
+          style={styles.icon}
+        />
+        <TextInput
+          style={styles.textInput}
+          placeholder="Enter Description"
+          multiline
+          numberOfLines={4}
+          value={description}
+          onChangeText={setDescription}
+          placeholderTextColor="#888"
+        />
+      </View>
 
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <Text style={styles.buttonText}>Submit</Text>
@@ -158,6 +147,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: "#f8f8f8",
+    justifyContent: "center",
   },
   imageContainer: {
     width: 100,
@@ -168,50 +158,45 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#f0f0f0",
+    marginBottom: 20,
   },
   image: {
     width: "100%",
     height: "100%",
     borderRadius: 50,
   },
-  uploadText: {
-    color: "#888",
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    marginBottom: 15,
+    paddingHorizontal: 10,
+    backgroundColor: "#fff",
+  },
+  textInput: {
+    flex: 1,
+    padding: 8,
     fontSize: 16,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
+  icon: {
+    marginRight: 10,
   },
   picker: {
+    flex: 1,
     height: 50,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 4,
-    marginBottom: 20,
-    backgroundColor: "#fff",
-  },
-  input: {
-    height: 100,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 4,
-    marginBottom: 20,
-    paddingHorizontal: 10,
-    paddingTop: 10,
-    backgroundColor: "#fff",
-    textAlignVertical: "top",
   },
   button: {
     backgroundColor: "#00bcd4",
     padding: 16,
     borderRadius: 8,
-    marginVertical: 8,
     alignItems: "center",
+    marginTop: 10,
   },
   buttonText: {
     color: "#fff",
     fontSize: 16,
+    fontWeight: "bold",
   },
 });
