@@ -42,6 +42,7 @@ const NotificationItem = ({
   orderID,
   read,
   onMarkAsRead,
+  notificationID,
 }) => {
   const router = useRouter();
 
@@ -49,8 +50,8 @@ const NotificationItem = ({
     console.log("Navigating to OrderDetail with orderID:", orderID);
 
     try {
-      await axios.put(`${backendUrl}/notifications/mark-as-read/${orderID}`);
-      onMarkAsRead(orderID);
+      await axios.put(`${backendUrl}/notifications/mark-as-read/${notificationID}`);
+      onMarkAsRead(notificationID);
 
       router.push(`/orderdetailnotif?orderID=${orderID}`);
     } catch (error) {
@@ -130,10 +131,10 @@ const Notifications = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  const handleMarkAsRead = (orderID) => {
+  const handleMarkAsRead = (notificationID) => {
     setNotifications((prevNotifications) =>
       prevNotifications.map((notification) =>
-        notification.orderID === orderID
+        notification._id === notificationID
           ? { ...notification, read: true }
           : notification
       )
@@ -185,6 +186,7 @@ const Notifications = () => {
             orderID={item.orderID}
             read={item.read}
             onMarkAsRead={handleMarkAsRead}
+            notificationID={item._id}
           />
         )}
         refreshing={refreshing}

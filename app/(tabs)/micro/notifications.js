@@ -33,14 +33,15 @@ const NotificationItem = ({
   orderID,
   read,
   onMarkAsRead,
+  notificationID
 }) => {
   const router = useRouter();
 
   const handlePress = async () => {
     try {
       // Mark notification as read in the backend
-      await axios.put(`${backendUrl}/notifications/mark-as-read/${orderID}`);
-      onMarkAsRead(orderID); // Update the frontend state to mark as read and decrease the unread count
+      await axios.put(`${backendUrl}/notifications/mark-as-read/${notificationID}`);
+      onMarkAsRead(notificationID); // Update the frontend state to mark as read and decrease the unread count
 
       router.push(`/orderdetailnotif?orderID=${orderID}`);
     } catch (error) {
@@ -88,9 +89,8 @@ const NotificationItem = ({
   );
 };
 
-const Notifications = () => {
+const Notifications = ({setUnreadCount}) => {
   const [notifications, setNotifications] = useState([]);
-  const [unreadCount, setUnreadCount] = useState(0);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -144,10 +144,10 @@ const Notifications = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  const handleMarkAsRead = async (orderID) => {
+  const handleMarkAsRead = async (notificationID) => {
     // Update state immediately
     const updatedNotifications = notifications.map((notification) =>
-      notification.orderID === orderID
+      notification._id === notificationID
         ? { ...notification, read: true }
         : notification
     );
@@ -215,6 +215,7 @@ const Notifications = () => {
             createdAt={item.createdAt}
             orderID={item.orderID}
             read={item.read}
+            notificationID={item._id}
             onMarkAsRead={handleMarkAsRead} // Pass the handler to mark as read
           />
         )}

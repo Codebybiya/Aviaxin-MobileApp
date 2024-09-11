@@ -68,12 +68,14 @@ function MicrobiologistStack() {
   );
 }
 
-function NotificationStack() {
+function NotificationStack({ setUnreadCount }) {
   return (
     <Stack.Navigator>
       <Stack.Screen
         name="Notifications"
-        component={Notification}
+        component={(props) => (
+          <Notification {...props} setUnreadCount={setUnreadCount} />
+        )}
         options={{
           headerLeft: () => <DrawerButton />,
           headerTitle: "Notification",
@@ -195,7 +197,11 @@ function RootTabs() {
       })}
     >
       <Tabs.Screen name="Microbiologist" component={MicrobiologistStack} />
-      <Tabs.Screen name="Notification" component={NotificationStack} />
+      <Tabs.Screen
+        name="Notification"
+        children={() => <NotificationStack setUnreadCount={setUnreadCount} />} // Correct way to pass setUnreadCount
+      />
+
       <Tabs.Screen name="About" component={AboutStack} />
     </Tabs.Navigator>
   );
