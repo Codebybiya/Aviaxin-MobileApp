@@ -92,7 +92,7 @@ const Register = () => {
                 <FontAwesome
                   name="user"
                   size={24}
-                  color="#00bcd4"
+                  color="#7DDD51"
                   style={styles.icon}
                 />
                 <TextInput
@@ -112,7 +112,7 @@ const Register = () => {
                 <FontAwesome
                   name="user"
                   size={24}
-                  color="#00bcd4"
+                  color="#7DDD51"
                   style={styles.icon}
                 />
                 <TextInput
@@ -132,7 +132,7 @@ const Register = () => {
                 <FontAwesome
                   name="phone"
                   size={24}
-                  color="#00bcd4"
+                  color="#7DDD51"
                   style={styles.icon}
                 />
                 <TextInput
@@ -157,7 +157,7 @@ const Register = () => {
                     setFieldValue("role", itemValue)
                   }
                 >
-                  <Picker.Item label="Sign In As" value="" color="#A9A9A9" />
+                  <Picker.Item label="Sign In As" value="" color="#7DDD51" />
                   <Picker.Item label="Veterinarian" value="veterinarian" />
                   <Picker.Item label="Microbiologist" value="microbiologist" />
                   <Picker.Item label="Farmer" value="farmer" />
@@ -171,7 +171,7 @@ const Register = () => {
                 <FontAwesome
                   name="envelope"
                   size={24}
-                  color="#00bcd4"
+                  color="#7DDD51"
                   style={styles.icon}
                 />
                 <TextInput
@@ -192,7 +192,7 @@ const Register = () => {
                 <FontAwesome
                   name="lock"
                   size={24}
-                  color="#00bcd4"
+                  color="#7DDD51"
                   style={styles.icon}
                 />
                 <TextInput
@@ -213,7 +213,7 @@ const Register = () => {
                 <FontAwesome
                   name="lock"
                   size={24}
-                  color="#00bcd4"
+                  color="#7DDD51"
                   style={styles.icon}
                 />
                 <TextInput
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   button: {
-    backgroundColor: "#00bcd4",
+    backgroundColor: "#7DDD51",
     padding: 16,
     borderRadius: 8,
     alignItems: "center",

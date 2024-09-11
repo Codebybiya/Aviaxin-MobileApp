@@ -87,7 +87,7 @@ const ProductPage = () => {
       </TouchableOpacity>
 
       <View style={styles.inputContainer}>
-        <FontAwesome name="tag" size={24} color="#00bcd4" style={styles.icon} />
+        <FontAwesome name="tag" size={24} color="#7DDD51" style={styles.icon} />
         <Picker
           selectedValue={product}
           style={styles.picker}
@@ -102,7 +102,7 @@ const ProductPage = () => {
         <FontAwesome
           name="dollar"
           size={24}
-          color="#00bcd4"
+          color="#7DDD51"
           style={styles.icon}
         />
         <TextInput
@@ -119,7 +119,7 @@ const ProductPage = () => {
         <FontAwesome
           name="align-left"
           size={24}
-          color="#00bcd4"
+          color="#7DDD51"
           style={styles.icon}
         />
         <TextInput
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
     height: 50,
   },
   button: {
-    backgroundColor: "#00bcd4",
+    backgroundColor: "#7DDD51",
     padding: 16,
     borderRadius: 8,
     alignItems: "center",

@@ -19,7 +19,7 @@ const CustomInput = ({
         <FontAwesome
           name={icon}
           size={24}
-          color="#A9A9A9"
+          color="#7DDD51"
           style={styles.icon}
         />
         <TextInput
@@ -40,14 +40,14 @@ const CustomInput = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#00bcd4",
+    backgroundColor: "#7DDD51",
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
   },
 
   button: {
-    backgroundColor: "#00bcd4",
+    backgroundColor: "#7DDD51",
     padding: 10,
     borderRadius: 5,
     marginTop: 20,

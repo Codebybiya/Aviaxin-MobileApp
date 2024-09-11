@@ -50,7 +50,7 @@ function RootLayout() {
 
           return <FontAwesome name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: "#00bcd4",
+        tabBarActiveTintColor: "#7DDD51",
         tabBarInactiveTintColor: "gray",
         tabBarStyle: {
           backgroundColor: darkMode ? "#7DDD51" : "#fff",
@@ -80,7 +80,7 @@ function RootLayout() {
             <FontAwesome
               name="home"
               size={size}
-              color={focused ? "#00bcd4" : "gray"}
+              color={focused ? "#7DDD51" : "gray"}
             />
           ),
         }}

@@ -78,7 +78,7 @@ const AddAdmin: React.FC = () => {
         <FontAwesome
           name="user"
           size={24}
-          color="#00bcd4"
+          color="#7DDD51"
           style={styles.icon}
         />
         <TextInput
@@ -94,7 +94,7 @@ const AddAdmin: React.FC = () => {
         <FontAwesome
           name="user"
           size={24}
-          color="#00bcd4"
+          color="#7DDD51"
           style={styles.icon}
         />
         <TextInput
@@ -110,7 +110,7 @@ const AddAdmin: React.FC = () => {
         <FontAwesome
           name="phone"
           size={24}
-          color="#00bcd4"
+          color="#7DDD51"
           style={styles.icon}
         />
         <TextInput
@@ -127,7 +127,7 @@ const AddAdmin: React.FC = () => {
         <FontAwesome
           name="envelope"
           size={24}
-          color="#00bcd4"
+          color="#7DDD51"
           style={styles.icon}
         />
         <TextInput
@@ -144,7 +144,7 @@ const AddAdmin: React.FC = () => {
         <FontAwesome
           name="lock"
           size={24}
-          color="#00bcd4"
+          color="#7DDD51"
           style={styles.icon}
         />
         <TextInput
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   button: {
-    backgroundColor: "#00bcd4",
+    backgroundColor: "#7DDD51",
     padding: 16,
     borderRadius: 8,
     alignItems: "center",

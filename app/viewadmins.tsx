@@ -93,7 +93,7 @@ const ViewAdmins: React.FC = () => {
       </View>
       <View style={styles.adminActions}>
         <TouchableOpacity onPress={() => handleUpdate(item._id)}>
-          <Ionicons name="create-outline" size={28} color="#007AFF" />
+          <Ionicons name="create-outline" size={28} color="#7DDD51" />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => handleDelete(item._id)}
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8F9FA",
   },
   header: {
-    backgroundColor: "#007AFF",
+    backgroundColor: "#7DDD51",
     padding: 10,
     borderRadius: 10,
     marginBottom: 10,

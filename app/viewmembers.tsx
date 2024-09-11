@@ -80,7 +80,7 @@ const ViewUsers: React.FC = () => {
         <TouchableOpacity
           onPress={() => showPopup("Update feature coming soon!", "Update")}
         >
-          <Ionicons name="create-outline" size={24} color="#007AFF" />
+          <Ionicons name="create-outline" size={24} color="#7DDD51" />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => showPopup("Delete feature coming soon!", "Delete")}
@@ -111,7 +111,7 @@ const ViewUsers: React.FC = () => {
           <Text style={styles.noUsersText}>No users found.</Text>
         )
       ) : (
-        <ActivityIndicator size="large" color="#007AFF" />
+        <ActivityIndicator size="large" color="#7DDD51" />
       )}
     </View>
   );
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   header: {
-    backgroundColor: "#007AFF",
+    backgroundColor: "#7DDD51",
     padding: 10,
     borderRadius: 8,
     flexDirection: "row",

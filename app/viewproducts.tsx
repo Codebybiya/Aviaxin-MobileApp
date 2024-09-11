@@ -76,7 +76,9 @@ const ViewProducts: React.FC = () => {
   const fetchProducts = async () => {
     try {
       const response = await axios.get(`${backendUrl}/products/allproduct`);
+      console.log("Products:", response?.data?.data);
       setProducts(response?.data?.data);
+      
     } catch (error) {
       console.error("Failed to fetch products:", error);
     }
@@ -92,7 +94,7 @@ const ViewProducts: React.FC = () => {
       <Text style={styles.productText}>${item.productPrice}</Text>
       <View style={styles.productActions}>
         <TouchableOpacity onPress={() => handleUpdate(item._id)}>
-          <Ionicons name="create-outline" size={28} color="#007AFF" />
+          <Ionicons name="create-outline" size={28} color="#7DDD51" />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => handleDelete(item._id)}
@@ -142,7 +144,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   header: {
-    backgroundColor: "#007AFF",
+    backgroundColor: "#7DDD51",
     padding: 10,
     borderRadius: 10,
     marginBottom: 10,

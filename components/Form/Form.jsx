@@ -30,7 +30,7 @@ const CustomForm = ({ inputs,handleSubmit }) => {
         />
       ))}
       <TouchableOpacity style={styles.button} onPress={formik.handleSubmit}>
-        <Text style={styles.buttonText}>Register Request</Text>
+        <Text style={styles.buttonText}>Save Changes</Text>
       </TouchableOpacity>
     </View>
   );
@@ -38,12 +38,12 @@ const CustomForm = ({ inputs,handleSubmit }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#00bcd4",
+    backgroundColor: "#7DDD51",
     justifyContent: "center",
     alignItems: "center",
   },
   button: {
-    backgroundColor: "#00bcd4",
+    backgroundColor: "#7DDD51",
     padding: 10,
     borderRadius: 5,
     marginTop: 20,

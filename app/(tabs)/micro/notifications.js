@@ -61,7 +61,7 @@ const NotificationItem = ({
           <FontAwesome
             name={icon}
             size={24}
-            color={read ? "#4a90e2" : "#fff"}
+            color={read ? "#7DDD51" : "#fff"}
           />
         </View>
         <View style={styles.textContainer}>

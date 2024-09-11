@@ -54,7 +54,7 @@ const Orderstatus = () => {
       case "pending":
         return (
           <View style={styles.step}>
-            <MaterialIcons name="check-circle" size={24} color="#00bcd4" />
+            <MaterialIcons name="check-circle" size={24} color="#7DDD51" />
             <Text style={styles.stepTitle}>Order Placed</Text>
             <Text style={styles.stepDescription}>
               Your order has been placed and is pending processing.
@@ -64,7 +64,7 @@ const Orderstatus = () => {
       case "delivered":
         return (
           <View style={styles.step}>
-            <MaterialIcons name="local-shipping" size={24} color="#00bcd4" />
+            <MaterialIcons name="local-shipping" size={24} color="#7DDD51" />
             <Text style={styles.stepTitle}>Order Processing</Text>
             <Text style={styles.stepDescription}>
               Your order is being processed and will be delivered soon.
@@ -74,7 +74,7 @@ const Orderstatus = () => {
       case "shipped":
         return (
           <View style={styles.step}>
-            <MaterialIcons name="local-shipping" size={24} color="#00bcd4" />
+            <MaterialIcons name="local-shipping" size={24} color="#7DDD51" />
             <Text style={styles.stepTitle}>Ready to Pick</Text>
             <Text style={styles.stepDescription}>
               Your order is ready to be picked up or is on its way.
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   imageContainer: {
-    backgroundColor: "#00bcd4",
+    backgroundColor: "#7DDD51",
     padding: 30,
     borderRadius: 20,
     alignSelf: "center",
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#00bcd4",
+    color: "#7DDD51",
     marginBottom: 5,
     marginLeft: 10,
   },
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#00bcd4",
+    backgroundColor: "#7DDD51",
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 30,
