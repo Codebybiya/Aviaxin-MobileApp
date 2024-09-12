@@ -87,11 +87,11 @@ const ViewProducts: React.FC = () => {
   const renderProductItem = ({ item }: { item: Products }) => (
     <View style={styles.productItem}>
       <Image
-        source={{ uri: `${backendUrl}/${item.imagePath}` }}
+        source={{ uri: `${item.imagePath}` }}
         style={styles.productImage}
       />
       <Text style={styles.productText}>{item.productName}</Text>
-      <Text style={styles.productText}>${item.productPrice}</Text>
+      <Text style={styles.productText}>per contract</Text>
       <View style={styles.productActions}>
         <TouchableOpacity onPress={() => handleUpdate(item._id)}>
           <Ionicons name="create-outline" size={28} color="#7DDD51" />
