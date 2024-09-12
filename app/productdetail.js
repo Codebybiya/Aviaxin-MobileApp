@@ -108,7 +108,7 @@ const ProductDetail = () => {
         {/* Product Image */}
         <View style={styles.imageContainer}>
           <Image
-            source={{ uri: `${backendUrl}/${product.imagePath}` }}
+            source={{ uri: `${product.imagePath}` }}
             style={styles.productImage}
           />
         </View>

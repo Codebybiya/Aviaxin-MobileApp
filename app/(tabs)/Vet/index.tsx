@@ -124,7 +124,7 @@ const HomeTab = () => {
             {filteredProducts.map((item, index) => (
               <View key={index} style={styles.productCard}>
                 <Image
-                  source={{ uri: `${backendUrl}/${item.imagePath}` }}
+                  source={{ uri: `${item.imagePath}` }}
                   style={styles.productImage}
                 />
                 <Text style={styles.productName}>{item.productName}</Text>
