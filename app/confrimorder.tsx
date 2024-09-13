@@ -34,6 +34,8 @@ const ConfirmOrder = () => {
           `${backendUrl}/orders/orderdetail/${id}`
         );
         setOrder(response.data.data);
+        setIsolateNumber(response.data.data.isolateNumber || ""); // Set initial isolate and batch numbers if they exist
+        setBatchNumber(response.data.data.batchNumber || "");
       } catch (error) {
         console.error("Failed to fetch order details:", error);
         setError("Failed to load order details.");
@@ -155,11 +157,15 @@ const ConfirmOrder = () => {
         style={styles.confirmButton}
         onPress={() => setModalVisible(true)}
       >
-        <Text style={styles.buttonText}>Confirm Order</Text>
+        <Text style={styles.buttonText}>
+          {order.status === "confirmed" ? "Edit Details" : "Confirm Order"}
+        </Text>
       </TouchableOpacity>
 
       <Text style={styles.signatureText}>
-        Click to Confirm this product Order
+        {order.status === "confirmed"
+          ? "Click to Edit product Order"
+          : "Click to Confirm this product Order"}
       </Text>
 
       {/* Confirmation Modal */}
@@ -171,7 +177,9 @@ const ConfirmOrder = () => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Confirm Order</Text>
+            <Text style={styles.modalTitle}>
+              {order.status === "confirmed" ? "Edit Order" : "Confirm Order"}
+            </Text>
             <TextInput
               style={styles.input}
               placeholder="Enter isolation no"
@@ -192,7 +200,9 @@ const ConfirmOrder = () => {
                   style={styles.modalButton}
                   onPress={handleConfirmOrder}
                 >
-                  <Text style={styles.buttonText}>Confirm</Text>
+                  <Text style={styles.buttonText}>
+                    {order.status === "confirmed" ? "Save Changes" : "Confirm"}
+                  </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.modalButton, styles.cancelButton]}
@@ -214,7 +224,8 @@ export default ConfirmOrder;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#F0FFF0", // Light green background
+    padding: 20,
   },
   loaderContainer: {
     flex: 1,
@@ -262,19 +273,6 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   confirmButton: {
-    backgroundColor: "#7DDD51", // Changed color to green
-    paddingVertical: 15,
-    paddingHorizontal: 40,
-    borderRadius: 30,
-    alignSelf: "center",
-    marginTop: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 5,
-  },
-  invoiceButton: {
     backgroundColor: "#7DDD51", // Changed color to green
     paddingVertical: 15,
     paddingHorizontal: 40,
