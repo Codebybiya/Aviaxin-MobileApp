@@ -17,6 +17,7 @@
       "supportsTablet": true
     },
     "android": {
+      "permissions": ["NOTIFICATIONS"],
       "package": "com.aviaxinapp",
       "versionCode": 1,
       "adaptiveIcon": {

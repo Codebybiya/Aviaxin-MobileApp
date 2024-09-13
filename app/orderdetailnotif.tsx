@@ -154,10 +154,6 @@ const OrderDetailNotif = () => {
           </View>
         )}
       </View>
-
-      <TouchableOpacity style={styles.button} activeOpacity={0.8}>
-        <Text style={styles.buttonText}>View Invoice</Text>
-      </TouchableOpacity>
     </Animated.View>
   );
 };

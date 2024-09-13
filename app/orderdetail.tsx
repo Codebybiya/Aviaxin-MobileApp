@@ -7,12 +7,27 @@ import {
   ActivityIndicator,
   Animated,
   Easing,
-} from "react-native"; // Import Animated for smooth transitions
+  Modal, // Import Modal for custom alerts
+  Platform,
+} from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import axios from "axios";
 import config from "@/assets/config";
+import * as FileSystem from "expo-file-system";
+import * as Print from "expo-print";
+import * as Sharing from "expo-sharing";
+import * as Notifications from "expo-notifications";
 
 const backendUrl = `${config.backendUrl}`;
+
+// Notification configuration
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 const OrderDetail = () => {
   const { id } = useLocalSearchParams(); // Get the order ID from the route
@@ -20,6 +35,9 @@ const OrderDetail = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const fadeAnim = useState(new Animated.Value(0))[0]; // Add animation state
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [modalType, setModalType] = useState("success");
 
   useEffect(() => {
     const fetchOrderDetails = async () => {
@@ -56,30 +74,145 @@ const OrderDetail = () => {
     }
   }, [id]);
 
-  if (loading) {
-    return (
-      <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#7DDD51" />
-        <Text style={styles.loadingText}>Loading Order Details...</Text>
-      </View>
-    );
-  }
+  const showDownloadNotification = async (fileName: string) => {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Download Complete",
+        body: `${fileName} has been saved to your Downloads folder.`,
+      },
+      trigger: null,
+    });
+  };
 
-  if (error) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error}</Text>
-      </View>
-    );
-  }
+  const showModal = (message: string, type: "success" | "error") => {
+    setModalMessage(message);
+    setModalType(type);
+    setModalVisible(true);
+  };
 
-  if (!order) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>No order details found.</Text>
-      </View>
-    );
-  }
+  const generatePDF = async () => {
+    if (!order) {
+      showModal("Order details not available.", "error");
+      return;
+    }
+
+    const statusClass = getStatusStyleClass(order.status);
+
+    const htmlContent = `
+      <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; background-color: #F0FFF0; padding: 20px; }
+            .container { width: 100%; padding: 20px; }
+            h1 { font-size: 28px; font-weight: bold; color: #218838; margin-bottom: 20px; text-align: center; }
+            h2 { font-size: 20px; font-weight: 600; color: #666; margin-bottom: 30px; text-align: center; }
+            .card { background-color: #fff; border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); }
+            .detail-container { display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid #D0E8D0; }
+            .label { font-size: 16px; color: #218838; flex: 1; }
+            .value { font-size: 16px; color: #28A745; flex: 1; text-align: right; }
+            .status-pending { color: orange; }
+            .status-shipped { color: blue; }
+            .status-delivered { color: green; }
+            .status-cancelled { color: red; }
+            .status-confirmed { color: #7DDD51; }
+          </style>
+        </head>
+        <body>
+          <h1>Order Detail</h1>
+          <h2>${order.productID.productName}</h2>
+          <div class="card">
+            <div class="detail-container">
+              <span class="label">Submitting Vet:</span>
+              <span class="value">${order.veterinarianName}</span>
+            </div>
+            <div class="detail-container">
+              <span class="label">Site Name:</span>
+              <span class="value">${order.colonyName}</span>
+            </div>
+            <div class="detail-container">
+              <span class="label">ORT Confirmed Previously:</span>
+              <span class="value">${order.ortConfirmed ? "Yes" : "No"}</span>
+            </div>
+            <div class="detail-container">
+              <span class="label">Quantity:</span>
+              <span class="value">${order.quantity}</span>
+            </div>
+            <div class="detail-container">
+              <span class="label">Order Status:</span>
+              <span class="value ${statusClass}">${getStatusText(
+      order.status
+    )}</span>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+
+    try {
+      const { uri } = await Print.printToFileAsync({
+        html: htmlContent,
+        fileName: `order_${id}_details.pdf`,
+      });
+
+      const fileName = `order_${id}_details.pdf`;
+
+      if (Platform.OS === "android") {
+        const permissions =
+          await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+        if (permissions.granted) {
+          const directoryUri = permissions.directoryUri;
+          const safUri =
+            await FileSystem.StorageAccessFramework.createFileAsync(
+              directoryUri,
+              fileName,
+              "application/pdf"
+            );
+          await FileSystem.StorageAccessFramework.writeAsStringAsync(
+            safUri,
+            await FileSystem.readAsStringAsync(uri, {
+              encoding: FileSystem.EncodingType.Base64,
+            }),
+            { encoding: FileSystem.EncodingType.Base64 }
+          );
+
+          showDownloadNotification(fileName);
+          showModal("PDF has been saved to your Downloads folder.", "success");
+        } else {
+          showModal(
+            "Permission to save in Downloads folder was denied.",
+            "error"
+          );
+        }
+      } else {
+        if (await Sharing.isAvailableAsync()) {
+          await Sharing.shareAsync(uri);
+        } else {
+          showModal(`PDF has been saved to: ${uri}`, "success");
+        }
+      }
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      showModal("Failed to generate PDF.", "error");
+    }
+  };
+
+  // Helper function to map status to CSS classes
+  const getStatusStyleClass = (status) => {
+    switch (status) {
+      case "pending":
+        return "status-pending";
+      case "shipped":
+        return "status-shipped";
+      case "delivered":
+        return "status-delivered";
+      case "cancelled":
+        return "status-cancelled";
+      case "confirmed":
+        return "status-confirmed";
+      default:
+        return "";
+    }
+  };
 
   const getStatusText = (status: string) => {
     switch (status) {
@@ -115,7 +248,30 @@ const OrderDetail = () => {
     }
   };
 
-  const confirmedByName = order.confirmedBy?.name || "Microbiologist";
+  if (loading) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#7DDD51" />
+        <Text style={styles.loadingText}>Loading Order Details...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
+
+  if (!order) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>No order details found.</Text>
+      </View>
+    );
+  }
 
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
@@ -153,14 +309,50 @@ const OrderDetail = () => {
         {order.status === "confirmed" && (
           <View style={styles.detailContainer}>
             <Text style={styles.label}>Confirmed By:</Text>
-            <Text style={styles.value}>{confirmedByName}</Text>
+            <Text style={styles.value}>
+              {order.confirmedBy?.name || "Microbiologist"}
+            </Text>
           </View>
         )}
       </View>
 
-      <TouchableOpacity style={styles.button} activeOpacity={0.8}>
+      <TouchableOpacity
+        style={styles.button}
+        activeOpacity={0.8}
+        onPress={generatePDF}
+      >
         <Text style={styles.buttonText}>View Invoice</Text>
       </TouchableOpacity>
+
+      {/* Custom Modal for Alert Messages */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View
+            style={[
+              styles.modalView,
+              modalType === "error" ? styles.errorModal : styles.successModal,
+            ]}
+          >
+            <Text style={styles.modalText}>{modalMessage}</Text>
+            <TouchableOpacity
+              style={[
+                styles.modalButton,
+                modalType === "error"
+                  ? styles.errorButton
+                  : styles.successButton,
+              ]}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.modalButtonText}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </Animated.View>
   );
 };
@@ -277,5 +469,51 @@ const styles = StyleSheet.create({
   },
   statusDefault: {
     color: "#666",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalView: {
+    width: "80%",
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  successModal: {
+    backgroundColor: "#DFF2BF", // Light green background for success
+  },
+  errorModal: {
+    backgroundColor: "#FFBABA", // Light red background for error
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  modalButton: {
+    backgroundColor: "#7DDD51", // Success color
+    borderRadius: 10,
+    padding: 10,
+    elevation: 2,
+    width: 100,
+    alignItems: "center",
+  },
+  errorButton: {
+    backgroundColor: "#FF5252", // Error color
+  },
+  modalButtonText: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });

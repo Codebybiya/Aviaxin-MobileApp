@@ -5,6 +5,7 @@ import {
   View,
   FlatList,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import axios from "axios";
 import { FontAwesome } from "@expo/vector-icons";
@@ -43,7 +44,7 @@ const NotificationItem = ({
       await axios.put(
         `${backendUrl}/notifications/mark-as-read/${notificationID}`
       );
-      onMarkAsRead(notificationID); // Update the frontend state to mark as read and decrease the unread count
+      onMarkAsRead(notificationID); // Update frontend state to mark as read
 
       router.push(`/orderdetailnotif?orderID=${orderID}`);
     } catch (error) {
@@ -56,7 +57,7 @@ const NotificationItem = ({
       <View
         style={[
           styles.notificationItem,
-          read ? styles.readNotification : styles.newNotification, // Apply styles based on read status
+          read ? styles.readNotification : styles.newNotification,
         ]}
       >
         <View style={styles.iconContainer}>
@@ -97,75 +98,8 @@ const Notifications = ({ setUnreadCount }) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        // Load from AsyncStorage first
-        const storedNotifications = await AsyncStorage.getItem("notifications");
-        if (storedNotifications) {
-          const parsedNotifications = JSON.parse(storedNotifications);
-          setNotifications(parsedNotifications);
-          setUnreadCount(
-            parsedNotifications.filter((notification) => !notification.read)
-              .length
-          );
-        } else {
-          // If not available in AsyncStorage, fetch from backend
-          const storedUserData = await AsyncStorage.getItem("userData");
-          if (storedUserData) {
-            const { userid } = JSON.parse(storedUserData);
-            const url = `${backendUrl}/notifications/notifications/${userid}`;
-            const response = await axios.get(url);
-            const allNotifications = response.data.data;
-
-            setNotifications(allNotifications);
-            setUnreadCount(
-              allNotifications.filter((notification) => !notification.read)
-                .length
-            );
-
-            // Save fetched notifications to AsyncStorage
-            await AsyncStorage.setItem(
-              "notifications",
-              JSON.stringify(allNotifications)
-            );
-          }
-        }
-      } catch (error) {
-        setError("Failed to load notifications.");
-        console.error("Error fetching notifications:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchNotifications();
-
-    // Set an interval to refresh notifications
-    const intervalId = setInterval(fetchNotifications, 60000);
-    return () => clearInterval(intervalId);
-  }, []);
-
-  const handleMarkAsRead = async (notificationID) => {
-    // Update state immediately
-    const updatedNotifications = notifications.map((notification) =>
-      notification._id === notificationID
-        ? { ...notification, read: true }
-        : notification
-    );
-
-    setNotifications(updatedNotifications);
-    setUnreadCount((prevCount) => Math.max(prevCount - 1, 0)); // Decrease unread count without going below 0
-
-    // Persist the updated state to AsyncStorage
-    await AsyncStorage.setItem(
-      "notifications",
-      JSON.stringify(updatedNotifications)
-    );
-  };
-
-  const onRefresh = async () => {
-    setRefreshing(true);
+  // Function to fetch notifications from the backend or local storage
+  const fetchNotifications = async () => {
     try {
       const storedUserData = await AsyncStorage.getItem("userData");
       if (storedUserData) {
@@ -177,23 +111,75 @@ const Notifications = ({ setUnreadCount }) => {
         setNotifications(allNotifications);
         setUnreadCount(
           allNotifications.filter((notification) => !notification.read).length
-        ); // Update unread count on refresh
+        );
 
-        // Save refreshed notifications to AsyncStorage
+        // Save notifications to AsyncStorage
         await AsyncStorage.setItem(
           "notifications",
           JSON.stringify(allNotifications)
         );
       }
     } catch (error) {
+      setError("Failed to load notifications.");
       console.error("Error fetching notifications:", error);
     } finally {
-      setRefreshing(false);
+      setLoading(false);
     }
   };
 
+  // Initial load and refresh every 60 seconds
+  useEffect(() => {
+    const initializeNotifications = async () => {
+      // Load from AsyncStorage first
+      const storedNotifications = await AsyncStorage.getItem("notifications");
+      if (storedNotifications) {
+        const parsedNotifications = JSON.parse(storedNotifications);
+        setNotifications(parsedNotifications);
+        setUnreadCount(
+          parsedNotifications.filter((notification) => !notification.read)
+            .length
+        );
+      }
+
+      // Then fetch from the backend
+      await fetchNotifications();
+    };
+
+    initializeNotifications();
+
+    // Set an interval to refresh notifications every minute
+    const intervalId = setInterval(fetchNotifications, 60000);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  // Mark a notification as read
+  const handleMarkAsRead = async (notificationID) => {
+    const updatedNotifications = notifications.map((notification) =>
+      notification._id === notificationID
+        ? { ...notification, read: true }
+        : notification
+    );
+
+    setNotifications(updatedNotifications);
+    setUnreadCount(
+      updatedNotifications.filter((notification) => !notification.read).length
+    );
+
+    await AsyncStorage.setItem(
+      "notifications",
+      JSON.stringify(updatedNotifications)
+    );
+  };
+
+  // Refresh handler
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchNotifications();
+    setRefreshing(false);
+  };
+
   if (loading) {
-    return <Text>Loading...</Text>;
+    return <ActivityIndicator size="large" color="#7DDD51" />;
   }
 
   if (error) {
@@ -218,7 +204,7 @@ const Notifications = ({ setUnreadCount }) => {
             orderID={item.orderID}
             read={item.read}
             notificationID={item._id}
-            onMarkAsRead={handleMarkAsRead} // Pass the handler to mark as read
+            onMarkAsRead={handleMarkAsRead}
           />
         )}
         refreshing={refreshing}
@@ -235,13 +221,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: "white",
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-    color: "#333",
   },
   notificationItem: {
     flexDirection: "row",
