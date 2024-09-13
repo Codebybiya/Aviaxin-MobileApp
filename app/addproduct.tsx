@@ -49,7 +49,7 @@ const ProductPage = () => {
     formData.append("productName", product);
     formData.append("productDescription", description);
     formData.append("productPrice", price);
-
+    console.log(formData)
     if (imageUri) {
       formData.append("image", {
         uri: imageUri,

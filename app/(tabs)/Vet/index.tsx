@@ -122,7 +122,7 @@ const HomeTab = () => {
             {filteredProducts.map((item, index) => (
               <View key={index} style={styles.productCard}>
                 <Image
-                  source={{ uri: item.imagePath }} // Use the updated imagePath with the backend URL or placeholder
+                  source={{ uri: `${item.imagePath}` }}
                   style={styles.productImage}
                 />
                 <Text style={styles.productName}>{item.productName}</Text>
