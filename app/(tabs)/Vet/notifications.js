@@ -50,7 +50,9 @@ const NotificationItem = ({
     console.log("Navigating to OrderDetail with orderID:", orderID);
 
     try {
-      await axios.put(`${backendUrl}/notifications/mark-as-read/${notificationID}`);
+      await axios.put(
+        `${backendUrl}/notifications/mark-as-read/${notificationID}`
+      );
       onMarkAsRead(notificationID);
 
       router.push(`/orderdetailnotif?orderID=${orderID}`);
@@ -168,7 +170,7 @@ const Notifications = () => {
   }
 
   if (!notifications.length) {
-    return <Text>No notifications found.</Text>;
+    return <Text style={styles.alertmessage}>No notifications found.</Text>;
   }
 
   return (
@@ -265,5 +267,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 10,
     top: 10,
+  },
+  alertmessage: {
+    textAlign: "center",
+    fontSize: 18,
+    color: "#666",
+    marginTop: 80,
+    color: "#7DDD51",
   },
 });

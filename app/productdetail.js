@@ -40,8 +40,9 @@ const ProductDetail = () => {
       }
     } catch (error) {
       console.error("Failed to fetch product details:", error);
-      alert(
-        "An error occurred while fetching the product details. Please try again later."
+      Alert.alert(
+        "Error",
+        "An error occurred while fetching the product details."
       );
     } finally {
       setLoading(false);
@@ -108,45 +109,48 @@ const ProductDetail = () => {
         {/* Product Image */}
         <View style={styles.imageContainer}>
           <Image
-            source={{ uri: `${backendUrl}/${product.imagePath}` }}
+            source={{ uri: product.imagePath }}
             style={styles.productImage}
           />
         </View>
 
-        {/* Product Title and Price */}
-        <View style={styles.headerContainer}>
+        {/* Product Info Card */}
+        <View style={styles.productInfoCard}>
+          {/* Product Title */}
           <Text style={styles.productTitle}>{product.productName}</Text>
+
+          {/* Product Description */}
+          <Text style={styles.description}>{product.productDescription}</Text>
+
+          {/* Product Price */}
           <Text style={styles.productPrice}>
-            ${product.productPrice.toFixed(2)}
+            {/* ${product.productPrice.toFixed(2)} */}
+            Price: Per Contract
           </Text>
+
+          {/* Quantity Selector */}
+          <View style={styles.counterContainer}>
+            <TouchableOpacity
+              style={[styles.counterButton, { backgroundColor: "#e4b05d" }]}
+              onPress={() => setQuantity((prev) => Math.max(prev - 1, 1))}
+            >
+              <Text style={styles.counterButtonText}>-</Text>
+            </TouchableOpacity>
+            <Text style={styles.counterText}>{quantity}</Text>
+            <TouchableOpacity
+              style={[styles.counterButton, { backgroundColor: "#e4b05d" }]}
+              onPress={() => setQuantity((prev) => prev + 1)}
+            >
+              <Text style={styles.counterButtonText}>+</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Total Price */}
+          <View style={styles.totalContainer}>
+            <Text style={styles.totalLabel}>Total:</Text>
+            <Text style={styles.totalPrice}>${totalPrice.toFixed(2)}</Text>
+          </View>
         </View>
-
-        {/* Quantity Selector */}
-        <View style={styles.counterContainer}>
-          <TouchableOpacity
-            style={[styles.counterButton, { backgroundColor: "#e4b05d" }]}
-            onPress={() => setQuantity((prev) => Math.max(prev - 1, 1))}
-          >
-            <Text style={styles.counterButtonText}>-</Text>
-          </TouchableOpacity>
-          <Text style={styles.counterText}>{quantity}</Text>
-          <TouchableOpacity
-            style={[styles.counterButton, { backgroundColor: "#e4b05d" }]}
-            onPress={() => setQuantity((prev) => prev + 1)}
-          >
-            <Text style={styles.counterButtonText}>+</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Description */}
-        <Text style={styles.description}>{product.productDescription}</Text>
-
-        {/* Total Price */}
-        <View style={styles.totalContainer}>
-          <Text style={styles.totalLabel}>Total:</Text>
-          <Text style={styles.totalPrice}>${totalPrice.toFixed(2)}</Text>
-        </View>
-
         {/* Add to Cart Button */}
         <TouchableOpacity
           style={[styles.orderButton, styles.orderButtonGreen]}
@@ -164,7 +168,7 @@ export default ProductDetail;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "red",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -188,53 +192,61 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingVertical: 20,
+    backgroundColor: "#F0FFF0",
   },
   card: {
     width: "90%",
-    backgroundColor: "white",
-    borderRadius: 15,
-    padding: 20,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-
     marginVertical: 20,
   },
   imageContainer: {
-    width: 250,
-    height: 250,
+    width: 200,
+    height: 200,
     marginBottom: 20,
-    borderRadius: 15,
+    borderRadius: 5,
     overflow: "hidden",
     shadowColor: "#e4b05d",
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.4,
     shadowRadius: 8,
-    elevation: 8,
+    elevation: 4,
   },
   productImage: {
     width: "100%",
     height: "100%",
     resizeMode: "cover",
   },
-  headerContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+  productInfoCard: {
+    backgroundColor: "#fff",
+    borderRadius: 15,
+    padding: 20,
     width: "100%",
-    paddingHorizontal: 10,
-    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
+    alignItems: "center",
   },
   productTitle: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
     color: "#333",
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  description: {
+    fontSize: 16,
+    color: "#777",
+    lineHeight: 24,
+    textAlign: "center",
+    marginBottom: 20,
   },
   productPrice: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "bold",
     color: "#e4b05d",
+    marginBottom: 20,
   },
   counterContainer: {
     flexDirection: "row",
@@ -260,15 +272,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#333",
   },
-  description: {
-    fontSize: 16,
-    color: "#777",
-    lineHeight: 24,
-    textAlign: "left",
-    width: "100%",
-    paddingHorizontal: 10,
-    marginBottom: 20,
-  },
   totalContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -288,7 +291,7 @@ const styles = StyleSheet.create({
   },
   orderButton: {
     paddingVertical: 15,
-    paddingHorizontal: 40,
+    paddingHorizontal: 70,
     borderRadius: 10,
     marginTop: 20,
     shadowColor: "#000",

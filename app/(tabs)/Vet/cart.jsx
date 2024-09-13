@@ -60,11 +60,21 @@ const Cart = () => {
     saveCartItems(updatedCart);
   };
 
-  const handleCheckout = () => {
-    router.push({
-      pathname: "/productform",
-      params: { cartItems: JSON.stringify(cartItems) }, // Pass cart items as a parameter
-    });
+  const handleCheckout = async () => {
+    try {
+      // Navigate to the checkout page
+      router.push({
+        pathname: "/productform",
+        params: { cartItems: JSON.stringify(cartItems) }, // Pass cart items as a parameter
+      });
+
+      // Clear the cart items after checkout
+      const emptyCart = [];
+      await AsyncStorage.setItem("cartItems", JSON.stringify(emptyCart)); // Clear the AsyncStorage
+      setCartItems(emptyCart); // Update the state
+    } catch (error) {
+      console.error("Failed to checkout:", error);
+    }
   };
 
   const renderItem = ({ item, index }) => (

@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
+  Modal,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { FontAwesome } from "@expo/vector-icons";
@@ -20,6 +21,7 @@ const ProductPage = () => {
   const [price, setPrice] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [imageUri, setImageUri] = useState<any>(null);
+  const [modalVisible, setModalVisible] = useState<boolean>(false); // New state
 
   const handleProductChange = (itemValue: string) => {
     setProduct(itemValue);
@@ -68,6 +70,16 @@ const ProductPage = () => {
       );
       if (resp.data.status === "Success") {
         console.log("Product Added!!!");
+        setModalVisible(true); // Show the modal when the product is added successfully
+        setTimeout(() => {
+          setModalVisible(false); // Close the modal after 3 seconds
+        }, 3000);
+
+        // Clear the fields after successful product addition
+        setProduct("ORT ISOLATION");
+        setPrice("");
+        setDescription("");
+        setImageUri(null);
       } else {
         console.log("Product cannot be added");
       }
@@ -78,6 +90,26 @@ const ProductPage = () => {
 
   return (
     <View style={styles.container}>
+      {/* Popup Modal */}
+      <Modal
+        transparent={true}
+        animationType="fade"
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>Product Added Successfully!</Text>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.modalButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       <TouchableOpacity onPress={pickImage} style={styles.imageContainer}>
         {imageUri ? (
           <Image source={{ uri: imageUri }} style={styles.image} />
@@ -198,5 +230,33 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContent: {
+    width: 250,
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  modalText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  modalButton: {
+    backgroundColor: "#7DDD51",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  modalButtonText: {
+    color: "#fff",
+    fontSize: 16,
   },
 });

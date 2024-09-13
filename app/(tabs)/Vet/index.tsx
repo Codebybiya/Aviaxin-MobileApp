@@ -29,23 +29,31 @@ const HomeTab = () => {
   const [products, setProducts] = useState<Products[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Products[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [veterinarianName, setVeterinarianName] = useState<string>("");
-  const [cartItemCount, setCartItemCount] = useState<number>(0);
   const [userName, setUserName] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true); // Add loading state
 
   useEffect(() => {
     fetchProducts();
     fetchUserData();
-    fetchCartItems();
   }, []);
 
   const fetchProducts = async () => {
     setIsLoading(true); // Start loading
     try {
       const response = await axios.get(`${backendUrl}/products/allproduct`);
-      setProducts(response?.data?.data);
-      setFilteredProducts(response?.data?.data); // Set initial filtered products
+      console.log("Fetched Products:", response?.data?.data); // Debugging
+
+      const fetchedProducts = response?.data?.data;
+
+      const productsWithValidImage = fetchedProducts.map(
+        (product: Products) => ({
+          ...product,
+          imagePath: product.imagePath || "https://via.placeholder.com/150", // Fallback image if imagePath is missing
+        })
+      );
+
+      setProducts(productsWithValidImage);
+      setFilteredProducts(productsWithValidImage); // Set initial filtered products
     } catch (error) {
       console.error("Failed to fetch products:", error);
     } finally {
@@ -57,32 +65,10 @@ const HomeTab = () => {
     const storedUserData = await AsyncStorage.getItem("userData");
     if (storedUserData) {
       const parsedUserData = JSON.parse(storedUserData);
-      const { userrole, name } = parsedUserData;
-
+      const { name } = parsedUserData;
       setUserName(name);
-
-      if (userrole === "veterinarian") {
-        setVeterinarianName(name);
-      }
     } else {
       console.error("Unexpected response from AsyncStorage");
-    }
-  };
-
-  const fetchCartItems = async () => {
-    try {
-      const storedUserData = await AsyncStorage.getItem("userData");
-      if (storedUserData) {
-        const parsedUserData = JSON.parse(storedUserData);
-        const { userid } = parsedUserData;
-
-        const response = await axios.get(
-          `${backendUrl}/orders/getallorders/${userid}`
-        );
-        setCartItemCount(response?.data?.items?.length);
-      }
-    } catch (error) {
-      console.error("Failed to fetch cart items:", error);
     }
   };
 
@@ -96,11 +82,23 @@ const HomeTab = () => {
 
   return (
     <View style={styles.wrapper}>
-      <View style={styles.headerContainer}>
-        <Text style={styles.header}>Welcome, {userName}</Text>
-      </View>
-
       <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.profileContainer}>
+          <Image
+            source={require("../../../assets/images/icon.png")} // Replace with your user icon image path
+            style={styles.avatar}
+          />
+          <View style={styles.profileTextContainer}>
+            <Text style={styles.profileName}>{userName}</Text>
+            <Text style={styles.profileRole}>Veterinarian</Text>
+          </View>
+        </View>
+
+        {/* Welcome Text */}
+        <Text style={styles.welcomeText}>
+          Hello,{" "}
+          <Text style={styles.welcomeName}>{userName.split(" ")[0]}👋!</Text>
+        </Text>
         <TouchableOpacity
           style={styles.promoCard}
           onPress={() => router.push("../../placedorders")}
@@ -124,7 +122,7 @@ const HomeTab = () => {
             {filteredProducts.map((item, index) => (
               <View key={index} style={styles.productCard}>
                 <Image
-                  source={{ uri: `${backendUrl}/${item.imagePath}` }}
+                  source={{ uri: item.imagePath }} // Use the updated imagePath with the backend URL or placeholder
                   style={styles.productImage}
                 />
                 <Text style={styles.productName}>{item.productName}</Text>
@@ -152,13 +150,6 @@ const HomeTab = () => {
 
 export default HomeTab;
 
-const { width } = Dimensions.get("window");
-const sidePadding = 20; // Padding on the left and right sides of the screen
-const marginBetweenCards = 10; // Margin between two cards
-
-// Calculate product card width
-const productCardWidth = (width - sidePadding * 2 - marginBetweenCards) / 2; // Width calculation to fit three items per row with margins
-
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
@@ -183,35 +174,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#333",
   },
-  cartContainer: {
-    position: "relative",
-  },
-  cartIcon: {
-    padding: 10,
-  },
-  cartBadge: {
-    position: "absolute",
-    right: 5,
-    top: 5,
-    backgroundColor: "#ff0000",
-    borderRadius: 10,
-    padding: 5,
-  },
-  cartBadgeText: {
-    color: "#fff",
-    fontSize: 12,
-    fontWeight: "bold",
-  },
   container: {
     flexGrow: 1,
     padding: 20,
     backgroundColor: "white",
-  },
-  vetnarianName: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 20,
-    color: "#333",
   },
   heade: {
     fontSize: 24,
@@ -251,43 +217,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "white",
   },
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  searchInput: {
-    flex: 1,
-    height: 40,
-    backgroundColor: "#fff",
-    borderRadius: 20,
-    paddingHorizontal: 15,
-    fontSize: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
-  },
-  searchButton: {
-    marginLeft: 10,
-    padding: 10,
-    backgroundColor: "#7DDD51",
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  searchButtonText: {
-    color: "#fff",
-    fontSize: 18,
-  },
   productGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
   },
   productCard: {
-    width: productCardWidth,
+    width: (Dimensions.get("window").width - 60) / 2,
     backgroundColor: "#fff",
     borderRadius: 15,
     padding: 10,
@@ -335,5 +271,41 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 12,
     fontWeight: "bold",
+  },
+  profileContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 15,
+  },
+  profileTextContainer: {
+    justifyContent: "center",
+  },
+  profileName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  profileRole: {
+    fontSize: 14,
+    color: "#666",
+  },
+  profileFriends: {
+    fontSize: 12,
+    color: "#666",
+  },
+  welcomeText: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 15,
+    color: "#333",
+  },
+  welcomeName: {
+    color: "#7DDD51", // Highlight color
   },
 });

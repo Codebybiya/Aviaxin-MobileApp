@@ -105,6 +105,8 @@ const Placeorder: React.FC = () => {
 
       {isLoading ? ( // Show loader when loading
         <ActivityIndicator size="large" color="#7DDD51" style={styles.loader} />
+      ) : orders.length === 0 ? ( // Show message when no orders are available
+        <Text style={styles.noOrdersText}>No orders have been placed yet.</Text>
       ) : (
         <FlatList
           data={orders}
@@ -206,6 +208,12 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   loader: {
+    marginTop: 20,
+  },
+  noOrdersText: {
+    fontSize: 18,
+    color: "#666",
+    textAlign: "center",
     marginTop: 20,
   },
 });

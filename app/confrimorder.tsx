@@ -214,8 +214,7 @@ export default ConfirmOrder;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f7f8fa",
-    padding: 20,
+    backgroundColor: "white",
   },
   loaderContainer: {
     flex: 1,

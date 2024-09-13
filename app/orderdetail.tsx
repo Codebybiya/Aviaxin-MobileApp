@@ -27,16 +27,25 @@ const OrderDetail = () => {
         const response = await axios.get(
           `${backendUrl}/orders/orderdetail/${id}`
         );
-        setOrder(response.data.data);
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 500,
-          easing: Easing.ease,
-          useNativeDriver: true,
-        }).start(); // Start fade-in animation
+
+        if (response.data && response.data.data) {
+          setOrder(response.data.data);
+          Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 500,
+            easing: Easing.ease,
+            useNativeDriver: true,
+          }).start(); // Start fade-in animation
+        } else {
+          setError(
+            "Unable to fetch the order details. Product has been removed by the admin. Please contact info@aviaxin.com."
+          );
+        }
       } catch (error) {
         console.error("Failed to fetch order details:", error);
-        setError("Failed to load order details.");
+        setError(
+          "Unable to fetch the order details. Product has been removed by the admin. Please contact info@aviaxin.com."
+        );
       } finally {
         setLoading(false);
       }

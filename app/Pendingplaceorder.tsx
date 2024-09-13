@@ -7,6 +7,7 @@ import {
   FlatList,
   ListRenderItemInfo,
   Alert,
+  ActivityIndicator, // Import ActivityIndicator for the loading spinner
 } from "react-native";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -26,6 +27,7 @@ const Pendingplaceorder: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(true); // Loading state
   const router = useRouter();
 
   useEffect(() => {
@@ -58,6 +60,8 @@ const Pendingplaceorder: React.FC = () => {
     } catch (error) {
       console.error("Failed to fetch orders:", error);
       Alert.alert("Error", "Unable to fetch orders. Please try again.");
+    } finally {
+      setLoading(false); // Set loading to false after data is fetched
     }
   };
 
@@ -87,21 +91,31 @@ const Pendingplaceorder: React.FC = () => {
     if (!hasMore) return null;
 
     return (
-      <TouchableOpacity style={styles.loadMoreButton} onPress={fetchOrders}>
-        <Text style={styles.loadMoreText}>Load More</Text>
-      </TouchableOpacity>
+      <View style={styles.loadMore}>
+        <TouchableOpacity style={styles.loadMoreButton} onPress={fetchOrders}>
+          <Text style={styles.loadMoreText}>Load More</Text>
+        </TouchableOpacity>
+      </View>
     );
   };
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={orders}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.ordersList}
-        ListFooterComponent={renderFooter}
-      />
+      {loading ? (
+        // Show the green spinner while loading
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#7DDD51" />
+          <Text style={styles.loadingText}>Loading orders...</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={orders}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.ordersList}
+          ListFooterComponent={renderFooter}
+        />
+      )}
     </View>
   );
 };
@@ -112,7 +126,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
-    padding: 20,
   },
   ordersList: {
     paddingBottom: 20,
@@ -123,7 +136,10 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 15,
+    marginLeft: 25,
+    marginRight: 25,
+    marginBottom: 10,
+    marginTop: 25,
     elevation: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
@@ -134,7 +150,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: "#7DDD51", // Changed color to green
+    backgroundColor: "#F8990A", // Changed color to green
     alignItems: "center",
     justifyContent: "center",
     marginRight: 15,
@@ -176,5 +192,21 @@ const styles = StyleSheet.create({
   loadMoreText: {
     color: "#fff",
     fontWeight: "bold",
+  },
+  // Loading spinner and text styles
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#7DDD51", // Matching green color for text
+  },
+
+  loadMore: {
+    marginLeft: 40,
+    marginRight: 40,
   },
 });

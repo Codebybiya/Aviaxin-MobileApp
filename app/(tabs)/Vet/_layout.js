@@ -388,10 +388,16 @@ function RootDrawer() {
 }
 
 // Main App Layout
+// Main App Layout
 export default function RootLayout() {
   return (
-    <SafeAreaView style={{ flex: 1, marginTop: 0 }}>
-      <StatusBar barStyle="dark-content" hidden={false} />
+    <SafeAreaView style={styles.container}>
+      {/* Manage the StatusBar to remove any extra gap */}
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="transparent"
+        translucent={true} // Set to true to overlay the content under the status bar
+      />
       <RootDrawer />
     </SafeAreaView>
   );
@@ -399,6 +405,10 @@ export default function RootLayout() {
 
 // Styles
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: 0, // Ensure there's no extra margin at the top
+  },
   drawerHeader: {
     backgroundColor: "#7DDD5180",
     height: 150,

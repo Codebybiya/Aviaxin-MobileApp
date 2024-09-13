@@ -27,16 +27,22 @@ const OrderDetailNotif = () => {
         const response = await axios.get(
           `${backendUrl}/orders/orderdetail/${orderID}`
         );
-        setOrder(response.data.data);
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 500,
-          easing: Easing.ease,
-          useNativeDriver: true,
-        }).start(); // Start fade-in animation
+        if (response.data.data) {
+          setOrder(response.data.data);
+          Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 500,
+            easing: Easing.ease,
+            useNativeDriver: true,
+          }).start(); // Start fade-in animation
+        } else {
+          throw new Error("Order not found");
+        }
       } catch (error) {
         console.error("Failed to fetch order details:", error);
-        setError("Failed to load order details.");
+        setError(
+          "Unable to fetch the order details.Product has Removed by the admin. Please contact info@aviaxin.com."
+        );
       } finally {
         setLoading(false);
       }
@@ -83,7 +89,7 @@ const OrderDetailNotif = () => {
       case "cancelled":
         return "Cancelled";
       case "confirmed":
-        return "Order Confirmed";
+        return "Isolation Completed";
       default:
         return "Unknown Status";
     }

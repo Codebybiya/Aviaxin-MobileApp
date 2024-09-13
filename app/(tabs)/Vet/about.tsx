@@ -4,7 +4,6 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Alert,
   TextInput,
   Modal,
   ScrollView,
@@ -20,6 +19,7 @@ const About = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordChanged, setPasswordChanged] = useState(false); // New state for success message
   const router = useRouter();
 
   useEffect(() => {
@@ -48,25 +48,30 @@ const About = () => {
       router.push("/auth/Login");
     } catch (error) {
       console.error("Error during logout", error);
-      Alert.alert(
-        "Logout Error",
-        "An error occurred during logout. Please try again."
-      );
     }
   };
 
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match");
+      // Show an error message if the passwords don't match, but no success alert
+      alert("Error: Passwords do not match");
       return;
     }
 
-    await updateUserPassword(newPassword);
-    setModalVisible(false);
+    try {
+      await updateUserPassword(newPassword); // Update the password
+      setPasswordChanged(true); // Show the success message in the modal
+    } catch (error) {
+      console.error("Error updating password:", error);
+      alert("Error: Failed to change password.");
+    }
   };
 
-  const handlePress2 = () => {
-    router.push("../../placedorders");
+  const handleCloseModal = () => {
+    setModalVisible(false);
+    setPasswordChanged(false); // Reset the success message
+    setNewPassword(""); // Clear password fields
+    setConfirmPassword(""); // Clear confirm password field
   };
 
   const modelView = () => {
@@ -81,33 +86,49 @@ const About = () => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>Change Password</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="New Password"
-              secureTextEntry
-              value={newPassword}
-              onChangeText={setNewPassword}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Confirm New Password"
-              secureTextEntry
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-            />
-            <TouchableOpacity
-              style={styles.modalButton}
-              onPress={handleChangePassword}
-            >
-              <Text style={styles.buttonText}>Submit</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.modalButton, styles.cancelButton]}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.cancelButtonText}>Cancel</Text>
-            </TouchableOpacity>
+            {passwordChanged ? (
+              <>
+                <Text style={styles.modalText}>
+                  Password Successfully Changed!
+                </Text>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={handleCloseModal}
+                >
+                  <Text style={styles.buttonText}>Close</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                <Text style={styles.modalText}>Change Password</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="New Password"
+                  secureTextEntry
+                  value={newPassword}
+                  onChangeText={setNewPassword}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Confirm New Password"
+                  secureTextEntry
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                />
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={handleChangePassword}
+                >
+                  <Text style={styles.buttonText}>Submit</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.cancelButton]}
+                  onPress={handleCloseModal}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </>
+            )}
           </View>
         </View>
       </Modal>
@@ -118,10 +139,9 @@ const About = () => {
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
         <View style={styles.profileContainer}>
-          {/* Profile Picture and User Info Container */}
           <View style={styles.userInfoContainer}>
             <Image
-              source={require("../../../assets/images/icon.png")} // Replace with your user icon image path
+              source={require("../../../assets/images/icon.png")}
               style={styles.userIcon}
             />
             <View>
@@ -139,7 +159,7 @@ const About = () => {
         <View style={styles.menuContainer}>
           <TouchableOpacity
             style={styles.orderHistoryBtn}
-            onPress={handlePress2}
+            onPress={() => router.push("../../placedorders")}
           >
             <MaterialIcons name="punch-clock" size={30} color="#7DDD51" />
           </TouchableOpacity>
@@ -210,10 +230,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   userIcon: {
-    width: 80, // Adjust width as needed
-    height: 80, // Adjust height as needed
-    borderRadius: 25, // Makes the icon circular
-    marginRight: 10, // Space between icon and text
+    width: 80,
+    height: 80,
+    borderRadius: 25,
+    marginRight: 10,
   },
   profileName: {
     fontSize: 22,

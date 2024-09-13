@@ -59,7 +59,6 @@ export const updateUserPassword = async (newPassword) => {
       userData.password = newPassword;
       await AsyncStorage.setItem("userData", JSON.stringify(userData));
       if (updatedUserData.data.status === "Success") {
-        Alert.alert("Success", "Password changed successfully");
       } else {
         Alert.alert("Error", "An error occurred while changing password");
       }

@@ -124,7 +124,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
-    padding: 20,
   },
   ordersList: {
     paddingBottom: 20,
@@ -135,8 +134,12 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 15,
     elevation: 5,
+    marginLeft: 25,
+
+    marginRight: 25,
+    marginBottom: 10,
+    marginTop: 25,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,

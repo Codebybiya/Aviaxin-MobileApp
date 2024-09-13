@@ -33,14 +33,16 @@ const NotificationItem = ({
   orderID,
   read,
   onMarkAsRead,
-  notificationID
+  notificationID,
 }) => {
   const router = useRouter();
 
   const handlePress = async () => {
     try {
       // Mark notification as read in the backend
-      await axios.put(`${backendUrl}/notifications/mark-as-read/${notificationID}`);
+      await axios.put(
+        `${backendUrl}/notifications/mark-as-read/${notificationID}`
+      );
       onMarkAsRead(notificationID); // Update the frontend state to mark as read and decrease the unread count
 
       router.push(`/orderdetailnotif?orderID=${orderID}`);
@@ -89,7 +91,7 @@ const NotificationItem = ({
   );
 };
 
-const Notifications = ({setUnreadCount}) => {
+const Notifications = ({ setUnreadCount }) => {
   const [notifications, setNotifications] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -232,7 +234,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#f8f8f8",
+    backgroundColor: "white",
   },
   header: {
     fontSize: 24,
