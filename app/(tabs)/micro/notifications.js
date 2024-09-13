@@ -45,7 +45,7 @@ const NotificationItem = ({
         `${backendUrl}/notifications/mark-as-read/${notificationID}`
       );
       onMarkAsRead(notificationID); // Update frontend state to mark as read
-
+      
       router.push(`/orderdetailnotif?orderID=${orderID}`);
     } catch (error) {
       console.error("Error marking notification as read:", error);

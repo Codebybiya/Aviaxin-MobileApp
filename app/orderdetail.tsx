@@ -197,7 +197,7 @@ const OrderDetail = () => {
   };
 
   // Helper function to map status to CSS classes
-  const getStatusStyleClass = (status) => {
+  const getStatusStyleClass = (status:string) => {
     switch (status) {
       case "pending":
         return "status-pending";

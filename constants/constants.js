@@ -151,7 +151,7 @@ export const tabs = [
     route: "cart",
   },
   {
-    name: "Order Deatil",
+    name: "Order Detail",
     icon: "Order",
     route: "orderdetailnotif",
   },

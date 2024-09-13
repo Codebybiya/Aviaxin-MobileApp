@@ -11,10 +11,24 @@ import {
 import { useLocalSearchParams } from "expo-router";
 import axios from "axios";
 import config from "@/assets/config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { object } from "yup";
 
 const backendUrl = `${config.backendUrl}`;
+const formatDate = (dateString: string): string => {
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true, // for 12-hour format with AM/PM
+  };
+  return new Date(dateString).toLocaleString("en-US", options);
+};
 
 const OrderDetailNotif = () => {
+  const [confirmedByName, setConfirmedByName] = useState<string | null>(null);
   const { orderID } = useLocalSearchParams(); // Get the order ID from the route
   const [order, setOrder] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +41,15 @@ const OrderDetailNotif = () => {
         const response = await axios.get(
           `${backendUrl}/orders/orderdetail/${orderID}`
         );
+        const savedUserData = await AsyncStorage.getItem("userData");
+        if (savedUserData) {
+          const { name,userid } = JSON.parse(savedUserData);
+          console.log(userid);
+          setConfirmedByName(name);
+        }
+
         if (response.data.data) {
+          console.log(response.data.data);
           setOrder(response.data.data);
           Animated.timing(fadeAnim, {
             toValue: 1,
@@ -112,8 +134,6 @@ const OrderDetailNotif = () => {
     }
   };
 
-  const confirmedByName = order.confirmedBy?.name || "Microbiologist";
-
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
       <Text style={styles.title}>Order Detail</Text>
@@ -148,9 +168,15 @@ const OrderDetailNotif = () => {
         </View>
 
         {order.status === "confirmed" && (
-          <View style={styles.detailContainer}>
-            <Text style={styles.label}>Confirmed By:</Text>
-            <Text style={styles.value}>{confirmedByName}</Text>
+          <View>
+            <View style={styles.detailContainer}>
+              <Text style={styles.label}>Confirmed By:</Text>
+              <Text style={styles.value}>{order.confirmedByUser}</Text>
+            </View>
+            <View style={styles.detailContainer}>
+              <Text style={styles.label}>Time of Confirmation:</Text>
+              <Text style={styles.value}>{formatDate(order.confirmationTime)}</Text>
+            </View>
           </View>
         )}
       </View>

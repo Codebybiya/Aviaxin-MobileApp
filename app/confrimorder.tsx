@@ -12,6 +12,7 @@ import {
 import axios from "axios";
 import config from "@/assets/config";
 import { useLocalSearchParams } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const backendUrl = `${config.backendUrl}`;
 
@@ -52,12 +53,17 @@ const ConfirmOrder = () => {
   const handleConfirmOrder = async () => {
     try {
       setConfirmingOrder(true); // Start loader for order confirmation
-      await axios.patch(`${backendUrl}/orders/confirm-order/${id}`, {
-        isolateNumber,
-        batchNumber,
-        userId: order.userID, // Assuming userID is part of the order data
-        status: "confirmed",
-      });
+      const savedUserData = await AsyncStorage.getItem("userData");
+      if(savedUserData){
+        const {userid}=JSON.parse(savedUserData);
+        console.log(userid)
+        await axios.patch(`${backendUrl}/orders/confirm-order/${id}`, {
+          isolateNumber,
+          batchNumber,
+          userId: userid, // Assuming userID is part of the order data
+          status: "confirmed",
+        });
+      }
       setOrder((prevOrder: any) => ({
         ...prevOrder,
         status: "confirmed",
