@@ -7,7 +7,8 @@ import {
   ActivityIndicator,
   Animated,
   Easing,
-  Modal, // Import Modal for custom alerts
+  Modal,
+  ScrollView,
   Platform,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
@@ -17,6 +18,18 @@ import * as FileSystem from "expo-file-system";
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
 import * as Notifications from "expo-notifications";
+import { Asset } from "expo-asset";
+import Icon from "react-native-vector-icons/FontAwesome"; // Import FontAwesome Icons
+
+// Function to convert local asset to base64
+const getBase64Image = async (localUri) => {
+  const asset = Asset.fromModule(localUri);
+  await asset.downloadAsync(); // Make sure the asset is downloaded
+  const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
+    encoding: FileSystem.EncodingType.Base64,
+  });
+  return `data:image/png;base64,${base64}`; // You can change the image type based on your logo (png/jpg)
+};
 
 const backendUrl = `${config.backendUrl}`;
 
@@ -74,14 +87,10 @@ const OrderDetail = () => {
     }
   }, [id]);
 
-  const showDownloadNotification = async (fileName: string) => {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "Download Complete",
-        body: `${fileName} has been saved to your Downloads folder.`,
-      },
-      trigger: null,
-    });
+  // Helper function to format the confirmation time
+  const formatConfirmationTime = (time: string) => {
+    const date = new Date(time);
+    return date.toLocaleString(); // Format date and time into a readable string
   };
 
   const showModal = (message: string, type: "success" | "error") => {
@@ -96,52 +105,89 @@ const OrderDetail = () => {
       return;
     }
 
-    const statusClass = getStatusStyleClass(order.status);
+    const base64Logo = await getBase64Image(
+      require("../assets/images/logo.png")
+    ); // Replace with your actual local asset path
 
     const htmlContent = `
       <html>
         <head>
           <style>
-            body { font-family: Arial, sans-serif; background-color: #F0FFF0; padding: 20px; }
-            .container { width: 100%; padding: 20px; }
+            body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; }
+            .container { width: 100%; padding: 20px; background-color: #fff; border-radius: 10px; }
+            .header { text-align: center; margin-bottom: 20px; }
+            .header img { max-width: 150px; }
+            .company-name { font-size: 24px; font-weight: bold; margin-top: 10px; color: #333; }
             h1 { font-size: 28px; font-weight: bold; color: #218838; margin-bottom: 20px; text-align: center; }
-            h2 { font-size: 20px; font-weight: 600; color: #666; margin-bottom: 30px; text-align: center; }
-            .card { background-color: #fff; border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); }
-            .detail-container { display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid #D0E8D0; }
-            .label { font-size: 16px; color: #218838; flex: 1; }
-            .value { font-size: 16px; color: #28A745; flex: 1; text-align: right; }
-            .status-pending { color: orange; }
-            .status-shipped { color: blue; }
-            .status-delivered { color: green; }
-            .status-cancelled { color: red; }
-            .status-confirmed { color: #7DDD51; }
+            .card { background-color: #fff; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
+            .detail-container { display: flex; justify-content: space-between; margin-bottom: 15px; }
+            .label { font-size: 16px; color: #218838; }
+            .value { font-size: 16px; color: #333; text-align: right; }
+            .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #777; }
+            .footer p { margin: 0; }
           </style>
         </head>
         <body>
-          <h1>Order Detail</h1>
-          <h2>${order.productID.productName}</h2>
-          <div class="card">
-            <div class="detail-container">
-              <span class="label">Submitting Vet:</span>
-              <span class="value">${order.veterinarianName}</span>
+          <div class="container">
+            <div class="header">
+              <img src="${base64Logo}" alt="Company Logo">
+             
             </div>
-            <div class="detail-container">
-              <span class="label">Site Name:</span>
-              <span class="value">${order.colonyName}</span>
+            <h1>Order Detail</h1>
+            <div class="card">
+              <div class="detail-container">
+                <span class="label">Product Name:</span>
+                <span class="value">${order.productID.productName}</span>
+              </div>
+              <div class="detail-container">
+                <span class="label">Submitting Vet:</span>
+                <span class="value">${order.veterinarianName}</span>
+              </div>
+              <div class="detail-container">
+                <span class="label">Site Name:</span>
+                <span class="value">${order.colonyName}</span>
+              </div>
+              <div class="detail-container">
+                <span class="label">ORT Confirmed:</span>
+                <span class="value">${order.ortConfirmed}</span>
+              </div>
+              <div class="detail-container">
+                <span class="label">Quantity:</span>
+                <span class="value">${order.quantity}</span>
+              </div>
+              <div class="detail-container">
+                <span class="label">Order Status:</span>
+                <span class="value">${getStatusText(order.status)}</span>
+              </div>
+              ${
+                order.status === "confirmed"
+                  ? `
+              <div class="detail-container">
+                <span class="label">Confirmed By:</span>
+                <span class="value">${order.confirmedByUser || "Unknown"}</span>
+              </div>
+              <div class="detail-container">
+                <span class="label">Confirmation Time:</span>
+                <span class="value">${
+                  order.confirmationTime
+                    ? formatConfirmationTime(order.confirmationTime)
+                    : "Unknown"
+                }</span>
+              </div>
+              <div class="detail-container">
+                <span class="label">Batch Number:</span>
+                <span class="value">${order.batchNumber || "Unknown"}</span>
+              </div>
+              <div class="detail-container">
+                <span class="label">Isolation Number:</span>
+                <span class="value">${order.isolateNumber || "Unknown"}</span>
+              </div>`
+                  : ""
+              }
             </div>
-            <div class="detail-container">
-              <span class="label">ORT Confirmed Previously:</span>
-              <span class="value">${order.ortConfirmed ? "Yes" : "No"}</span>
-            </div>
-            <div class="detail-container">
-              <span class="label">Quantity:</span>
-              <span class="value">${order.quantity}</span>
-            </div>
-            <div class="detail-container">
-              <span class="label">Order Status:</span>
-              <span class="value ${statusClass}">${getStatusText(
-      order.status
-    )}</span>
+            <div class="footer">
+              <p>Aviaxin | 2301 Research Park Way, Suite 217, Brookings, South Dakota 57006 | Contact Info</p>
+              <p>Email: info@aviaxin.com | Phone: +1(952)213-1794</p>
             </div>
           </div>
         </body>
@@ -174,8 +220,6 @@ const OrderDetail = () => {
             }),
             { encoding: FileSystem.EncodingType.Base64 }
           );
-
-          showDownloadNotification(fileName);
           showModal("PDF has been saved to your Downloads folder.", "success");
         } else {
           showModal(
@@ -196,21 +240,114 @@ const OrderDetail = () => {
     }
   };
 
-  // Helper function to map status to CSS classes
-  const getStatusStyleClass = (status:string) => {
-    switch (status) {
-      case "pending":
-        return "status-pending";
-      case "shipped":
-        return "status-shipped";
-      case "delivered":
-        return "status-delivered";
-      case "cancelled":
-        return "status-cancelled";
-      case "confirmed":
-        return "status-confirmed";
-      default:
-        return "";
+  const sharePDF = async () => {
+    if (!order) {
+      showModal("Order details not available.", "error");
+      return;
+    }
+
+    const base64Logo = await getBase64Image(
+      require("../assets/images/logo.png")
+    );
+
+    const htmlContent = `
+      <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; }
+            .container { width: 100%; padding: 20px; background-color: #fff; border-radius: 10px; }
+            .header { text-align: center; margin-bottom: 20px; }
+            .header img { max-width: 150px; }
+            .company-name { font-size: 24px; font-weight: bold; margin-top: 10px; color: #333; }
+            h1 { font-size: 28px; font-weight: bold; color: #218838; margin-bottom: 20px; text-align: center; }
+            .card { background-color: #fff; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
+            .detail-container { display: flex; justify-content: space-between; margin-bottom: 15px; }
+            .label { font-size: 16px; color: #218838; }
+            .value { font-size: 16px; color: #333; text-align: right; }
+            .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #777; }
+            .footer p { margin: 0; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <img src="${base64Logo}" alt="Company Logo">
+            </div>
+            <h1>Order Detail</h1>
+            <div class="card">
+              <div class="detail-container">
+                <span class="label">Product Name:</span>
+                <span class="value">${order.productID.productName}</span>
+              </div>
+              <div class="detail-container">
+                <span class="label">Submitting Vet:</span>
+                <span class="value">${order.veterinarianName}</span>
+              </div>
+              <div class="detail-container">
+                <span class="label">Site Name:</span>
+                <span class="value">${order.colonyName}</span>
+              </div>
+              <div class="detail-container">
+                <span class="label">ORT Confirmed:</span>
+                <span class="value">${order.ortConfirmed}</span>
+              </div>
+              <div class="detail-container">
+                <span class="label">Quantity:</span>
+                <span class="value">${order.quantity}</span>
+              </div>
+              <div class="detail-container">
+                <span class="label">Order Status:</span>
+                <span class="value">${getStatusText(order.status)}</span>
+              </div>
+              ${
+                order.status === "confirmed"
+                  ? `
+              <div class="detail-container">
+                <span class="label">Confirmed By:</span>
+                <span class="value">${order.confirmedByUser || "Unknown"}</span>
+              </div>
+              <div class="detail-container">
+                <span class="label">Confirmation Time:</span>
+                <span class="value">${
+                  order.confirmationTime
+                    ? formatConfirmationTime(order.confirmationTime)
+                    : "Unknown"
+                }</span>
+              </div>
+              <div class="detail-container">
+                <span class="label">Batch Number:</span>
+                <span class="value">${order.batchNumber || "Unknown"}</span>
+              </div>
+              <div class="detail-container">
+                <span class="label">Isolation Number:</span>
+                <span class="value">${order.isolateNumber || "Unknown"}</span>
+              </div>`
+                  : ""
+              }
+            </div>
+            <div class="footer">
+              <p>Aviaxin | 2301 Research Park Way, Suite 217, Brookings, South Dakota 57006 | Contact Info</p>
+              <p>Email: info@aviaxin.com | Phone: +1(952)213-1794</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+
+    try {
+      const { uri } = await Print.printToFileAsync({
+        html: htmlContent,
+        fileName: `order_${id}_details.pdf`,
+      });
+
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(uri);
+      } else {
+        showModal("Sharing is not available on this device", "error");
+      }
+    } catch (error) {
+      console.error("Error sharing PDF:", error);
+      showModal("Failed to generate and share PDF.", "error");
     }
   };
 
@@ -274,95 +411,136 @@ const OrderDetail = () => {
   }
 
   return (
-    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-      <Text style={styles.title}>Order Detail</Text>
-      <Text style={styles.subtitle}>{order.productID.productName}</Text>
+    <ScrollView style={styles.scrollView}>
+      <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+        <Text style={styles.title}>{order.productID.productName}</Text>
 
-      <View style={styles.card}>
-        <View style={styles.detailContainer}>
-          <Text style={styles.label}>Submitting Vet:</Text>
-          <Text style={styles.value}>{order.veterinarianName}</Text>
-        </View>
-
-        <View style={styles.detailContainer}>
-          <Text style={styles.label}>Site Name:</Text>
-          <Text style={styles.value}>{order.colonyName}</Text>
-        </View>
-
-        <View style={styles.detailContainer}>
-          <Text style={styles.label}>ORT Confirmed Previously:</Text>
-          <Text style={styles.value}>{order.ortConfirmed ? "Yes" : "No"}</Text>
-        </View>
-
-        <View style={styles.detailContainer}>
-          <Text style={styles.label}>Quantity:</Text>
-          <Text style={styles.value}>{order.quantity}</Text>
-        </View>
-
-        <View style={styles.detailContainer}>
-          <Text style={styles.label}>Order Status:</Text>
-          <Text style={[styles.value, getStatusStyle(order.status)]}>
-            {getStatusText(order.status)}
-          </Text>
-        </View>
-
-        {order.status === "confirmed" && (
+        <View style={styles.card}>
           <View style={styles.detailContainer}>
-            <Text style={styles.label}>Confirmed By:</Text>
+            <Text style={styles.label}>Submitting Vet:</Text>
+            <Text style={styles.value}>{order.veterinarianName}</Text>
+          </View>
+
+          <View style={styles.detailContainer}>
+            <Text style={styles.label}>Site Name:</Text>
+            <Text style={styles.value}>{order.colonyName}</Text>
+          </View>
+
+          <View style={styles.detailContainer}>
+            <Text style={styles.label}>ORT Confirmed Previously:</Text>
             <Text style={styles.value}>
-              {order.confirmedBy?.name || "Microbiologist"}
+              {order.ortConfirmed ? "Yes" : "No"}
             </Text>
           </View>
-        )}
-      </View>
 
-      <TouchableOpacity
-        style={styles.button}
-        activeOpacity={0.8}
-        onPress={generatePDF}
-      >
-        <Text style={styles.buttonText}>View Invoice</Text>
-      </TouchableOpacity>
-
-      {/* Custom Modal for Alert Messages */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View
-            style={[
-              styles.modalView,
-              modalType === "error" ? styles.errorModal : styles.successModal,
-            ]}
-          >
-            <Text style={styles.modalText}>{modalMessage}</Text>
-            <TouchableOpacity
-              style={[
-                styles.modalButton,
-                modalType === "error"
-                  ? styles.errorButton
-                  : styles.successButton,
-              ]}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.modalButtonText}>OK</Text>
-            </TouchableOpacity>
+          <View style={styles.detailContainer}>
+            <Text style={styles.label}>Quantity:</Text>
+            <Text style={styles.value}>{order.quantity}</Text>
           </View>
+
+          <View style={styles.detailContainer}>
+            <Text style={styles.label}>Order Status:</Text>
+            <Text style={[styles.value, getStatusStyle(order.status)]}>
+              {getStatusText(order.status)}
+            </Text>
+          </View>
+
+          {order.status === "confirmed" && (
+            <>
+              <View style={styles.detailContainer}>
+                <Text style={styles.label}>Confirmed By:</Text>
+                <Text style={styles.value}>
+                  {order.confirmedByUser || "Unknown"}
+                </Text>
+              </View>
+              <View style={styles.detailContainer}>
+                <Text style={styles.label}>Confirmation Time:</Text>
+                <Text style={styles.value}>
+                  {order.confirmationTime
+                    ? formatConfirmationTime(order.confirmationTime)
+                    : "Unknown"}
+                </Text>
+              </View>
+              <View style={styles.detailContainer}>
+                <Text style={styles.label}>Batch Number:</Text>
+                <Text style={styles.value}>
+                  {order.batchNumber || "Unknown"}
+                </Text>
+              </View>
+              <View style={styles.detailContainer}>
+                <Text style={styles.label}>Isolation Number:</Text>
+                <Text style={styles.value}>
+                  {order.isolateNumber || "Unknown"}
+                </Text>
+              </View>
+            </>
+          )}
         </View>
-      </Modal>
-    </Animated.View>
+
+        <View style={styles.buttonRow}>
+          {/* Download Button */}
+          <TouchableOpacity
+            style={styles.button}
+            activeOpacity={0.8}
+            onPress={generatePDF}
+          >
+            <Icon name="download" size={18} color="#fff" />
+            <Text style={styles.buttonText}>Download Invoice</Text>
+          </TouchableOpacity>
+
+          {/* Share Button */}
+          <TouchableOpacity
+            style={styles.shareButton}
+            activeOpacity={0.8}
+            onPress={sharePDF}
+          >
+            <Icon name="share" size={18} color="#fff" />
+            <Text style={styles.buttonText}>Share Invoice</Text>
+          </TouchableOpacity>
+        </View>
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View
+              style={[
+                styles.modalView,
+                modalType === "error" ? styles.errorModal : styles.successModal,
+              ]}
+            >
+              <Text style={styles.modalText}>{modalMessage}</Text>
+              <TouchableOpacity
+                style={[
+                  styles.modalButton,
+                  modalType === "error"
+                    ? styles.errorButton
+                    : styles.successButton,
+                ]}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>OK</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      </Animated.View>
+    </ScrollView>
   );
 };
 
 export default OrderDetail;
 
 const styles = StyleSheet.create({
-  container: {
+  scrollView: {
     flex: 1,
-    backgroundColor: "#F0FFF0", // Light green background
+    backgroundColor: "#F0FFF0",
+  },
+  container: {
+    backgroundColor: "#F0FFF0",
     padding: 20,
   },
   loaderContainer: {
@@ -391,22 +569,15 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#218838", // Dark green for title
+    color: "#218838",
     marginBottom: 20,
-    textAlign: "center",
-  },
-  subtitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#666",
-    marginBottom: 30,
     textAlign: "center",
   },
   card: {
     backgroundColor: "#fff",
     borderRadius: 15,
     padding: 20,
-    shadowColor: "#D0E8D0", // Pale green shadow
+    shadowColor: "#D0E8D0",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
@@ -421,26 +592,45 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: "#D0E8D0", // Light border to separate items
+    borderBottomColor: "#D0E8D0",
   },
   label: {
     fontSize: 16,
-    color: "#218838", // Darker green for labels
+    color: "#218838",
     flex: 1,
   },
   value: {
     fontSize: 16,
-    color: "#28A745", // Medium green for values
+    color: "#28A745",
     flex: 1,
     textAlign: "right",
   },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+  },
   button: {
-    backgroundColor: "#7DDD51", // Primary button color
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F8990A",
     paddingVertical: 15,
-    paddingHorizontal: 40,
+    paddingHorizontal: 20,
     borderRadius: 30,
-    alignSelf: "center",
-    marginTop: 30,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 4,
+    marginRight: 10,
+  },
+  shareButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#4CAF50",
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 30,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
@@ -449,26 +639,9 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#fff",
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
-  },
-  statusPending: {
-    color: "orange",
-  },
-  statusShipped: {
-    color: "blue",
-  },
-  statusDelivered: {
-    color: "green",
-  },
-  statusCancelled: {
-    color: "red",
-  },
-  statusConfirmed: {
-    color: "#7DDD51", // Use #7DDD51 for confirmed status
-  },
-  statusDefault: {
-    color: "#666",
+    marginLeft: 8, // To add space between the icon and text
   },
   modalContainer: {
     flex: 1,
@@ -489,10 +662,10 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   successModal: {
-    backgroundColor: "#DFF2BF", // Light green background for success
+    backgroundColor: "#DFF2BF",
   },
   errorModal: {
-    backgroundColor: "#FFBABA", // Light red background for error
+    backgroundColor: "#FFBABA",
   },
   modalText: {
     marginBottom: 15,
@@ -501,7 +674,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   modalButton: {
-    backgroundColor: "#7DDD51", // Success color
+    backgroundColor: "#7DDD51",
     borderRadius: 10,
     padding: 10,
     elevation: 2,
@@ -509,7 +682,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   errorButton: {
-    backgroundColor: "#FF5252", // Error color
+    backgroundColor: "#FF5252",
   },
   modalButtonText: {
     color: "white",

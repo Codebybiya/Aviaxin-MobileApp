@@ -105,6 +105,10 @@ const NewConfirmedOrder: React.FC = () => {
         <View style={styles.loaderContainer}>
           <ActivityIndicator size="large" color="#7DDD51" />
         </View>
+      ) : orders.length === 0 ? ( // Show message when no orders are found
+        <View style={styles.noOrdersContainer}>
+          <Text style={styles.noOrdersText}>No orders found.</Text>
+        </View>
       ) : (
         <FlatList
           data={orders}
@@ -129,14 +133,13 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   orderContainer: {
-    backgroundColor: "#f9f9f9", // Light grey background for the order card
+    backgroundColor: "#f9f9f9",
     padding: 20,
     borderRadius: 15,
     flexDirection: "row",
     alignItems: "center",
     elevation: 5,
     marginLeft: 25,
-
     marginRight: 25,
     marginBottom: 10,
     marginTop: 25,
@@ -149,7 +152,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: "#7DDD51", // Changed color to green
+    backgroundColor: "#7DDD51",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 15,
@@ -173,7 +176,7 @@ const styles = StyleSheet.create({
   },
   orderDetails: {
     fontSize: 14,
-    color: "#7DDD51", // Changed color to green
+    color: "#7DDD51",
     textDecorationLine: "underline",
   },
   productPrice: {
@@ -183,7 +186,7 @@ const styles = StyleSheet.create({
   },
   loadMoreButton: {
     padding: 15,
-    backgroundColor: "#7DDD51", // Changed color to green
+    backgroundColor: "#7DDD51",
     borderRadius: 10,
     alignItems: "center",
     marginTop: 20,
@@ -197,5 +200,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 20,
+  },
+  noOrdersContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  noOrdersText: {
+    fontSize: 18,
+    color: "#888",
   },
 });

@@ -20,6 +20,7 @@ const backendUrl = `${config.backendUrl}`; // Use backendUrl from the config
 const Register = () => {
   const router = useRouter();
   const [modalVisible, setModalVisible] = useState(false); // Modal visibility state
+  const [modalMessage, setModalMessage] = useState(""); // Store the modal message (success or error)
 
   // Validation schema
   const validationSchema = Yup.object().shape({
@@ -60,12 +61,27 @@ const Register = () => {
     axios
       .post(`${backendUrl}/users/register`, userData)
       .then((res) => {
-        console.log(res.data);
+        if (res.data.status === "Failed") {
+          setModalMessage(res.data.message); // Set error message if email already exists
+        } else {
+          // Check if the registered user is a microbiologist and show a different message
+          if (values.role === "microbiologist") {
+            setModalMessage(
+              "Your account has been registered successfully! Please wait for approval. You will receive an email once your account is activated."
+            );
+          } else {
+            setModalMessage("You have been registered successfully.");
+          }
+        }
 
-        // Show success modal
+        // Show modal with the respective message
         setModalVisible(true);
       })
-      .catch((e) => console.log(e));
+      .catch((e) => {
+        console.log(e);
+        setModalMessage("An error occurred. Please try again later."); // Set generic error message
+        setModalVisible(true);
+      });
   };
 
   return (
@@ -170,6 +186,7 @@ const Register = () => {
                 >
                   <Picker.Item label="Sign In As" value="" color="#7DDD51" />
                   <Picker.Item label="Veterinarian" value="veterinarian" />
+                  <Picker.Item label="Microbiologist" value="microbiologist" />
                 </Picker>
               </View>
               {touched.role && errors.role && (
@@ -256,7 +273,7 @@ const Register = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Modal for Registration Success */}
+      {/* Modal for Registration Status */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -265,18 +282,25 @@ const Register = () => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Success!</Text>
-            <Text style={styles.modalText}>
-              You have been registered successfully.
+            <Text style={styles.modalTitle}>
+              {modalMessage === "You have been registered successfully."
+                ? "Success!"
+                : "Notice"}
             </Text>
+            <Text style={styles.modalText}>{modalMessage}</Text>
             <TouchableOpacity
               style={styles.modalButton}
               onPress={() => {
                 setModalVisible(false);
-                router.push("/auth/Login");
+                if (
+                  modalMessage === "You have been registered successfully." ||
+                  modalMessage.includes("Please wait for approval")
+                ) {
+                  router.push("/auth/Login");
+                }
               }}
             >
-              <Text style={styles.modalButtonText}>Go to Login</Text>
+              <Text style={styles.modalButtonText}>OK</Text>
             </TouchableOpacity>
           </View>
         </View>

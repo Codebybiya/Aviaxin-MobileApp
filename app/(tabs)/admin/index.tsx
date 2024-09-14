@@ -37,7 +37,7 @@ const HomeTab = () => {
       <View style={styles.row}>
         <TouchableOpacity
           style={styles.section}
-          onPress={() => router.push("/viewrequest")}
+          onPress={() => router.push("../../registerrequest")}
         >
           <FontAwesome name="list" size={24} color="#FFFFFF" />
           <Text style={styles.sectionText}>View Request</Text>

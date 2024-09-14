@@ -4,9 +4,9 @@ import {
   View,
   TouchableOpacity,
   TextInput,
-  Alert,
   ActivityIndicator,
   Dimensions,
+  Modal,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { FontAwesome } from "@expo/vector-icons";
@@ -28,6 +28,8 @@ const Login = () => {
   const [errors, setErrors] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState("vet");
+  const [modalVisible, setModalVisible] = useState(false); // Modal visibility state
+  const [modalMessage, setModalMessage] = useState(""); // Modal message state
 
   const validationSchema = Yup.object().shape({
     email: Yup.string().required("Email is required").email().label("Email"),
@@ -74,10 +76,9 @@ const Login = () => {
     }
   };
 
-  const showPopup = (message) => {
-    Alert.alert("Login Error", message, [{ text: "OK" }], {
-      cancelable: false,
-    });
+  const showModal = (message) => {
+    setModalMessage(message); // Set the message for the modal
+    setModalVisible(true); // Show the modal
   };
 
   const navigateToRoleScreen = (role) => {
@@ -104,14 +105,26 @@ const Login = () => {
       const response = await axios.post(`${backendUrl}/users/login`, userData);
 
       if (response.data.status === "Failed") {
-        showPopup(response.data.message);
+        showModal(response.data.message);
+        setLoading(false);
+        return;
+      }
+
+      // If the account is pending for Microbiologist
+      if (
+        response.data.status === "Failed" &&
+        response.data.message.includes("under observation")
+      ) {
+        showModal(
+          "Your account is under observation. Please wait for confirmation."
+        );
         setLoading(false);
         return;
       }
 
       const userToSave = response?.data?.data;
       if (!userToSave?.userrole) {
-        showPopup("User role is missing. Please try again.");
+        showModal("User role is missing. Please try again.");
         setLoading(false);
         return;
       }
@@ -119,11 +132,7 @@ const Login = () => {
       await AsyncStorage.setItem("userData", JSON.stringify(userToSave));
       navigateToRoleScreen(userToSave?.userrole);
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        showPopup("An error occurred. Please try again.");
-      } else {
-        showPopup("An unexpected error occurred. Please try again.");
-      }
+      showModal("An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -167,6 +176,7 @@ const Login = () => {
             style={styles.picker}
           >
             <Picker.Item label="Veterinarian" value="vet" />
+            <Picker.Item label="Microbiologist" value="microbiologist" />
           </Picker>
         </View>
 
@@ -219,6 +229,27 @@ const Login = () => {
           <Text style={styles.signupText}>SignUp Account Request</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Custom Modal for Error Messages */}
+      <Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>AVIAXIN</Text>
+            <Text style={styles.modalText}>{modalMessage}</Text>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.modalButtonText}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -348,5 +379,45 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#7DDD51",
     marginTop: 10,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#7DDD51",
+    marginBottom: 10,
+  },
+  modalText: {
+    fontSize: 16,
+    color: "#333",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  modalButton: {
+    backgroundColor: "#7DDD51",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  modalButtonText: {
+    color: "white",
+    fontSize: 16,
+    textAlign: "center",
   },
 });

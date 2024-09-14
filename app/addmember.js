@@ -157,10 +157,14 @@ const Register = () => {
                     setFieldValue("role", itemValue)
                   }
                 >
-                  <Picker.Item label="Sign In As" value="" color="#7DDD51" />
+                  <Picker.Item
+                    label="Add Member as "
+                    value=""
+                    color="#7DDD51"
+                  />
                   <Picker.Item label="Veterinarian" value="veterinarian" />
                   <Picker.Item label="Microbiologist" value="microbiologist" />
-                  <Picker.Item label="Farmer" value="farmer" />
+                  {/* <Picker.Item label="Farmer" value="farmer" /> */}
                 </Picker>
               </View>
               {touched.role && errors.role && (

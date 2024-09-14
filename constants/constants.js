@@ -185,6 +185,11 @@ export const tabs = [
     icon: "Aviaxin Members",
     route: "viewmembers",
   },
+  {
+    label: "Request",
+    icon: "Request",
+    route: "registerrequest",
+  },
 ];
 
 export const menuItems = [

@@ -102,10 +102,14 @@ const Pendingplaceorder: React.FC = () => {
   return (
     <View style={styles.container}>
       {loading ? (
-        // Show the green spinner while loading
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#7DDD51" />
           <Text style={styles.loadingText}>Loading orders...</Text>
+        </View>
+      ) : orders.length === 0 ? (
+        // Show "No orders found" message if the orders array is empty
+        <View style={styles.noOrdersContainer}>
+          <Text style={styles.noOrdersText}>No orders found.</Text>
         </View>
       ) : (
         <FlatList
@@ -131,7 +135,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   orderContainer: {
-    backgroundColor: "#ffffff", // White background for the order card
+    backgroundColor: "#ffffff",
     padding: 20,
     borderRadius: 15,
     flexDirection: "row",
@@ -150,7 +154,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: "#F8990A", // Changed color to green
+    backgroundColor: "#F8990A",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 15,
@@ -174,7 +178,7 @@ const styles = StyleSheet.create({
   },
   orderDetails: {
     fontSize: 14,
-    color: "#7DDD51", // Changed color to green
+    color: "#7DDD51",
     textDecorationLine: "underline",
   },
   productPrice: {
@@ -184,7 +188,7 @@ const styles = StyleSheet.create({
   },
   loadMoreButton: {
     padding: 15,
-    backgroundColor: "#7DDD51", // Changed color to green
+    backgroundColor: "#7DDD51",
     borderRadius: 10,
     alignItems: "center",
     marginTop: 20,
@@ -193,7 +197,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
   },
-  // Loading spinner and text styles
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
@@ -202,9 +205,17 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: "#7DDD51", // Matching green color for text
+    color: "#7DDD51",
   },
-
+  noOrdersContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  noOrdersText: {
+    fontSize: 18,
+    color: "#888",
+  },
   loadMore: {
     marginLeft: 40,
     marginRight: 40,
