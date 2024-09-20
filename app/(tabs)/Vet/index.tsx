@@ -97,7 +97,7 @@ const HomeTab = () => {
         {/* Welcome Text */}
         <Text style={styles.welcomeText}>
           Hello,{" "}
-          <Text style={styles.welcomeName}>{userName.split(" ")[0]}👋!</Text>
+          <Text style={styles.welcomeName}>{userName?.split(" ")?.[0]}👋!</Text>
         </Text>
         <TouchableOpacity
           style={styles.promoCard}

@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "137019116488",
+    "project_id": "aviaxin",
+    "storage_bucket": "aviaxin.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:137019116488:android:da05a8f9daf55ce74b4efd",
+        "android_client_info": {
+          "package_name": "com.aviaxinapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "137019116488-fb3i6j5tcsbo01l0s4qsjel8av9ltgp6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aviaxinapp",
+            "certificate_hash": "60f353796263eb4abbd9aad1d8422bccecea9fa8"
+          }
+        },
+        {
+          "client_id": "137019116488-q6br4847282q36v10b2hg3ssspnjs1lc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aviaxinapp",
+            "certificate_hash": "9e6b335a28ada0fbc10923b4b3298d3af6c0e09d"
+          }
+        },
+        {
+          "client_id": "137019116488-2apc9qpdrhb6j0d5iltbvn63h6tgvdl4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-z7gOFHiZ5alAJIfJ-cRMobmMdzQApME"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "137019116488-2apc9qpdrhb6j0d5iltbvn63h6tgvdl4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

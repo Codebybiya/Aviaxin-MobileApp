@@ -10,7 +10,7 @@ import {
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import 'expo-dev-client'
 const Home = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);

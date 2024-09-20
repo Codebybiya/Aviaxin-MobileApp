@@ -1,4 +1,4 @@
-import { Modal, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import CustomForm from "../Form/Form";
 import { AntDesign } from "@expo/vector-icons";
 
@@ -9,6 +9,8 @@ const CustomModel = ({
   id,
   setShow,
   handleSubmit,
+  formTitle,
+  buttonText
 }) => {
   return (
     <Modal
@@ -16,6 +18,7 @@ const CustomModel = ({
       transparent={true}
       visible={visible}
       onRequestClose={() => setShow(false)}
+      style={{width:"100%"}}
     >
       <View style={styles.modalBackground}>
         <View style={styles.modalContainer}>
@@ -25,7 +28,9 @@ const CustomModel = ({
           >
             <AntDesign name="close" size={24} color="black" />
           </TouchableOpacity>
-          <CustomForm inputs={inputs} handleSubmit={handleSubmit} />
+          <Text style={styles.headingTxt}>{formTitle}</Text>
+
+          <CustomForm inputs={inputs} handleSubmit={handleSubmit}  buttonText={buttonText}/>
         </View>
       </View>
     </Modal>
@@ -33,10 +38,11 @@ const CustomModel = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+
+  headingTxt: {
+    color: "#7DDD51",
+    fontSize: 28,
+    fontWeight: "bold",
   },
   openButton: {
     backgroundColor: "#F194FF",
@@ -51,10 +57,10 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContainer: {
-    width: 300,
+    width: 330,
     backgroundColor: "white",
     borderRadius: 10,
-    padding: 20,
+    padding: 10,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },

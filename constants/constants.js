@@ -190,6 +190,11 @@ export const tabs = [
     icon: "Request",
     route: "registerrequest",
   },
+  {
+    label: "Verify Your Email",
+    icon: "otp",
+    route: "otppage",
+  },
 ];
 
 export const menuItems = [
@@ -369,3 +374,108 @@ export const aboutApp = [
       "Embrace the future of poultry health with Aviaxin. Together, we can achieve healthier poultry populations and a more sustainable agricultural environment. For more information on how to get started with our app, visit www.aviaxin.com",
   },
 ];
+
+export const loginInputs = [
+  {
+    name: "email",
+    type: "email",
+    placeholder: "Email",
+    icon: "envelope",
+    validation: {
+      required: true,
+      email: true,
+    },
+  },
+  {
+    name: "password",
+    type: "password",
+    placeholder: "Password",
+    icon: "lock",
+    validation: {
+      required: true,
+      minLength: 6,
+    },
+  },
+];
+
+export const registerInputs=[
+  {
+    name: "firstname",
+    type: "text",
+    placeholder: "First Name",
+    icon: "user",
+    validation: {
+      required: "true",
+    },
+  },
+  {
+    name: "lastname",
+    type: "text",
+    placeholder: "Last Name",
+    icon: "user",
+    validation: {
+      required: "true",
+    },
+  },
+  {
+    name: "email",
+    type: "email",
+    placeholder: "Email",
+    icon: "envelope",
+    validation: {
+      required: true,
+      email: true,
+    },
+  },
+  {
+    name: "phno",
+    type: "number",
+    placeholder: "Phone No",
+    icon: "phone",
+    validation: {
+      required: true,
+      minLength: 10,
+      maxLength: 15,
+    },
+  },
+  {
+    name: "password",
+    type: "password",
+    placeholder: "Password",
+    icon: "lock",
+    validation: {
+      required: true,
+      minLength: 6,
+    },
+  },
+  {
+    name: "confirmPassword",
+    type: "password",
+    placeholder: "Confirm Password",
+    icon: "lock",
+    validation: {
+      required: true,
+      minLength: 6,
+    },
+  },
+  {
+    name: "role",
+    type: "select",
+    placeholder: "Role",
+    icon: "user",
+    validation: {
+      required: "true",
+    },
+  },
+]
+
+export const users=[
+  // {label:"Admin",value:"admin"},
+  // {label:"SuperAdmin",value:"superadmin"},
+  {label:"Veterinarian",value:"veterinarian",role:"veterinarian"},
+  {label:"Microbiologist",value:"microbiologist",role:"microbiologist"},
+]
+
+
+
+

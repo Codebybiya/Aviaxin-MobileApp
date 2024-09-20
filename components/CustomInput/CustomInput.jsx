@@ -1,5 +1,7 @@
+import { users } from "@/constants/constants";
 import { FontAwesome } from "@expo/vector-icons";
-import React from "react";
+import { Picker } from "@react-native-picker/picker";
+import React, { useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 
 const CustomInput = ({
@@ -22,15 +24,32 @@ const CustomInput = ({
           color="#7DDD51"
           style={styles.icon}
         />
-        <TextInput
-          style={styles.textInput}
-          secureTextEntry={type === "password"}
-          placeholder={placeholder}
-          keyboardType={type === "number" ? "phone-pad" : "default"}
-          onChangeText={handleChange(name)}
-          onBlur={() => handleBlur(name)}
-          value={value}
-        />
+        {type === "select" ? (
+          <Picker
+            selectedValue={value}
+            style={[
+              styles.textInput,
+              {
+                color: value ? "#7DDD51" : "#000", // Change selected value color conditionally
+              },
+            ]}
+            onValueChange={handleChange(name)}
+          >
+            <Picker.Item label="Sign In As" value="" color="#7DDD51" />
+            <Picker.Item label="Veterinarian" value="veterinarian" />
+            <Picker.Item label="Microbiologist" value="microbiologist" />
+          </Picker>
+        ) : (
+          <TextInput
+            style={styles.textInput}
+            secureTextEntry={type === "password"}
+            placeholder={placeholder}
+            keyboardType={type === "number" ? "phone-pad" : "default"}
+            onChangeText={handleChange(name)}
+            onBlur={() => handleBlur(name)}
+            value={value}
+          />
+        )}
       </View>
       {error && touched && <Text style={styles.errorText}>{error}</Text>}
     </View>
@@ -83,6 +102,11 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: "center",
     textAlign: "center",
+  },
+
+  picker: {
+    width: "100%",
+    padding: 10,
   },
 });
 

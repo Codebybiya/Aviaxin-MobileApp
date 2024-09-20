@@ -70,5 +70,22 @@ export const updateUserPassword = async (newPassword) => {
 };
 
 export const captilizeFirstLetter = (string) => {
-  return string.charAt(0).toUpperCase() + string.slice(1);
+  return string?.charAt(0).toUpperCase() + string?.slice(1);
+};
+
+export const getRoleScreen = (role) => {
+  switch (role) {
+    case "microbiologist":
+      return "../(tabs)/micro";
+    case "veterinarian":
+      return "../(tabs)/Vet";
+    case "farmer":
+      return "../(tabs)/micro";
+    case "superadmin":
+      return "../(tabs)/admin";
+    case "admin":
+      return "../(tabs)/admin";
+  }
+
+ return null;
 };

@@ -1,10 +1,38 @@
 import React from "react";
-import {useFormik } from "formik";
+import { useFormik } from "formik";
 import CustomInput from "../CustomInput/CustomInput";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import {createValidationSchema} from "@/utils/utils";
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { createValidationSchema } from "@/utils/utils";
 
-const CustomForm = ({ inputs,handleSubmit }) => {
+const CustomForm = ({ inputs, handleSubmit, buttonText }) => {
+  const renderInput = ({ item }) => {
+    return (
+      <View
+        style={{
+          flex: 1,
+          margin: 3, // Adjust spacing between items
+        }}
+      >
+        <CustomInput
+          name={item.name}
+          type={item.type}
+          placeholder={item.placeholder}
+          handleChange={formik.handleChange}
+          handleBlur={formik.handleBlur}
+          value={formik.values[item.name]}
+          error={formik.errors[item.name]}
+          icon={item.icon}
+          touched={formik.touched[item.name]}
+        />
+      </View>
+    );
+  };
   const formik = useFormik({
     initialValues: inputs.reduce(
       (acc, input) => ({ ...acc, [input.name]: "" }),
@@ -14,23 +42,25 @@ const CustomForm = ({ inputs,handleSubmit }) => {
     validationSchema: createValidationSchema(inputs),
   });
   return (
-    <View style={{ width: "100%" }}>
-      {inputs.map((input) => (
-        <CustomInput
-          key={input.name}
-          name={input.name}
-          type={input.type}
-          placeholder={input.placeholder}
-          handleChange={formik.handleChange}
-          handleBlur={formik.handleBlur}
-          value={formik.values[input.name]}
-          error={formik.errors[input.name]}
-          icon={input.icon}
-          touched={formik.touched[input.name]}
+    <View style={{ width: "100%"}}>
+      <View
+        style={{
+          width: "100%",
+          flexDirection: inputs?.length > 4 ? "row" : "column",
+          justifyContent: "space-between", // Ensure spacing between rows
+        }}
+      >
+        <FlatList
+          data={inputs}
+          renderItem={renderInput}
+          keyExtractor={(item) => item.name}
+          numColumns={inputs?.length > 4 ? 2 : 1} // 2 columns if length > 4, else 1 column
         />
-      ))}
+      </View>
       <TouchableOpacity style={styles.button} onPress={formik.handleSubmit}>
-        <Text style={styles.buttonText}>Save Changes</Text>
+        <Text style={styles.buttonText}>
+          {buttonText ? buttonText : "Save Changes"}
+        </Text>
       </TouchableOpacity>
     </View>
   );

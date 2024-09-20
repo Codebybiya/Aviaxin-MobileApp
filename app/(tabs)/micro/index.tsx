@@ -48,7 +48,7 @@ const HomeTab = () => {
 
       {/* Welcome Text */}
       <Text style={styles.welcomeText}>
-        Hello, <Text style={styles.welcomeName}>{userName.split(" ")[0]}!</Text>
+        Hello, <Text style={styles.welcomeName}>{userName?.split(" ")[0]}!</Text>
       </Text>
 
       {/* Category Cards with routing */}

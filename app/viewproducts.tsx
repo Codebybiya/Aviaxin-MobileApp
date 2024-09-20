@@ -128,6 +128,8 @@ const ViewProducts: React.FC = () => {
           id={id}
           setShow={setShow}
           handleSubmit={handleSubmit}
+          formTitle="Update Product"
+          buttonText="Save Changes"
         />
       )}
     </View>

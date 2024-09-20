@@ -29,7 +29,7 @@ const About = () => {
         if (savedUserData) {
           const userData = JSON.parse(savedUserData);
           setUser({
-            name: userData.name,
+            name: userData?.name,
             email: userData.email,
             phone: userData.phno,
           });
