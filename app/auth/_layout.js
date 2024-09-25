@@ -9,6 +9,10 @@ export default function RootLayout() {
         name="Register"
         options={{ title: "Register Account", headerShown: true }}
       />
+      <Stack.Screen
+        name="OtpPage"
+        options={{ title: "Verify Your Email", headerShown: true }}
+      />
     </Stack>
   );
 }

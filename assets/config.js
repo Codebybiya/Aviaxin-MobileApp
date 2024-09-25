@@ -8,8 +8,8 @@ const config = {
       : "http://192.168.1.101:8081/aviaxin",
   backendUrl:
     Platform.OS === "web"
-      ? "http://localhost:8080/aviaxin"
-      : "http://192.168.1.102:8080/aviaxin",
+      ? "http://192.168.1.104:8080/aviaxin"
+      : "http://192.168.1.104:8080/aviaxin",
   //  ? "https://aviaxin-api-75cc816c85ed.herokuapp.com/aviaxin"
   // : "https://aviaxin-api-75cc816c85ed.herokuapp.com/aviaxin",
 };

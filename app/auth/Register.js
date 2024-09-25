@@ -30,18 +30,21 @@ const Register = ({ show, setShow }) => {
 
     // try {
     console.log(values.email);
-    console.log(`${backendUrl}/users/sendOTP/${values.email}`)
+    console.log(`${backendUrl}/users/sendOTP/${values.email}`);
     const resp = await axios.post(
       `${backendUrl}/users/sendOTP/${values.email}`
     );
-  
+
     console.log(resp.data);
     if (resp.data.status === "Success") {
       showAlert("success", "OTP sent successfully, check your email!");
-      router.push({
-        pathname: "/otppage",
-        params: { userData },
-      });
+      setTimeout(() => {
+        // router.push("./OtpPage");
+        router.push({
+          pathname: "./OtpPage",
+          params: userData
+        });
+      }, 2000);
     } else {
       showAlert("error", "Failed to send OTP, try again!");
     }

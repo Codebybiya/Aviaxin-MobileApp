@@ -193,7 +193,7 @@ export const tabs = [
   {
     label: "Verify Your Email",
     icon: "otp",
-    route: "otppage",
+    route: "../app/auth/OtpPage",
   },
 ];
 
