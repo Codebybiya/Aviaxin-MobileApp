@@ -27,8 +27,9 @@ const CustomForm = ({ inputs, handleSubmit, buttonText }) => {
           handleBlur={formik.handleBlur}
           value={formik.values[item.name]}
           error={formik.errors[item.name]}
-          icon={item.icon}
+          icon={item?.icon}
           touched={formik.touched[item.name]}
+          pickerItems={item?.pickerItems}
         />
       </View>
     );

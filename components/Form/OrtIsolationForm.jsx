@@ -5,50 +5,41 @@ import {
   View,
   TextInput,
   TouchableOpacity,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
   Alert,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import config from "@/assets/config";
-import OrtIsolationForm from "@/components/Form/OrtIsolationForm";
-import ReusableProductForm from "@/components/Form/ReusableProductForm";
+import { ortIsolationInputs } from "../../constants/constants";
+
 const backendUrl = `${config.backendUrl}`;
-import { useAuth } from "@/context/authcontext/AuthContext";
-import {
-  ortIsolationInputs,
-  ortVaccinationInputs,
-} from "@/constants/constants";
-const ProductForm = () => {
-  const { cartItems } = useLocalSearchParams();
-  const parsedCartItems = JSON.parse(cartItems);
+
+const OrtIsolationForm = ({
+  parsedCartItems,
+  user,
+  handleInput,
+  inputValues,
+}) => {
   const router = useRouter();
-  console.log(parsedCartItems);
-const [Success,setSuccess]=useState(false)
-  const { getUserData } = useAuth();
-  const handleCheckout = async (inputValues) => {
-    const user=await getUserData();
-    console.log(user)
-    if (!user.userid) {
+
+  const [Success, setSuccess] = useState(false);
+
+  const handleCheckout = async () => {
+    console.log(user.userId);
+    if (!user.userId) {
       Alert.alert("Error", "User ID not found. Please log in.");
       return;
     }
 
     try {
       const orders = parsedCartItems.map((item) => ({
-        userID: user.userid,
+        userID: user.userId,
         productID: item.productID,
-        productType: item.productType,
         quantity: item.quantity,
         veterinarianName: inputValues?.veterinarianName,
         colonyName: inputValues?.colonyName,
         ortConfirmed: inputValues?.ortConfirmed,
-        bottles: inputValues?.bottles,
-        doses: inputValues?.doses,
       }));
 
       for (const order of orders) {
@@ -70,44 +61,46 @@ const [Success,setSuccess]=useState(false)
       );
     }
   };
-  const componentBasedOnType = (type) => {
-    if (type === "isolation")
-      return (
-        <ReusableProductForm
-          inputs={ortIsolationInputs}
-          formName="ORT Isolation"
-          handleCheckout={handleCheckout}
-        />
-      );
-    else if (type === "vaccine")
-      return (
-        <ReusableProductForm
-          inputs={ortVaccinationInputs}
-          formName="ORT Vaccination"
-          handleCheckout={handleCheckout}
-        />
-      );
-  };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {/* <OrtIsolationForm
-          cartItems={parsedCartItems}
-          user={user}
-          handleInput={handleInput}
-          inputValues={inputs}
-        /> */}
-        {componentBasedOnType(parsedCartItems[0].productType)}
-      </ScrollView>
-    </KeyboardAvoidingView>
+    <View style={styles.form}>
+      {ortIsolationInputs?.map((input) => (
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>{input.label}</Text>
+          {input?.name === "ortConfirmed" ? (
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={inputValues[input.name]}
+                style={styles.picker}
+                onValueChange={(itemValue) => handleInput(itemValue)}
+              >
+                <Picker.Item label="(select option)" value="" />
+                <Picker.Item label="Yes" value="yes" />
+                <Picker.Item label="No" value="no" />
+              </Picker>
+            </View>
+          ) : (
+            <TextInput
+              style={styles.input}
+              value={input.value}
+              onChangeText={handleInput(input.name)}
+              placeholder={input.placeholder}
+              placeholderTextColor="#aaa"
+            />
+          )}
+        </View>
+      ))}
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => handleCheckout()}
+      >
+        <Text style={styles.buttonText}>Place Order</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
-export default ProductForm;
+export default OrtIsolationForm;
 
 const styles = StyleSheet.create({
   container: {

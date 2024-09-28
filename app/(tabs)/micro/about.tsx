@@ -13,6 +13,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { captilizeFirstLetter, updateUserPassword } from "@/utils/utils";
+import { useAuth } from "@/context/authcontext/AuthContext";
 
 const About = () => {
   const [user, setUser] = useState({ name: "", email: "", phone: "" });
@@ -21,6 +22,7 @@ const About = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordChanged, setPasswordChanged] = useState(false); // New state for success message
   const router = useRouter();
+  const { handleLogout } = useAuth();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -42,14 +44,6 @@ const About = () => {
     fetchUserData();
   }, []);
 
-  const handleLogout = async () => {
-    try {
-      await AsyncStorage.removeItem("userData");
-      router.push("/auth/Login");
-    } catch (error) {
-      console.error("Error during logout", error);
-    }
-  };
 
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {

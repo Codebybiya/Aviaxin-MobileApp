@@ -7,12 +7,14 @@ import {
   ActivityIndicator,
   Animated,
   Easing,
+  ScrollView
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import axios from "axios";
 import config from "@/assets/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { object } from "yup";
+
 
 const backendUrl = `${config.backendUrl}`;
 const formatDate = (dateString: string): string => {
@@ -43,7 +45,7 @@ const OrderDetailNotif = () => {
         );
         const savedUserData = await AsyncStorage.getItem("userData");
         if (savedUserData) {
-          const { name,userid } = JSON.parse(savedUserData);
+          const { name, userid } = JSON.parse(savedUserData);
           console.log(userid);
           setConfirmedByName(name);
         }
@@ -135,52 +137,59 @@ const OrderDetailNotif = () => {
   };
 
   return (
-    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-      <Text style={styles.title}>Order Detail</Text>
-      <Text style={styles.subtitle}>{order.productID.productName}</Text>
+    <ScrollView>
+      <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+        <Text style={styles.title}>Order Detail</Text>
+        <Text style={styles.subtitle}>{order.productID.productName}</Text>
 
-      <View style={styles.card}>
-        <View style={styles.detailContainer}>
-          <Text style={styles.label}>Submitting Vet:</Text>
-          <Text style={styles.value}>{order.veterinarianName}</Text>
-        </View>
-
-        <View style={styles.detailContainer}>
-          <Text style={styles.label}>Site Name:</Text>
-          <Text style={styles.value}>{order.colonyName}</Text>
-        </View>
-
-        <View style={styles.detailContainer}>
-          <Text style={styles.label}>ORT Confirmed Previously:</Text>
-          <Text style={styles.value}>{order.ortConfirmed ? "Yes" : "No"}</Text>
-        </View>
-
-        <View style={styles.detailContainer}>
-          <Text style={styles.label}>Quantity:</Text>
-          <Text style={styles.value}>{order.quantity}</Text>
-        </View>
-
-        <View style={styles.detailContainer}>
-          <Text style={styles.label}>Order Status:</Text>
-          <Text style={[styles.value, getStatusStyle(order.status)]}>
-            {getStatusText(order.status)}
-          </Text>
-        </View>
-
-        {order.status === "confirmed" && (
-          <View>
-            <View style={styles.detailContainer}>
-              <Text style={styles.label}>Confirmed By:</Text>
-              <Text style={styles.value}>{order.confirmedByUser}</Text>
-            </View>
-            <View style={styles.detailContainer}>
-              <Text style={styles.label}>Time of Confirmation:</Text>
-              <Text style={styles.value}>{formatDate(order.confirmationTime)}</Text>
-            </View>
+        <View style={styles.card}>
+          <View style={styles.detailContainer}>
+            <Text style={styles.label}>Submitting Vet:</Text>
+            <Text style={styles.value}>{order.veterinarianName}</Text>
           </View>
-        )}
-      </View>
-    </Animated.View>
+
+          <View style={styles.detailContainer}>
+            <Text style={styles.label}>Site Name:</Text>
+            <Text style={styles.value}>{order.colonyName}</Text>
+          </View>
+
+          <View style={styles.detailContainer}>
+            <Text style={styles.label}>ORT Confirmed Previously:</Text>
+            <Text style={styles.value}>
+              {order.ortConfirmed ? "Yes" : "No"}
+            </Text>
+          </View>
+
+          <View style={styles.detailContainer}>
+            <Text style={styles.label}>Quantity:</Text>
+            <Text style={styles.value}>{order.quantity}</Text>
+          </View>
+          
+
+          <View style={styles.detailContainer}>
+            <Text style={styles.label}>Order Status:</Text>
+            <Text style={[styles.value, getStatusStyle(order.status)]}>
+              {getStatusText(order.status)}
+            </Text>
+          </View>
+
+          {order.status === "confirmed" && (
+            <View>
+              <View style={styles.detailContainer}>
+                <Text style={styles.label}>Confirmed By:</Text>
+                <Text style={styles.value}>{order.confirmedByUser}</Text>
+              </View>
+              <View style={styles.detailContainer}>
+                <Text style={styles.label}>Time of Confirmation:</Text>
+                <Text style={styles.value}>
+                  {formatDate(order.confirmationTime)}
+                </Text>
+              </View>
+            </View>
+          )}
+        </View>
+      </Animated.View>
+    </ScrollView>
   );
 };
 

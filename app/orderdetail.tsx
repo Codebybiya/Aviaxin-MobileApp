@@ -20,7 +20,7 @@ import * as Sharing from "expo-sharing";
 import * as Notifications from "expo-notifications";
 import { Asset } from "expo-asset";
 import Icon from "react-native-vector-icons/FontAwesome"; // Import FontAwesome Icons
-
+import {handlePDF} from "@/utils/GenOrPrintPdf";
 // Function to convert local asset to base64
 const getBase64Image = async (localUri) => {
   const asset = Asset.fromModule(localUri);
@@ -59,8 +59,10 @@ const OrderDetail = () => {
           `${backendUrl}/orders/orderdetail/${id}`
         );
 
+        console.log(response);
         if (response.data && response.data.data) {
           setOrder(response.data.data);
+
           Animated.timing(fadeAnim, {
             toValue: 1,
             duration: 500,
@@ -154,6 +156,14 @@ const OrderDetail = () => {
               <div class="detail-container">
                 <span class="label">Quantity:</span>
                 <span class="value">${order.quantity}</span>
+              </div>
+              <div class="detail-container">
+                <span class="label">No of 1000ml bottles:</span>
+                <span class="value">${order?.bottles}</span>
+              </div>
+              <div class="detail-container">
+                <span class="label">No of doses:</span>
+                <span class="value">${order?.doses}</span>
               </div>
               <div class="detail-container">
                 <span class="label">Order Status:</span>
@@ -409,7 +419,6 @@ const OrderDetail = () => {
       </View>
     );
   }
-
   return (
     <ScrollView style={styles.scrollView}>
       <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
@@ -437,6 +446,18 @@ const OrderDetail = () => {
             <Text style={styles.label}>Quantity:</Text>
             <Text style={styles.value}>{order.quantity}</Text>
           </View>
+          {order?.bottles && (
+            <View style={styles.detailContainer}>
+              <Text style={styles.label}>No of 1000ml bottles required:</Text>
+              <Text style={styles.value}>{order?.bottles}</Text>
+            </View>
+          )}
+          {order?.doses && (
+            <View style={styles.detailContainer}>
+              <Text style={styles.label}>No of doses required:</Text>
+              <Text style={styles.value}>{order?.doses}</Text>
+            </View>
+          )}
 
           <View style={styles.detailContainer}>
             <Text style={styles.label}>Order Status:</Text>
@@ -482,7 +503,7 @@ const OrderDetail = () => {
           <TouchableOpacity
             style={styles.button}
             activeOpacity={0.8}
-            onPress={generatePDF}
+            onPress={()=>handlePDF("print",order,id,showModal)}
           >
             <Icon name="download" size={18} color="#fff" />
             <Text style={styles.buttonText}>Download Invoice</Text>
@@ -492,7 +513,7 @@ const OrderDetail = () => {
           <TouchableOpacity
             style={styles.shareButton}
             activeOpacity={0.8}
-            onPress={sharePDF}
+            onPress={()=>handlePDF("share",order,id,showModal)}
           >
             <Icon name="share" size={18} color="#fff" />
             <Text style={styles.buttonText}>Share Invoice</Text>

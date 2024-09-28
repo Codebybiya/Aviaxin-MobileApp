@@ -29,5 +29,5 @@
     "app/viewmembers.js",
     "app/viewmembers.js",
     "app/addmember.js"
-  ]
+, "app/confrimorder.jsx"  ]
 }

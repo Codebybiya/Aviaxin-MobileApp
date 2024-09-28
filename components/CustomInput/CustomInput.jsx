@@ -14,6 +14,7 @@ const CustomInput = ({
   handleBlur,
   error,
   touched,
+  pickerItems,
 }) => {
   return (
     <View>
@@ -35,9 +36,19 @@ const CustomInput = ({
             ]}
             onValueChange={handleChange(name)}
           >
-            <Picker.Item label="Sign In As" value="" color="#7DDD51" />
-            <Picker.Item label="Veterinarian" value="veterinarian" />
-            <Picker.Item label="Microbiologist" value="microbiologist" />
+            <Picker.Item
+              label={placeholder || "Select an option"}
+              value=""
+            />
+
+            {pickerItems?.map((item, index) => (
+              <Picker.Item
+                key={index}
+                label={item.label}
+                value={item.value}
+                color="#7DDD51"
+              />
+            ))}
           </Picker>
         ) : (
           <TextInput

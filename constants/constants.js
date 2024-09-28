@@ -398,7 +398,7 @@ export const loginInputs = [
   },
 ];
 
-export const registerInputs=[
+export const registerInputs = [
   {
     name: "firstname",
     type: "text",
@@ -458,24 +458,143 @@ export const registerInputs=[
       minLength: 6,
     },
   },
+
   {
     name: "role",
     type: "select",
-    placeholder: "Role",
+    placeholder: "Register As",
     icon: "user",
+    pickerItems: [
+      { label: "Veterinarian", value: "veterinarian" },
+      { label: "Microbiologist", value: "microbiologist" },
+    ],
     validation: {
       required: "true",
     },
   },
-]
+];
 
-export const users=[
+export const users = [
   // {label:"Admin",value:"admin"},
   // {label:"SuperAdmin",value:"superadmin"},
-  {label:"Veterinarian",value:"veterinarian",role:"veterinarian"},
-  {label:"Microbiologist",value:"microbiologist",role:"microbiologist"},
-]
+  { label: "Veterinarian", value: "veterinarian", role: "veterinarian" },
+  { label: "Microbiologist", value: "microbiologist", role: "microbiologist" },
+];
 
+export const ortIsolationInputs = [
+  {
+    name: "veterinarianName",
+    type: "text",
+    validation: {
+      required: "true",
+    },
+    placeholder: "Anna Katrina Marchesi",
+    label: "Veterinarian Name",
+  },
+  {
+    name: "colonyName",
+    type: "text",
+    validation: {
+      required: "true",
+    },
+    placeholder: "XYZ",
+    label: "Colony Name",
+  },
+  {
+    name: "ortConfirmed",
+    type: "select",
+    placeholder: "ORT Confirmed",
+    validation: {
+      required: "true",
+    },
+    pickerItems: [
+      { label: "Yes", value: "yes" },
+      { label: "No", value: "no" },
+    ],
+    label: "If ORT has been confirmed previously (Yes) (No)",
+  },
+];
+export const ortVaccinationInputs = [
+  {
+    name: "veterinarianName",
+    type: "text",
+    validation: {
+      required: "true",
+    },
+    placeholder: "Anna Katrina Marchesi",
+    label: "Veterinarian Name",
+  },
+  {
+    name: "colonyName",
+    type: "text",
+    validation: {
+      required: "true",
+    },
+    placeholder: "XYZ",
+    label: "Colony Name",
+  },
+  {
+    name: "ortConfirmed",
+    type: "select",
+    placeholder: "ORT Confirmed",
+    validation: {
+      required: "true",
+    },
+    pickerItems: [
+      { label: "Yes", value: "yes" },
+      { label: "No", value: "no" },
+    ],
+    label: "If ORT has been confirmed previously (Yes) (No)",
+  },
+  {
+    name: "bottles",
+    type: "number",
+    validation: {
+      required: "true",
+    },
+    placeholder: "XYZ",
+    label: "No of 1000ml bottles required",
+  },
+  {
+    name: "doses",
+    type: "number",
+    validation: {
+      required: "true",
+    },
+    placeholder: "XYZ",
+    label: "No of doses required",
+  },
+];
 
+export const ortIsolationConfirmationInputs = [
+  {
+    name: "isolationno",
+    type: "number",
+    validation: {
+      required: true,
+    },
+    label: "Isolation No",
+    placeholder: "Enter Isolation No",
+  },
+  {
+    name: "batchno",
+    type: "number",
+    validation: {
+      required: true,
+    },
+    label: "Batch No",
+    placeholder: "Enter Batch No",
+  },
+];
 
-
+export const ortVaccinationPrepareInputs = [
+  {
+    name: "details",
+    type: "text",
+    validation: {
+      required: true,
+    },
+    label: "Enter Completed Process",
+    placeholder: "Enter Completed Process",
+  },
+];

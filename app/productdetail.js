@@ -54,6 +54,7 @@ const ProductDetail = () => {
 
     const cartItem = {
       productID: product._id,
+      productType: product.productType,
       productName: product.productName,
       productPrice: product.productPrice,
       quantity,

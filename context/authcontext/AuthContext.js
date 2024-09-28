@@ -33,42 +33,39 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const signInWithGoogle = async (role) => {
-    // try {
-    await GoogleSignin.hasPlayServices({
-      showPlayServicesUpdateDialog: true,
-    });
-    const { data } = await GoogleSignin.signIn();
-    console.log(data?.idToken);
-    const googleCredential = GoogleAuthProvider.credential(data?.idToken);
-    console.log(data?.idToken);
-    const user = await auth.signInWithCredential(googleCredential);
-    console.log(user.user);
-    const displayName = user?.user?.displayName; // Store displayName once for consistency
+    console.log(role);
+    try {
+      await GoogleSignin.hasPlayServices({
+        showPlayServicesUpdateDialog: true,
+      });
+      const { data } = await GoogleSignin.signIn();
+      const googleCredential = GoogleAuthProvider.credential(data?.idToken);
+      const user = await auth.signInWithCredential(googleCredential);
+      const displayName = user?.user?.displayName; // Store displayName once for consistency
 
-    const firstname = displayName?.includes(" ")
-      ? displayName.split(" ")[0]
-      : displayName;
+      const firstname = displayName?.includes(" ")
+        ? displayName.split(" ")[0]
+        : displayName;
 
-    const lastname = displayName?.includes(" ")
-      ? displayName.split(" ")[1]
-      : "";
-    const userDetails = {
-      firstname: firstname,
-      lastname: lastname,
-      email: user?.user?.email,
-      phno: user?.user?.phoneNumber,
-      googleUid: user?.user?.uid,
-      role: role,
-    };
-    console.log(userDetails);
-    const resp = await axios.post(
-      `${backendUrl}/users/signInUsingGoogle`,
-      userDetails
-    );
-    await redirectToPage(resp);
-    // } catch (error) {
-    //   showAlert("error", "Failed To Login");
-    // }
+      const lastname = displayName?.includes(" ")
+        ? displayName.split(" ")[1]
+        : "";
+      const userDetails = {
+        firstname: firstname,
+        lastname: lastname,
+        email: user?.user?.email,
+        phno: user?.user?.phoneNumber,
+        googleUid: user?.user?.uid,
+        role: role,
+      };
+      const resp = await axios.post(
+        `${backendUrl}/users/signInUsingGoogle`,
+        userDetails
+      );
+      await redirectToPage(resp);
+    } catch (error) {
+      showAlert("error", "Failed To Login");
+    }
   };
 
   const handleLogin = async (userData) => {
@@ -78,6 +75,22 @@ export const AuthProvider = ({ children }) => {
       await redirectToPage(resp);
     } catch (error) {
       showAlert("error", error.message);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      const user = await getUserData();
+      console.log(user);
+      if (user.hasOwnProperty("googleUid")) {
+        await GoogleSignin.signOut();
+      }
+      setUser(null);
+      await AsyncStorage.removeItem("userData");
+      console.log("User logged out");
+      router.push("/auth/Login");
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -99,6 +112,8 @@ export const AuthProvider = ({ children }) => {
     }
 
     const userToSave = resp?.data?.data;
+    setUser(userToSave);
+    console.log(user);
     if (!userToSave?.userrole) {
       showAlert("error", "User role is missing. Please try again.");
       return;
@@ -109,25 +124,36 @@ export const AuthProvider = ({ children }) => {
   };
 
   const registerUser = async (email, password) => {
-    // try {
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-    console.log(userCredential);
-    const user = userCredential.user;
-    console.log(user);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      console.log(userCredential);
+      const user = userCredential.user;
+      console.log(user);
 
-    // Send verification email
-    await sendEmailVerification(user);
-    console.log("Verification email sent.");
+      // Send verification email
+      await sendEmailVerification(user);
+      console.log("Verification email sent.");
 
-    return userCredential;
-    // Notify user to check email for verification
-    // } catch (error) {
-    //   showAlert("error", "User cannot be registered");
-    // }
+      return userCredential;
+      // Notify user to check email for verification
+    } catch (error) {
+      showAlert("error", "User cannot be registered");
+    }
+  };
+
+  const getUserData = async () => {
+    try {
+      const userData = await AsyncStorage.getItem("userData");
+      if (userData) {
+        return JSON.parse(userData);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const checkUserVerified = async (email, password) => {
@@ -155,6 +181,8 @@ export const AuthProvider = ({ children }) => {
         handleLogin,
         userData,
         checkUserVerified,
+        handleLogout,
+        getUserData,
       }}
     >
       {children}
