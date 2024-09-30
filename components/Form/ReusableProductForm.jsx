@@ -6,48 +6,82 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import Checkbox from "expo-checkbox";
 import { useFormik } from "formik";
-
 
 const ReusableProductForm = ({ inputs, formName, handleCheckout }) => {
   const formik = useFormik({
-    initialValues: inputs.reduce(
-      (acc, input) => ({ ...acc, [input.name]: "" }),
-      {}
-    ),
+    initialValues: inputs.reduce((acc, input) => {
+      // Initialize checkboxes with an empty array if input is a multi-select checkbox group
+      if (input.type === "checkbox") {
+        return { ...acc, [input.name]: [] };
+      }
+    }, {}),
     onSubmit: (values) => handleCheckout(values),
     // validationSchema: createValidationSchema(inputs),
   });
 
+  const handleCheckboxGroupToggle = (groupName, value) => {
+    const currentValues = formik.values[groupName];
+    console.log(currentValues);
+    if (currentValues.includes(value)) {
+      // If the value is already selected, remove it
+      formik.setFieldValue(
+        groupName,
+        currentValues.filter((item) => item !== value)
+      );
+    } else {
+      // If the value is not selected, add it
+      formik.setFieldValue(groupName, [...currentValues, value]);
+    }
+  };
+
   const renderInputs = (inputs) => {
-    
-    return  inputs?.map((input) => (
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>{input.label}</Text>
-          {input?.name === "ortConfirmed" ? (
-            <View style={styles.pickerContainer}>
-              <Picker
-                selectedValue={formik.values[input.name]}
-                style={styles.picker}
-                onValueChange={formik.handleChange(input.name)}
-              >
-                <Picker.Item label="(select option)" value="" />
-                <Picker.Item label="Yes" value="yes" />
-                <Picker.Item label="No" value="no" />
-              </Picker>
-            </View>
-          ) : (
-            <TextInput
-              style={styles.input}
-              value={formik.values[input.name]}
-              onChangeText={formik.handleChange(input.name)}
-              placeholder={input.placeholder}
-              placeholderTextColor="#aaa"
-            />
-          )}
-        </View>
-      ));
-    
+    return inputs?.map((input) => (
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>{input.label}</Text>
+        {input?.name === "ortConfirmed" ? (
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={formik.values[input.name]}
+              style={styles.picker}
+              onValueChange={formik.handleChange(input.name)}
+            >
+              <Picker.Item label="(select option)" value="" />
+              <Picker.Item label="Yes" value="yes" />
+              <Picker.Item label="No" value="no" />
+            </Picker>
+          </View>
+        ) : input?.type === "checkbox" ? (
+          <View style={styles.checkboxGroupContainer}>
+            {input.options.map((option, idx) => (
+              <View key={idx} style={styles.checkboxContainer}>
+                <Checkbox
+                  value={formik.values[input.name].includes(option.value)}
+                  onValueChange={() =>
+                    handleCheckboxGroupToggle(input.name, option.value)
+                  }
+                  color={
+                    formik.values[input.name].includes(option.value)
+                      ? "#7DDD51"
+                      : undefined
+                  } // Color when checked
+                />
+                <Text style={styles.checkboxLabel}>{option.label}</Text>
+              </View>
+            ))}
+          </View>
+        ) : (
+          <TextInput
+            style={styles.input}
+            value={formik.values[input.name]}
+            onChangeText={formik.handleChange(input.name)}
+            placeholder={input.placeholder}
+            placeholderTextColor="#aaa"
+          />
+        )}
+      </View>
+    ));
   };
 
   return (
@@ -133,6 +167,20 @@ const styles = StyleSheet.create({
   picker: {
     width: "100%",
     height: 50,
+  },
+  checkboxGroupContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 5,
+  },
+  checkboxContainer: {
+    flexDirection: "row",
+  },
+  checkboxLabel: {
+    marginLeft: 8,
+    fontSize: 16,
+    color: "#333",
   },
   button: {
     backgroundColor: "#7DDD51",

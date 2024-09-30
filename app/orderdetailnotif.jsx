@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
   Animated,
   Easing,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import axios from "axios";
@@ -15,10 +15,9 @@ import config from "@/assets/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { object } from "yup";
 
-
 const backendUrl = `${config.backendUrl}`;
-const formatDate = (dateString: string): string => {
-  const options: Intl.DateTimeFormatOptions = {
+const formatDate = (dateString) => {
+  const options = {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -30,10 +29,10 @@ const formatDate = (dateString: string): string => {
 };
 
 const OrderDetailNotif = () => {
-  const [confirmedByName, setConfirmedByName] = useState<string | null>(null);
+  const [confirmedByName, setConfirmedByName] = useState("");
   const { orderID } = useLocalSearchParams(); // Get the order ID from the route
-  const [order, setOrder] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [order, setOrder] = useState(null);
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const fadeAnim = useState(new Animated.Value(0))[0]; // Animation state for fade-in effect
 
@@ -102,7 +101,7 @@ const OrderDetailNotif = () => {
     );
   }
 
-  const getStatusText = (status: string) => {
+  const getStatusText = (status) => {
     switch (status) {
       case "pending":
         return "Order Placed";
@@ -119,7 +118,7 @@ const OrderDetailNotif = () => {
     }
   };
 
-  const getStatusStyle = (status: string) => {
+  const getStatusStyle = (status) => {
     switch (status) {
       case "pending":
         return styles.statusPending;
@@ -164,8 +163,34 @@ const OrderDetailNotif = () => {
             <Text style={styles.label}>Quantity:</Text>
             <Text style={styles.value}>{order.quantity}</Text>
           </View>
-          
-
+          {order?.bottles && (
+            <View style={styles.detailContainer}>
+              <Text style={styles.label}>No of 1000ml bottles required:</Text>
+              <Text style={styles.value}>{order?.bottles}</Text>
+            </View>
+          )}
+          {order?.doses && (
+            <View style={styles.detailContainer}>
+              <Text style={styles.label}>No of doses required:</Text>
+              <Text style={styles.value}>{order?.doses}</Text>
+            </View>
+          )}
+          {order?.bodyParts.length > 0 && (
+            <View style={styles.detailContainer}>
+              <Text style={styles.label}>Body Parts</Text>
+              {order?.bodyParts?.map((info, index) => (
+                <Text style={styles.value} key={index}>
+                  {index !== order?.bodyParts?.length - 1 ? info + "," : info}
+                </Text>
+              ))}
+            </View>
+          )}
+          {order?.moreInfo?.map((info, index) => (
+            <View style={styles.detailContainer} key={index}>
+              <Text style={styles.label}>{info.title}</Text>
+              <Text style={styles.value}>{info.description}</Text>
+            </View>
+          ))}
           <View style={styles.detailContainer}>
             <Text style={styles.label}>Order Status:</Text>
             <Text style={[styles.value, getStatusStyle(order.status)]}>
@@ -267,8 +292,7 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 16,
     color: "#28A745", // Medium green for values
-    flex: 1,
-    textAlign: "right",
+    marginLeft: 10,
   },
   button: {
     backgroundColor: "#7DDD51", // Primary button color

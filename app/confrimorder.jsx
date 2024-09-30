@@ -65,7 +65,7 @@ const ConfirmOrder = () => {
         console.log(userid);
         status = getUpdatedStatus(order.productID.productType);
         await axios.patch(`${backendUrl}/orders/confirm-order/${id}`, {
-          isolationNumber: data?.isolationNumber,
+          isolateNumber: data?.isolateNumber,
           batchNumber: data?.batchNumber,
           userId: userid, // Assuming userID is part of the order data
           status: status,
@@ -74,7 +74,7 @@ const ConfirmOrder = () => {
       setOrder((prevOrder) => ({
         ...prevOrder,
         status: status,
-        isolationNumber: data?.isolationNumber,
+        isolateNumber: data?.isolateNumber,
         batchNumber: data?.batchNumber,
         confirmedBy: order.userID,
       }));
@@ -258,7 +258,8 @@ const ConfirmOrder = () => {
 
         {ortVaccinationInputs?.map(
           (input, index) =>
-            order?.[input?.name] && (
+            order?.[input?.name] &&
+            input?.type !== "checkbox" && (
               <View style={styles.detailContainer} key={index}>
                 <Text style={styles.label}>
                   {input.label === "Veterinarian Name"
@@ -268,6 +269,16 @@ const ConfirmOrder = () => {
                 <Text style={styles.value}>{order?.[input.name]}</Text>
               </View>
             )
+        )}
+        {order?.bodyParts && (
+          <View style={styles.detailContainer}>
+            <Text style={styles.label}>Body Parts</Text>
+            {order?.bodyParts?.map((info, index) => (
+              <Text style={styles.value} key={index}>
+                {index !== order?.bodyParts?.length - 1 ? info + "," : info}
+              </Text>
+            ))}
+          </View>
         )}
         {order?.moreInfo?.map((info, index) => (
           <View style={styles.detailContainer} key={index}>
@@ -372,8 +383,8 @@ const styles = StyleSheet.create({
   },
   value: {
     fontSize: 16,
-    color: "#666",
-    textAlign: "right",
+    color: "#28A745", // Medium green for values
+    marginLeft: 10,
   },
   confirmButton: {
     backgroundColor: "#7DDD51",
