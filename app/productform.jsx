@@ -49,6 +49,7 @@ const [Success,setSuccess]=useState(false)
         ortConfirmed: inputValues?.ortConfirmed,
         bottles: inputValues?.bottles,
         doses: inputValues?.doses,
+        bodyParts: inputValues?.bodyParts,
       }));
 
       for (const order of orders) {

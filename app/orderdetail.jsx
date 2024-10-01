@@ -20,7 +20,7 @@ import * as Sharing from "expo-sharing";
 import * as Notifications from "expo-notifications";
 import { Asset } from "expo-asset";
 import Icon from "react-native-vector-icons/FontAwesome"; // Import FontAwesome Icons
-import {handlePDF} from "@/utils/GenOrPrintPdf";
+import { handlePDF } from "@/utils/GenOrPrintPdf";
 // Function to convert local asset to base64
 const getBase64Image = async (localUri) => {
   const asset = Asset.fromModule(localUri);
@@ -44,8 +44,8 @@ Notifications.setNotificationHandler({
 
 const OrderDetail = () => {
   const { id } = useLocalSearchParams(); // Get the order ID from the route
-  const [order, setOrder] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [order, setOrder] = useState(null);
+  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const fadeAnim = useState(new Animated.Value(0))[0]; // Add animation state
   const [modalVisible, setModalVisible] = useState(false);
@@ -59,10 +59,10 @@ const OrderDetail = () => {
           `${backendUrl}/orders/orderdetail/${id}`
         );
 
-        console.log(response);
+        console.log(response?.data?.data);  
         if (response.data && response.data.data) {
           setOrder(response.data.data);
-
+          
           Animated.timing(fadeAnim, {
             toValue: 1,
             duration: 500,
@@ -90,12 +90,12 @@ const OrderDetail = () => {
   }, [id]);
 
   // Helper function to format the confirmation time
-  const formatConfirmationTime = (time: string) => {
+  const formatConfirmationTime = (time) => {
     const date = new Date(time);
     return date.toLocaleString(); // Format date and time into a readable string
   };
 
-  const showModal = (message: string, type: "success" | "error") => {
+  const showModal = (message, type) => {
     setModalMessage(message);
     setModalType(type);
     setModalVisible(true);
@@ -361,7 +361,7 @@ const OrderDetail = () => {
     }
   };
 
-  const getStatusText = (status: string) => {
+  const getStatusText = (status) => {
     switch (status) {
       case "pending":
         return "Order Placed";
@@ -378,7 +378,7 @@ const OrderDetail = () => {
     }
   };
 
-  const getStatusStyle = (status: string) => {
+  const getStatusStyle = (status) => {
     switch (status) {
       case "pending":
         return styles.statusPending;
@@ -458,7 +458,22 @@ const OrderDetail = () => {
               <Text style={styles.value}>{order?.doses}</Text>
             </View>
           )}
-
+          {order?.bodyParts.length > 0 && (
+            <View style={styles.detailContainer}>
+              <Text style={styles.label}>Body Parts</Text>
+              {order?.bodyParts?.map((info, index) => (
+                <Text style={styles.value} key={index}>
+                  {index !== order?.bodyParts?.length - 1 ? info + "," : info}
+                </Text>
+              ))}
+            </View>
+          )}
+          {order?.moreInfo?.map((info, index) => (
+            <View style={styles.detailContainer} key={index}>
+              <Text style={styles.label}>{info.title}</Text>
+              <Text style={styles.value}>{info.description}</Text>
+            </View>
+          ))}
           <View style={styles.detailContainer}>
             <Text style={styles.label}>Order Status:</Text>
             <Text style={[styles.value, getStatusStyle(order.status)]}>
@@ -503,7 +518,7 @@ const OrderDetail = () => {
           <TouchableOpacity
             style={styles.button}
             activeOpacity={0.8}
-            onPress={()=>handlePDF("print",order,id,showModal)}
+            onPress={() => handlePDF("print", order, id, showModal)}
           >
             <Icon name="download" size={18} color="#fff" />
             <Text style={styles.buttonText}>Download Invoice</Text>
@@ -513,7 +528,7 @@ const OrderDetail = () => {
           <TouchableOpacity
             style={styles.shareButton}
             activeOpacity={0.8}
-            onPress={()=>handlePDF("share",order,id,showModal)}
+            onPress={() => handlePDF("share", order, id, showModal)}
           >
             <Icon name="share" size={18} color="#fff" />
             <Text style={styles.buttonText}>Share Invoice</Text>
@@ -622,9 +637,8 @@ const styles = StyleSheet.create({
   },
   value: {
     fontSize: 16,
-    color: "#28A745",
-    flex: 1,
-    textAlign: "right",
+    color: "#28A745", // Medium green for values
+    marginLeft: 10,
   },
   buttonRow: {
     flexDirection: "row",

@@ -52,9 +52,48 @@ export const handlePDF = async (action, order, id, showModal) => {
         }:</span>
         <span class="value">${order[input.name] || "N/A"}</span>
       </div>
+      
     `
     )
     .join(""); // Join the generated HTML into a single string
+
+  // Generate HTML for dynamic fields like bottles, doses, bodyParts, and moreInfo
+  const bottlesHTML = order?.bottles
+    ? `<div class="detail-container">
+        <span class="label">No of 1000ml bottles required:</span>
+        <span class="value">${order?.bottles}</span>
+      </div>`
+    : "";
+
+  const dosesHTML = order?.doses
+    ? `<div class="detail-container">
+        <span class="label">No of doses required:</span>
+        <span class="value">${order?.doses}</span>
+      </div>`
+    : "";
+
+  const bodyPartsHTML = order?.bodyParts
+    ? `<div class="detail-container">
+          <span class="label">Body Parts:</span>
+          <span class="value">${order.bodyParts
+            .map((info, index) =>
+              index !== order?.bodyParts?.length - 1 ? info + ", " : info
+            )
+            .join("")}</span>
+        </div>`
+    : "";
+  const moreInfoHTML = order?.moreInfo
+    ? order.moreInfo
+        .map(
+          (info) => `
+        <div class="detail-container">
+          <span class="label">${info.title}:</span>
+          <span class="value">${info.description}</span>
+        </div>`
+        )
+        .join("")
+    : "";
+
   const htmlContent = `
       <html>
         <head>
@@ -86,6 +125,10 @@ export const handlePDF = async (action, order, id, showModal) => {
               </div>
              
               ${ortIsolationHTML}
+              ${bottlesHTML}
+              ${dosesHTML}
+              ${bodyPartsHTML}
+              ${moreInfoHTML}
             
               ${
                 order.status === "confirmed"

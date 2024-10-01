@@ -511,7 +511,7 @@ export const ortIsolationInputs = [
       { label: "Yes", value: "yes" },
       { label: "No", value: "no" },
     ],
-    label: "If ORT has been confirmed previously (Yes) (No)",
+    label: "If ORT has been confirmed previously by {Aviaxin} Lab (Yes) (No)",
   },
 ];
 export const ortVaccinationInputs = [
@@ -544,7 +544,7 @@ export const ortVaccinationInputs = [
       { label: "Yes", value: "yes" },
       { label: "No", value: "no" },
     ],
-    label: "If ORT has been confirmed previously (Yes) (No)",
+    label: "If ORT has been confirmed previously by {Aviaxin} Lab (Yes) (No)",
   },
   {
     name: "bottles",
@@ -564,11 +564,25 @@ export const ortVaccinationInputs = [
     placeholder: "XYZ",
     label: "No of doses required",
   },
+  {
+    name: "bodyParts",
+    type: "checkbox",
+    validation: {
+      required: "true",
+    },
+    placeholder: "XYZ",
+    label: "Select from the following: ",
+    options: [
+      { label: "Lungs", value: "lungs" },
+      { label: "Liver", value: "liver" },
+      { label: "Tissues", value: "tissues" },
+    ],
+  },
 ];
 
 export const ortIsolationConfirmationInputs = [
   {
-    name: "isolationno",
+    name: "isolateNumber",
     type: "number",
     validation: {
       required: true,
@@ -577,7 +591,7 @@ export const ortIsolationConfirmationInputs = [
     placeholder: "Enter Isolation No",
   },
   {
-    name: "batchno",
+    name: "batchNumber",
     type: "number",
     validation: {
       required: true,

@@ -29,5 +29,5 @@
     "app/viewmembers.js",
     "app/viewmembers.js",
     "app/addmember.js"
-, "app/confrimorder.jsx"  ]
+, "app/confrimorder.jsx", "app/orderdetailnotif.jsx", "app/orderdetail.jsx"  ]
 }
