@@ -4,11 +4,12 @@ import { CodeField, Cursor } from "react-native-confirmation-code-field";
 import { useAuth } from "../../context/authcontext/AuthContext";
 import axios from "axios";
 import config from "../../assets/config";
+import { useAlert } from "../../context/alertContext/AlertContext";
 const { backendUrl } = config;
 
 const OTPInput = ({ userData }) => {
   const [code, setCode] = useState("");
-  const { showAlert } = useAuth();
+  const { showAlert } = useAlert();
 
   const handleCodeChange = (newCode) => {
     setCode(newCode);
