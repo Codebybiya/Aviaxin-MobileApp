@@ -458,7 +458,7 @@ const OrderDetail = () => {
               <Text style={styles.value}>{order?.doses}</Text>
             </View>
           )}
-          {order?.bodyParts && (
+          {order?.bodyParts.length > 0 && (
             <View style={styles.detailContainer}>
               <Text style={styles.label}>Body Parts</Text>
               {order?.bodyParts?.map((info, index) => (

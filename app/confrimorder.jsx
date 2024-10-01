@@ -62,14 +62,17 @@ const ConfirmOrder = () => {
       const savedUserData = await AsyncStorage.getItem("userData");
       if (savedUserData) {
         const { userid } = JSON.parse(savedUserData);
-        console.log(userid);
         status = getUpdatedStatus(order.productID.productType);
-        await axios.patch(`${backendUrl}/orders/confirm-order/${id}`, {
-          isolateNumber: data?.isolateNumber,
-          batchNumber: data?.batchNumber,
-          userId: userid, // Assuming userID is part of the order data
-          status: status,
-        });
+        const resp = await axios.patch(
+          `${backendUrl}/orders/confirm-order/${id}`,
+          {
+            isolateNumber: data?.isolateNumber,
+            batchNumber: data?.batchNumber,
+            userId: userid, // Assuming userID is part of the order data
+            status: status,
+          }
+        );
+        console.log(resp?.data?.data);
       }
       setOrder((prevOrder) => ({
         ...prevOrder,
@@ -270,7 +273,7 @@ const ConfirmOrder = () => {
               </View>
             )
         )}
-        {order?.bodyParts && (
+        {order?.bodyParts.length > 0 && (
           <View style={styles.detailContainer}>
             <Text style={styles.label}>Body Parts</Text>
             {order?.bodyParts?.map((info, index) => (
