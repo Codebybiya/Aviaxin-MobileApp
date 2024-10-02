@@ -72,7 +72,7 @@ export const handlePDF = async (action, order, id, showModal) => {
       </div>`
     : "";
 
-  const bodyPartsHTML = order?.bodyParts
+  const bodyPartsHTML = order?.bodyParts && order?.bodyParts.length > 0
     ? `<div class="detail-container">
           <span class="label">Body Parts:</span>
           <span class="value">${order.bodyParts

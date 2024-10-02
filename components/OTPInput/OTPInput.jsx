@@ -4,12 +4,12 @@ import { CodeField, Cursor } from "react-native-confirmation-code-field";
 import axios from "axios";
 import config from "../../assets/config";
 import { useRouter } from "expo-router";
-
+import { getRoleScreen } from "../../utils/utils";
 const { backendUrl } = config;
 
 const OTPInput = ({ userData }) => {
   const [code, setCode] = useState("");
-  const router=useRouter();
+  const router = useRouter();
   const handleCodeChange = (newCode) => {
     setCode(newCode);
 
@@ -26,10 +26,13 @@ const OTPInput = ({ userData }) => {
 
     try {
       console.log(userData);
-      const response = await axios.post(`${backendUrl}/users/register`, userData);
+      const response = await axios.post(
+        `${backendUrl}/users/register`,
+        userData
+      );
       console.log(response);
 
-      if (response.data.status="Success") {
+      if ((response.data.status = "Success")) {
         console.log(response.data);
 
         // Show the built-in alert and redirect after user clicks "OK"
@@ -41,7 +44,7 @@ const OTPInput = ({ userData }) => {
               text: "OK",
               onPress: () => {
                 // Redirect to the login page after clicking OK
-                router.push("/Login");
+                router.push("/auth/Login");
               },
             },
           ],
@@ -67,7 +70,10 @@ const OTPInput = ({ userData }) => {
         rootStyle={styles.codeFieldRoot}
         keyboardType="number-pad"
         renderCell={({ index, symbol, isFocused }) => (
-          <View key={index} style={[styles.cell, isFocused && styles.focusCell]}>
+          <View
+            key={index}
+            style={[styles.cell, isFocused && styles.focusCell]}
+          >
             <Text style={styles.cellText}>
               {symbol || (isFocused ? <Cursor /> : null)}
             </Text>

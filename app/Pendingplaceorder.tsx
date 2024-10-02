@@ -39,6 +39,7 @@ const Pendingplaceorder: React.FC = () => {
       const response = await axios.get(
         `${backendUrl}/orders/getallordersbymic?page=${page}&limit=10&status=pending`
       );
+      console.log("response", response.data);
 
       const ordersData = response.data.data.map((order: any) => ({
         id: order._id,

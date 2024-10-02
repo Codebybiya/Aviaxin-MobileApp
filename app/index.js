@@ -10,7 +10,7 @@ import {
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import 'expo-dev-client'
+import "expo-dev-client";
 const Home = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -22,6 +22,7 @@ const Home = () => {
     const splashTimeout = setTimeout(() => {
       setShowSplash(false);
       checkLoginStatus(); // Call login check function after splash delay
+      router.replace("/auth/Login");
     }, 3000);
 
     // Start animation when component mounts
@@ -104,26 +105,6 @@ const Home = () => {
           source={require("@/assets/logo.png")} // Add your logo here
           style={styles.logo}
         /> */}
-      </View>
-      <View style={styles.content}>
-        <Text style={styles.title}>Aviaxin App</Text>
-        <Text style={styles.subtitle}>Welcome Back</Text>
-      </View>
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => router.replace("/auth/Login")}
-        >
-          <Text style={styles.buttonText}>Sign In</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, styles.registerButton]}
-          onPress={() => router.replace("/auth/Register")}
-        >
-          <Text style={[styles.buttonText, styles.registerButtonText]}>
-            Register
-          </Text>
-        </TouchableOpacity>
       </View>
     </View>
   );
