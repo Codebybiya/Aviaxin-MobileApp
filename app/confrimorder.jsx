@@ -21,6 +21,7 @@ import {
 } from "@/constants/constants";
 import CustomModel from "@/components/Model/CustomModel";
 import { useAlert } from "../context/alertContext/AlertContext";
+import { Ionicons } from "@expo/vector-icons";
 
 const backendUrl = `${config.backendUrl}`;
 
@@ -32,6 +33,8 @@ const ConfirmOrder = () => {
   const [loading, setLoading] = useState(true); // Loading state
   const [modalVisible, setModalVisible] = useState(false); // State to control modal visibility
   const [confirmingOrder, setConfirmingOrder] = useState(false); // Loading state for order confirmation
+  const [processId, setProcessId] = useState(null);
+  const [processModalVisible, setProcessModalVisible] = useState(false);
   const { showAlert } = useAlert();
   useEffect(() => {
     const fetchOrderDetails = async () => {
@@ -42,6 +45,7 @@ const ConfirmOrder = () => {
         );
         console.log(response.data.data);
         setOrder(response.data.data);
+        console.log(order);
       } catch (error) {
         console.error("Failed to fetch order details:", error);
         setError("Failed to load order details.");
@@ -92,6 +96,7 @@ const ConfirmOrder = () => {
   };
 
   const addMoreInfo = async (data) => {
+    console.log(data)
     try {
       const resp = await axios.patch(
         `${backendUrl}/orders/add-more-info/${id}`,
@@ -99,14 +104,12 @@ const ConfirmOrder = () => {
           moreinfo: { title: data?.details, description: "Yes" },
         }
       );
+      console.log(resp?.data?.data);
       if (resp.data.status === "success") {
-        console.log(resp?.data?.data);
+
         setOrder((prevOrder) => ({
           ...prevOrder,
-          moreInfo: [
-            ...prevOrder.moreInfo,
-            { title: data?.details, description: "Yes" },
-          ],
+          moreInfo: resp?.data?.data?.moreInfo
         }));
         console.log(order);
         Alert.alert("Success", "Process added successfully.");
@@ -117,6 +120,7 @@ const ConfirmOrder = () => {
       setError("Failed to add more info.");
     }
   };
+
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
@@ -132,6 +136,39 @@ const ConfirmOrder = () => {
   if (!order) {
     return <Text>No order details found.</Text>;
   }
+
+  const hanadleProcessEdit = async (data) => {
+    console.log(data);
+    // try {
+      const resp = await axios.patch(
+        `${backendUrl}/orders/edit-more-info/${id}`,
+        {
+          moreinfo: { title: data?.details, description: "Yes",id:processId },
+          processId: processId,
+        }
+      );
+      if (resp.data.status === "success") {
+        console.log(resp?.data?.data);
+        setOrder((prevOrder) => ({
+          ...prevOrder,
+          moreInfo: resp?.data?.data?.moreInfo
+
+        }));
+        console.log(order);
+        Alert.alert("Success", "Process edited successfully.");
+      }
+    // } catch (error) {
+    //   console.error("Failed to add more info:", error);
+    //   Alert.alert("Error", "Failed to add more info.");
+    //   setError("Failed to add more info.");
+    // }
+  };
+
+  const startProcessEdit = (id) => {
+    console.log(id);
+    setProcessModalVisible(true);
+    setProcessId(id);
+  };
 
   const getUpdatedStatus = (productType) => {
     if (productType === "isolation") {
@@ -193,15 +230,15 @@ const ConfirmOrder = () => {
       }
     }
     if (type === "vaccine") {
-      if (orderStatus === "pending") {
+      if (orderStatus === "confirmed") {
+        buttonText = "Edit Details";
+        signatureText = "Click to edit product Order";
+      } else if (orderStatus === "pending") {
         buttonText = "Prepare Order";
         signatureText = "Click to start preparing this order";
       } else if (orderStatus === "preparing") {
         buttonText = "Add Details";
         signatureText = "Click to add details this  Order";
-      } else {
-        buttonText = "Edit Details";
-        signatureText = "Click to edit product Order";
       }
     }
     return (
@@ -287,8 +324,24 @@ const ConfirmOrder = () => {
           <View style={styles.detailContainer} key={index}>
             <Text style={styles.label}>{info.title}</Text>
             <Text style={styles.value}>{info.description}</Text>
+            <TouchableOpacity onPress={() => startProcessEdit(info.id)}>
+              <Ionicons name="create-outline" size={28} color="#7DDD51" />
+            </TouchableOpacity>
           </View>
         ))}
+        {order?.isolateNumber && (
+          <View style={styles.detailContainer}>
+            <Text style={styles.label}>Isolation Number:</Text>
+            <Text style={styles.value}>{order.isolateNumber}</Text>
+          </View>
+        )}
+        {order?.batchNumber &&
+          <View style={styles.detailContainer}>
+            <Text style={styles.label}>Batch Number:</Text>
+            <Text style={styles.value}>{order.batchNumber}</Text>
+          </View>
+        }
+
         <View style={styles.detailContainer}>
           <Text style={styles.label}>Order Status:</Text>
           <Text style={[styles.value, getStatusStyle(order.status)]}>
@@ -300,7 +353,7 @@ const ConfirmOrder = () => {
           order.productID.productType,
           order.status
         )}
-        {order.productID.productType === "isolation" ? (
+        {order.productID.productType === "isolation" ||order.productID.productType === "vaccine" ? (
           <CustomModel
             inputs={ortIsolationConfirmationInputs}
             formTitle="Order Details"
@@ -338,6 +391,17 @@ const ConfirmOrder = () => {
             />
           )
         )}
+
+        <CustomModel
+          inputs={ortVaccinationPrepareInputs}
+          formTitle="Order Details"
+          buttonText="Save Process"
+          visible={processModalVisible}
+          onClose={() => setProcessModalVisible(false)}
+          id={null}
+          setShow={setProcessModalVisible}
+          handleSubmit={hanadleProcessEdit}
+        />
       </View>
     </ScrollView>
   );

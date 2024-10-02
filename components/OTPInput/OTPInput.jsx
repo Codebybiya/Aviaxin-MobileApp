@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { View, Text, Alert, StyleSheet } from "react-native";
 import { CodeField, Cursor } from "react-native-confirmation-code-field";
-import { useAuth } from "../../context/authcontext/AuthContext";
 import axios from "axios";
 import config from "../../assets/config";
+import { useRouter } from "expo-router";
+
 const { backendUrl } = config;
 
 const OTPInput = ({ userData }) => {
   const [code, setCode] = useState("");
-  const { showAlert } = useAuth();
-
+  const router=useRouter();
   const handleCodeChange = (newCode) => {
     setCode(newCode);
 
@@ -21,28 +21,40 @@ const OTPInput = ({ userData }) => {
   };
 
   const handleRegister = async (userData, enteredOtp) => {
-    console.log("reached here");
+    console.log("Reached registration handler");
     userData = { ...userData, otpCode: enteredOtp };
-    // try {
-    console.log(userData);
-    console.log(`${backendUrl}/auth/register`)
+
+    try {
+      console.log(userData);
       const response = await axios.post(`${backendUrl}/users/register`, userData);
       console.log(response);
-      if (response.data.success) {
+
+      if (response.data.status="Success") {
         console.log(response.data);
 
-        showAlert("success", "User Registered Successfully");
-        setTimeout(() => {
-          router.push("./Login");
-        }, 2000);
+        // Show the built-in alert and redirect after user clicks "OK"
+        Alert.alert(
+          "Success",
+          "User Registered Successfully",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                // Redirect to the login page after clicking OK
+                router.push("/Login");
+              },
+            },
+          ],
+          { cancelable: false }
+        );
       } else {
         console.log(response.data);
-        showAlert("error", response.data.message);
+        Alert.alert("Error", response.data.message);
       }
-    // } catch (error) {
-    //   console.log(error);
-    //   showAlert("error", "Registration Failed!");
-    // }
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Error", "Registration Failed!");
+    }
   };
 
   return (
@@ -51,7 +63,7 @@ const OTPInput = ({ userData }) => {
       <CodeField
         value={code}
         onChangeText={handleCodeChange}
-        cellCount={6}  // Assuming OTP has 6 digits
+        cellCount={6} // Assuming OTP has 6 digits
         rootStyle={styles.codeFieldRoot}
         keyboardType="number-pad"
         renderCell={({ index, symbol, isFocused }) => (

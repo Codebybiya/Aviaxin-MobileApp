@@ -12,13 +12,15 @@ import { useFormik } from "formik";
 const ReusableProductForm = ({ inputs, formName, handleCheckout }) => {
   const formik = useFormik({
     initialValues: inputs.reduce((acc, input) => {
-      // Initialize checkboxes with an empty array if input is a multi-select checkbox group
-      if (input.type === "checkbox") {
-        return { ...acc, [input.name]: [] };
+      if (input?.type === "checkbox") {
+        // Initialize checkboxes as arrays (for multiple selections)
+        return { ...acc, [input?.name]: [] };
+      } else {
+        // Initialize text inputs, pickers, or other input types
+        return { ...acc, [input?.name]: "" };
       }
     }, {}),
     onSubmit: (values) => handleCheckout(values),
-    // validationSchema: createValidationSchema(inputs),
   });
 
   const handleCheckboxGroupToggle = (groupName, value) => {
@@ -39,13 +41,13 @@ const ReusableProductForm = ({ inputs, formName, handleCheckout }) => {
   const renderInputs = (inputs) => {
     return inputs?.map((input) => (
       <View style={styles.inputContainer}>
-        <Text style={styles.label}>{input.label}</Text>
+        <Text style={styles.label}>{input?.label}</Text>
         {input?.name === "ortConfirmed" ? (
           <View style={styles.pickerContainer}>
             <Picker
-              selectedValue={formik.values[input.name]}
+              selectedValue={formik.values[input?.name]}
               style={styles.picker}
-              onValueChange={formik.handleChange(input.name)}
+              onValueChange={formik.handleChange(input?.name)}
             >
               <Picker.Item label="(select option)" value="" />
               <Picker.Item label="Yes" value="yes" />
@@ -54,15 +56,15 @@ const ReusableProductForm = ({ inputs, formName, handleCheckout }) => {
           </View>
         ) : input?.type === "checkbox" ? (
           <View style={styles.checkboxGroupContainer}>
-            {input.options.map((option, idx) => (
+            {input?.options.map((option, idx) => (
               <View key={idx} style={styles.checkboxContainer}>
                 <Checkbox
-                  value={formik.values[input.name].includes(option.value)}
+                  value={formik.values[input?.name].includes(option.value)}
                   onValueChange={() =>
-                    handleCheckboxGroupToggle(input.name, option.value)
+                    handleCheckboxGroupToggle(input?.name, option.value)
                   }
                   color={
-                    formik.values[input.name].includes(option.value)
+                    formik.values[input?.name].includes(option.value)
                       ? "#7DDD51"
                       : undefined
                   } // Color when checked
@@ -74,16 +76,16 @@ const ReusableProductForm = ({ inputs, formName, handleCheckout }) => {
         ) : (
           <TextInput
             style={styles.input}
-            value={formik.values[input.name]}
-            onChangeText={formik.handleChange(input.name)}
-            placeholder={input.placeholder}
+            value={formik.values[input?.name]}
+            onChangeText={formik.handleChange(input?.name)}
+            placeholder={input?.placeholder}
             placeholderTextColor="#aaa"
           />
         )}
       </View>
     ));
   };
-
+  console.log(inputs);
   return (
     <View>
       <View style={styles.header}>

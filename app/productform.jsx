@@ -72,6 +72,7 @@ const [Success,setSuccess]=useState(false)
     }
   };
   const componentBasedOnType = (type) => {
+    console.log(type);
     if (type === "isolation")
       return (
         <ReusableProductForm
