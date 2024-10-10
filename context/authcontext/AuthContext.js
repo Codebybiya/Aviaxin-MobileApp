@@ -1,19 +1,24 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  getAuth,
-  sendEmailVerification,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  GoogleAuthProvider,
-} from "@react-native-firebase/auth";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import config from "../../assets/config";
 import axios from "axios";
 import { useAlert } from "../alertContext/AlertContext";
 import { getRoleScreen } from "../../utils/utils";
 import { router } from "expo-router";
+import config from "../../assets/config";
+
+// Firebase and Google Sign-In imports
+import {
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+  signInWithCredential,
+} from "firebase/auth";
+import { authD, googleProvider } from "@/assets/firebaseConfig";
+import { Platform } from "react-native";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 const backendUrl = `${config.backendUrl}`;
+
+// Your auth context
 const AuthContext = createContext();
 
 export const useAuth = () => {
@@ -21,53 +26,78 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const auth = getAuth();
   const [user, setUser] = useState(null);
-  const [userData, setUserData] = useState(null);
   const { showAlert } = useAlert();
+  const [userData, setUserData] = useState(null);
+  // Google SignIn configuration for Android
   useEffect(() => {
-    GoogleSignin.configure({
-      webClientId:
-        "137019116488-2apc9qpdrhb6j0d5iltbvn63h6tgvdl4.apps.googleusercontent.com",
-    });
+    if (Platform.OS !== "web") {
+      GoogleSignin.configure({
+        webClientId:
+          "137019116488-2apc9qpdrhb6j0d5iltbvn63h6tgvdl4.apps.googleusercontent.com",
+      });
+    }
   }, []);
 
   const signInWithGoogle = async (role) => {
-    console.log(role);
     try {
-      await GoogleSignin.hasPlayServices({
-        showPlayServicesUpdateDialog: true,
-      });
-      const { data } = await GoogleSignin.signIn();
-      const googleCredential = GoogleAuthProvider.credential(data?.idToken);
-      const user = await auth.signInWithCredential(googleCredential);
-      const displayName = user?.user?.displayName; // Store displayName once for consistency
+      if (Platform.OS === "web") {
+        const result = await signInWithPopup(authD, googleProvider);
+        const user = result.user;
 
-      const firstname = displayName?.includes(" ")
-        ? displayName.split(" ")[0]
-        : displayName;
+        const userDetails = {
+          firstname: user.displayName.split(" ")[0],
+          lastname: user.displayName.split(" ")[1] || "",
+          email: user.email,
+          googleUid: user.uid,
+          role: role,
+        };
 
-      const lastname = displayName?.includes(" ")
-        ? displayName.split(" ")[1]
-        : "";
-      const userDetails = {
-        firstname: firstname,
-        lastname: lastname,
-        email: user?.user?.email,
-        phno: user?.user?.phoneNumber,
-        googleUid: user?.user?.uid,
-        role: role,
-      };
-      const resp = await axios.post(
-        `${backendUrl}/users/signInUsingGoogle`,
-        userDetails
-      );
-      await redirectToPage(resp);
+        const resp = await axios.post(
+          `${backendUrl}/users/signInUsingGoogle`,
+          userDetails
+        );
+        await redirectToPage(resp);
+      } else {
+        // Android Sign-In flow
+        await GoogleSignin.hasPlayServices({
+          showPlayServicesUpdateDialog: true,
+        });
+        const { data } = await GoogleSignin.signIn();
+        const googleCredential = GoogleAuthProvider.credential(data.idToken);
+        const auth = getAuth();
+        const user = await signInWithCredential(auth, googleCredential);
+
+        const displayName = user?.user?.displayName; // Store displayName once for consistency
+
+        const firstname = displayName?.includes(" ")
+          ? displayName.split(" ")[0]
+          : displayName;
+
+        const lastname = displayName?.includes(" ")
+          ? displayName.split(" ")[1]
+          : "";
+        const userDetails = {
+          firstname: firstname,
+          lastname: lastname,
+          email: user?.user?.email,
+          phno: user?.user?.phoneNumber,
+          googleUid: user?.user?.uid,
+          role: role,
+        };
+        const resp = await axios.post(
+          `${backendUrl}/users/signInUsingGoogle`,
+          userDetails
+        );
+        await redirectToPage(resp);
+      }
     } catch (error) {
-      showAlert("error", "Failed To Login");
+      showAlert("error", "Failed to login.");
+      console.error(error);
     }
   };
 
+  // Other functions here...
   const handleLogin = async (userData) => {
     try {
       console.log(userData);

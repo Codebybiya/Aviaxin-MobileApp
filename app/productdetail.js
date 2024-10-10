@@ -9,6 +9,7 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -69,19 +70,34 @@ const ProductDetail = () => {
 
       await AsyncStorage.setItem("cartItems", JSON.stringify(cartItems));
 
-      Alert.alert("Success", "Product added to cart!", [
-        {
-          text: "OK",
-          onPress: () =>
-            router.push({
-              pathname: "./Vet/cart",
-              params: { cartItems: JSON.stringify(cartItems) },
-            }),
-        },
-      ]);
+      if (Platform.OS === "web") {
+        window.alert("Product added to cart!"); // Use browser alert for web
+        router.push({
+          pathname: "./Vet/cart",
+          params: { cartItems: JSON.stringify(cartItems) },
+        });
+      } else {
+        Alert.alert("Success", "Product added to cart!", [
+          {
+            text: "OK",
+            onPress: () =>
+              router.push({
+                pathname: "./Vet/cart",
+                params: { cartItems: JSON.stringify(cartItems) },
+              }),
+          },
+        ]);
+      }
     } catch (error) {
       console.error("Failed to add to cart:", error);
-      Alert.alert("Error", "Failed to add product to cart. Please try again.");
+      if (Platform.OS === "web") {
+        window.alert("Failed to add product to cart. Please try again.");
+      } else {
+        Alert.alert(
+          "Error",
+          "Failed to add product to cart. Please try again."
+        );
+      }
     }
   };
 

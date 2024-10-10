@@ -28,11 +28,11 @@ const ProductForm = () => {
   const parsedCartItems = JSON.parse(cartItems);
   const router = useRouter();
   console.log(parsedCartItems);
-const [Success,setSuccess]=useState(false)
+  const [Success, setSuccess] = useState(false);
   const { getUserData } = useAuth();
   const handleCheckout = async (inputValues) => {
-    const user=await getUserData();
-    console.log(user)
+    const user = await getUserData();
+    console.log(user);
     if (!user.userid) {
       Alert.alert("Error", "User ID not found. Please log in.");
       return;
@@ -58,17 +58,25 @@ const [Success,setSuccess]=useState(false)
 
         await axios.post(`${backendUrl}/orders/addorders`, order);
       }
-
-      Alert.alert("Success", "Your order has been placed!", [
-        { text: "OK", onPress: () => router.push("/orderconfirmation") },
-      ]);
+      if (Platform.OS === "web") {
+        window.alert("Your order has been placed!"); // Use browser alert for web
+        router.push("/orderconfirmation");
+      } else {
+        Alert.alert("Success", "Your order has been placed!", [
+          { text: "OK", onPress: () => router.push("/orderconfirmation") },
+        ]);
+      }
       setSuccess(true);
     } catch (error) {
       console.error("Error placing order:", error);
-      Alert.alert(
-        "Error",
-        "There was an issue placing your order. Please try again."
-      );
+      if (Platform.OS === "web") {
+        window.alert("There was an issue placing your order. Please try again.");
+      } else {
+        Alert.alert(
+          "Error",
+          "There was an issue placing your order. Please try again."
+        );
+      }
     }
   };
   const componentBasedOnType = (type) => {
