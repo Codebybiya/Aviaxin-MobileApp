@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   TextInput,
   Modal,
-  Alert,
   ActivityIndicator,
   ScrollView,
 } from "react-native";
@@ -23,6 +22,7 @@ import CustomModel from "@/components/Model/CustomModel";
 import { useAlert } from "../context/alertContext/AlertContext";
 import { Ionicons } from "@expo/vector-icons";
 import * as Updates from "expo-updates"; // Import Updates from expo-updates
+import Alert from "@/components/Alert/Alert";
 const backendUrl = `${config.backendUrl}`;
 
 const ConfirmOrder = () => {
@@ -76,7 +76,6 @@ const ConfirmOrder = () => {
             status: status,
           }
         );
-        console.log(resp?.data?.data);
       }
       setOrder((prevOrder) => ({
         ...prevOrder,
@@ -85,8 +84,8 @@ const ConfirmOrder = () => {
         batchNumber: data?.batchNumber,
         confirmedBy: order.userID,
       }));
+      showAlert("Success", "Order confirmed successfully.");
       setModalVisible(false); // Close the modal after confirmation
-      Alert.alert("Success", "Order confirmed successfully.");
     } catch (error) {
       console.error("Failed to confirm order:", error);
       setError("Failed to confirm order.");
@@ -111,11 +110,11 @@ const ConfirmOrder = () => {
           moreInfo: resp?.data?.data?.moreInfo,
         }));
         console.log(order);
-        Alert.alert("Success", "Process added successfully.");
+        showAlert("Success", "Process added successfully.");
       }
     } catch (error) {
       console.error("Failed to add more info:", error);
-      Alert.alert("Error", "Failed to add more info.");
+      showAlert("Error", "Failed to add more info.");
       setError("Failed to add more info.");
     }
   };
@@ -153,11 +152,11 @@ const ConfirmOrder = () => {
           moreInfo: resp?.data?.data?.moreInfo,
         }));
         console.log(order);
-        Alert.alert("Success", "Process edited successfully.");
+        showAlert("Success", "Process edited successfully.");
       }
     } catch (error) {
       console.error("Failed to add more info:", error);
-      Alert.alert("Error", "Failed to add more info.");
+      showAlert("Error", "Failed to add more info.");
       setError("Failed to add more info.");
     }
   };
@@ -402,6 +401,7 @@ const ConfirmOrder = () => {
           setShow={setProcessModalVisible}
           handleSubmit={hanadleProcessEdit}
         />
+        <Alert/>
       </View>
     </ScrollView>
   );

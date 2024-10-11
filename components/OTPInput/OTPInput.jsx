@@ -1,15 +1,14 @@
 import React, { useState } from "react";
-import { View, Text, Alert, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { CodeField, Cursor } from "react-native-confirmation-code-field";
 import axios from "axios";
 import config from "../../assets/config";
-import { useRouter } from "expo-router";
-import { getRoleScreen } from "../../utils/utils";
+import { useAlert } from "../../context/alertContext/AlertContext";
 const { backendUrl } = config;
 
 const OTPInput = ({ userData }) => {
   const [code, setCode] = useState("");
-  const router = useRouter();
+  const { showAlert } = useAlert;
   const handleCodeChange = (newCode) => {
     setCode(newCode);
 
@@ -36,27 +35,14 @@ const OTPInput = ({ userData }) => {
         console.log(response.data);
 
         // Show the built-in alert and redirect after user clicks "OK"
-        Alert.alert(
-          "Success",
-          "User Registered Successfully",
-          [
-            {
-              text: "OK",
-              onPress: () => {
-                // Redirect to the login page after clicking OK
-                router.push("/auth/Login");
-              },
-            },
-          ],
-          { cancelable: false }
-        );
+        showAlert("Success", "User Registered Successfully", "/auth/Login");
       } else {
         console.log(response.data);
-        Alert.alert("Error", response.data.message);
+        showAlert("Error", response.data.message);
       }
     } catch (error) {
       console.error(error);
-      Alert.alert("Error", "Registration Failed!");
+      showAlert("Error", "Registration Failed!");
     }
   };
 

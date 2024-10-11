@@ -6,14 +6,14 @@ import {
   TouchableOpacity,
   FlatList,
   ListRenderItemInfo,
-  Alert,
   ActivityIndicator, // Import ActivityIndicator for the loading spinner
 } from "react-native";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import axios from "axios";
 import config from "@/assets/config";
-
+import { useAlert } from "@/context/alertContext/AlertContext";
+import Alert from "@/components/Alert/Alert";
 const backendUrl = `${config.backendUrl}`;
 
 interface Order {
@@ -29,7 +29,7 @@ const Pendingplaceorder: React.FC = () => {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(true); // Loading state
   const router = useRouter();
-
+  const { showAlert } = useAlert();
   useEffect(() => {
     fetchOrders(); // Initial fetch
   }, []);
@@ -60,7 +60,7 @@ const Pendingplaceorder: React.FC = () => {
       }
     } catch (error) {
       console.error("Failed to fetch orders:", error);
-      Alert.alert("Error", "Unable to fetch orders. Please try again.");
+      showAlert("Error", "Unable to fetch orders. Please try again.");
     } finally {
       setLoading(false); // Set loading to false after data is fetched
     }
@@ -121,6 +121,7 @@ const Pendingplaceorder: React.FC = () => {
           ListFooterComponent={renderFooter}
         />
       )}
+      
     </View>
   );
 };

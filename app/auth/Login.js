@@ -86,7 +86,6 @@ const Login = () => {
         {showRegisterForm && (
           <Register show={showRegisterForm} setShow={setShowRegisterForm} />
         )}
-        <Alert />
       </View>
     </View>
   );

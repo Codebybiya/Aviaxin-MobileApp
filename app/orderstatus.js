@@ -1,22 +1,16 @@
 import React, { useEffect, useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import config from "@/assets/config";
-
+import { useAlert } from "@/context/alertContext/AlertContext";
+import Alert from "@/components/Alert/Alert";
 const backendUrl = `${config.backendUrl}`;
 
 const Orderstatus = () => {
   const [orderStatus, setOrderStatus] = useState(null);
-
+  const { showAlert } = useAlert();
   useEffect(() => {
     const fetchOrderStatus = async () => {
       try {
@@ -31,18 +25,15 @@ const Orderstatus = () => {
             if (latestOrder) {
               setOrderStatus(latestOrder.status);
             } else {
-              Alert.alert(
-                "No orders found",
-                "You don't have any recent orders."
-              );
+              showAlert("No orders found", "You don't have any recent orders.");
             }
           } else {
-            Alert.alert("Error", "User ID not found. Please log in.");
+            showAlert("Error", "User ID not found. Please log in.");
           }
         }
       } catch (error) {
         console.error("Failed to fetch order status:", error);
-        Alert.alert("Error", "Unable to fetch order status. Please try again.");
+        showAlert("Error", "Unable to fetch order status. Please try again.");
       }
     };
 

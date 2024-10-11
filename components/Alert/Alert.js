@@ -1,25 +1,52 @@
 import { useState, useEffect } from "react";
-import { Modal, View, Text, TouchableOpacity, StyleSheet, Dimensions } from "react-native";
+import {
+  Modal,
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Platform,
+} from "react-native";
 import { useAlert } from "../../context/alertContext/AlertContext";
+import { router } from "expo-router";
 
 const Alert = () => {
-  const { alert,setAlert } = useAlert();
+  const { alert, setAlert } = useAlert();
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     if (alert) {
-      setModalVisible(true); // Show modal when alert is available
+      console.log(alert)
+      if (Platform.OS === "web") {
+        handleWebAlert();
+      } else {
+        setModalVisible(true);
+      }
     }
   }, [alert]);
 
+  // Show alert for web immediately if platform is web
+  const handleWebAlert = () => {
+    const { message, redirect } = alert;
+    window.alert(message); // Show alert in web
+    setAlert(null); // Reset the alert state after showing it
+    if (redirect) {
+      router.push(redirect); // Redirect if needed
+    }
+  };
+
+  // Handle closing the modal for mobile
   const handleClose = () => {
     setModalVisible(false);
-    setAlert(null); // Reset alert
+    setAlert(null); // Ensure the alert is reset after closing the modal
+    if (alert?.redirect) {
+      router.push(alert.redirect);
+    }
   };
 
   return (
-    <View style={styles.container}>
-      {alert && (
+    <View >
+      {alert && modalVisible && (
         <Modal
           visible={modalVisible}
           animationType="slide"
@@ -33,7 +60,7 @@ const Alert = () => {
                 style={styles.closeModalButton}
                 onPress={handleClose}
               >
-                <Text style={styles.closeModalButtonText}>Close</Text>
+                <Text style={styles.closeModalButtonText}>OK</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -42,7 +69,6 @@ const Alert = () => {
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {

@@ -5,7 +5,6 @@ import {
   Text,
   TouchableOpacity,
   Image,
-  Alert,
   StatusBar,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -35,7 +34,7 @@ import OrderDetailNotif from "../../orderdetailnotif";
 import Cart from "./cart";
 import Login from "../../auth/Login";
 import { menuItems } from "../../../constants/constants";
-
+import { useAuth } from "../../../context/authcontext/AuthContext";
 const Stack = createStackNavigator();
 const Tabs = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -44,7 +43,6 @@ const backendUrl = `${config.backendUrl}`;
 // Drawer Button Component
 function DrawerButton() {
   const navigation = useNavigation();
-
   return (
     <TouchableOpacity onPress={() => navigation.openDrawer()}>
       <FontAwesome
@@ -278,19 +276,8 @@ function CustomDrawerContent(props) {
 
     fetchUserData();
   }, []);
-
-  const handleLogout = async () => {
-    try {
-      await AsyncStorage.removeItem("userData");
-      navigation.navigate("Login"); // Ensure this route name matches your navigator setup
-    } catch (error) {
-      console.error("Error during logout", error);
-      Alert.alert(
-        "Logout Error",
-        "An error occurred during logout. Please try again."
-      );
-    }
-  };
+  
+  const { handleLogout } = useAuth();
 
   return (
     <DrawerContentScrollView {...props}>
@@ -311,7 +298,7 @@ function CustomDrawerContent(props) {
           )}
           onPress={
             item.route === "logout"
-              ? handleLogout
+              ? () => handleLogout()
               : () => navigation.navigate(item.route)
           }
           labelStyle={

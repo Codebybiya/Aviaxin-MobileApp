@@ -7,14 +7,14 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-  Alert,
   ActivityIndicator,
   Platform,
 } from "react-native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import config from "@/assets/config";
-
+import { useAlert } from "@/context/alertContext/AlertContext";
+import Alert from "@/components/Alert/Alert";
 const backendUrl = `${config.backendUrl}`;
 
 const ProductDetail = () => {
@@ -23,7 +23,7 @@ const ProductDetail = () => {
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
-
+  const { alert, showAlert } = useAlert();
   useEffect(() => {
     if (productId) {
       fetchProductDetails(productId);
@@ -41,7 +41,7 @@ const ProductDetail = () => {
       }
     } catch (error) {
       console.error("Failed to fetch product details:", error);
-      Alert.alert(
+      showAlert(
         "Error",
         "An error occurred while fetching the product details."
       );
@@ -69,35 +69,13 @@ const ProductDetail = () => {
       cartItems.push(cartItem);
 
       await AsyncStorage.setItem("cartItems", JSON.stringify(cartItems));
-
-      if (Platform.OS === "web") {
-        window.alert("Product added to cart!"); // Use browser alert for web
-        router.push({
-          pathname: "./Vet/cart",
-          params: { cartItems: JSON.stringify(cartItems) },
-        });
-      } else {
-        Alert.alert("Success", "Product added to cart!", [
-          {
-            text: "OK",
-            onPress: () =>
-              router.push({
-                pathname: "./Vet/cart",
-                params: { cartItems: JSON.stringify(cartItems) },
-              }),
-          },
-        ]);
-      }
+      showAlert("Success", "Product added to cart!", {
+        pathname: "./Vet/cart",
+        params: { cartItems: JSON.stringify(cartItems) },
+      });
     } catch (error) {
       console.error("Failed to add to cart:", error);
-      if (Platform.OS === "web") {
-        window.alert("Failed to add product to cart. Please try again.");
-      } else {
-        Alert.alert(
-          "Error",
-          "Failed to add product to cart. Please try again."
-        );
-      }
+      showAlert("Error", "Failed to add product to cart. Please try again.");
     }
   };
 
