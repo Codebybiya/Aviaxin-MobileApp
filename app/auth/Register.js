@@ -6,16 +6,13 @@ import CustomModel from "../../components/Model/CustomModel"; // Import CustomMo
 import { registerInputs } from "../../constants/constants";
 import Alert from "../../components/Alert/Alert";
 import { useAlert } from "../../context/alertContext/AlertContext";
-import { useAuth } from "../../context/authcontext/AuthContext";
 import { useState } from "react";
 const backendUrl = `${config.backendUrl}`;
 const Register = ({ show, setShow }) => {
   const router = useRouter();
   const { showAlert } = useAlert();
-  const { checkUserVerified, registerUser } = useAuth();
   const [userDetails, setUserDetails] = useState(null);
   // Function to handle form submission
-  const navigation = useNavigation();
   const handleSubmit = async (values) => {
     const userData = {
       firstName: values.firstname,
@@ -28,7 +25,7 @@ const Register = ({ show, setShow }) => {
     setUserDetails(userData);
     // setShow(false);
 
-    // try {
+    try {
     console.log(values.email);
     console.log(`${backendUrl}/users/sendOTP/${values.email}`);
     const resp = await axios.post(
@@ -42,16 +39,16 @@ const Register = ({ show, setShow }) => {
         // router.push("./OtpPage");
         router.push({
           pathname: "./OtpPage",
-          params: userData
+          params: userData,
         });
       }, 2000);
     } else {
       showAlert("error", "Failed to send OTP, try again!");
     }
-    // } catch (error) {
-    //   console.log(error);
-    //   showAlert("error", "Failed to send OTP, try again!");
-    // }
+    } catch (error) {
+      console.log(error);
+      showAlert("error", "Failed to send OTP, try again!");
+    }
   };
 
   return (
@@ -66,7 +63,7 @@ const Register = ({ show, setShow }) => {
         formTitle="Get Register"
         buttonText="Register"
       />
-      <Alert />
+      
     </View>
   );
 };

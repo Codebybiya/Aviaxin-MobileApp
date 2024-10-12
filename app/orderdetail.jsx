@@ -515,14 +515,14 @@ const OrderDetail = () => {
 
         <View style={styles.buttonRow}>
           {/* Download Button */}
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.button}
             activeOpacity={0.8}
             onPress={() => handlePDF("print", order, id, showModal)}
           >
             <Icon name="download" size={18} color="#fff" />
             <Text style={styles.buttonText}>Download Invoice</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           {/* Share Button */}
           <TouchableOpacity

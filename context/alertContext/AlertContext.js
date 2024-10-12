@@ -7,10 +7,8 @@ const AlertContext = createContext();
 export const AlertProvider = ({ children }) => {
   const [alert, setAlert] = useState(null);
 
-  const showAlert = (type, message) => {
-
-    setAlert({ type, message });
-    console.log(alert)
+  const showAlert = (type, message, redirect) => {
+    setAlert({ type, message, redirect });
   };
 
   return (

@@ -1,15 +1,14 @@
 import React, { useState } from "react";
-import { View, Text, Alert, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { CodeField, Cursor } from "react-native-confirmation-code-field";
 import axios from "axios";
 import config from "../../assets/config";
-import { useRouter } from "expo-router";
-
+import { useAlert } from "../../context/alertContext/AlertContext";
 const { backendUrl } = config;
 
 const OTPInput = ({ userData }) => {
   const [code, setCode] = useState("");
-  const router=useRouter();
+  const { showAlert } = useAlert;
   const handleCodeChange = (newCode) => {
     setCode(newCode);
 
@@ -26,34 +25,24 @@ const OTPInput = ({ userData }) => {
 
     try {
       console.log(userData);
-      const response = await axios.post(`${backendUrl}/users/register`, userData);
+      const response = await axios.post(
+        `${backendUrl}/users/register`,
+        userData
+      );
       console.log(response);
 
-      if (response.data.status="Success") {
+      if ((response.data.status = "Success")) {
         console.log(response.data);
 
         // Show the built-in alert and redirect after user clicks "OK"
-        Alert.alert(
-          "Success",
-          "User Registered Successfully",
-          [
-            {
-              text: "OK",
-              onPress: () => {
-                // Redirect to the login page after clicking OK
-                router.push("/Login");
-              },
-            },
-          ],
-          { cancelable: false }
-        );
+        showAlert("Success", "User Registered Successfully", "/auth/Login");
       } else {
         console.log(response.data);
-        Alert.alert("Error", response.data.message);
+        showAlert("Error", response.data.message);
       }
     } catch (error) {
       console.error(error);
-      Alert.alert("Error", "Registration Failed!");
+      showAlert("Error", "Registration Failed!");
     }
   };
 
@@ -67,7 +56,10 @@ const OTPInput = ({ userData }) => {
         rootStyle={styles.codeFieldRoot}
         keyboardType="number-pad"
         renderCell={({ index, symbol, isFocused }) => (
-          <View key={index} style={[styles.cell, isFocused && styles.focusCell]}>
+          <View
+            key={index}
+            style={[styles.cell, isFocused && styles.focusCell]}
+          >
             <Text style={styles.cellText}>
               {symbol || (isFocused ? <Cursor /> : null)}
             </Text>

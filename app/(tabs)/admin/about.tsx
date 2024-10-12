@@ -4,7 +4,6 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Alert,
   TextInput,
   Modal,
   ScrollView,
@@ -15,12 +14,14 @@ import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { captilizeFirstLetter, updateUserPassword } from "@/utils/utils";
 import { useAuth } from "@/context/authcontext/AuthContext";
-
+import Alert from "../../../components/Alert/Alert";
+import { useAlert } from "../../../context/alertContext/AlertContext";
 const About = () => {
   const [user, setUser] = useState({ name: "", email: "", phone: "" });
   const [modalVisible, setModalVisible] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const { alert,showAlert } = useAlert();
   const router = useRouter();
   const { handleLogout } = useAuth();
 
@@ -44,15 +45,13 @@ const About = () => {
     fetchUserData();
   }, []);
 
- 
-
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match");
+      showAlert("Error", "Passwords do not match");
       return;
     }
 
-    await updateUserPassword(newPassword);
+    await updateUserPassword(newPassword, showAlert);
     setModalVisible(false);
   };
 

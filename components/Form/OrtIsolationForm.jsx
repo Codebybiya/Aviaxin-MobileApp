@@ -5,14 +5,14 @@ import {
   View,
   TextInput,
   TouchableOpacity,
-  Alert,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import axios from "axios";
 import config from "@/assets/config";
 import { ortIsolationInputs } from "../../constants/constants";
-
+import { useAlert } from "@/context/alertContext/AlertContext";
+import Alert from "../Alert/Alert";
 const backendUrl = `${config.backendUrl}`;
 
 const OrtIsolationForm = ({
@@ -22,13 +22,13 @@ const OrtIsolationForm = ({
   inputValues,
 }) => {
   const router = useRouter();
-
+  const { showAlert } = useAlert();
   const [Success, setSuccess] = useState(false);
 
   const handleCheckout = async () => {
     console.log(user.userId);
     if (!user.userId) {
-      Alert.alert("Error", "User ID not found. Please log in.");
+      showAlert("Error", "User ID not found. Please log in.");
       return;
     }
 
@@ -49,13 +49,11 @@ const OrtIsolationForm = ({
         await axios.post(`${backendUrl}/orders/addorders`, order);
       }
 
-      Alert.alert("Success", "Your order has been placed!", [
-        { text: "OK", onPress: () => router.push("/orderconfirmation") },
-      ]);
+      showAlert("Success", "Your order has been placed!", "/orderconfirmation");
       setSuccess(true);
     } catch (error) {
       console.error("Error placing order:", error);
-      Alert.alert(
+      showAlert(
         "Error",
         "There was an issue placing your order. Please try again."
       );
@@ -90,10 +88,7 @@ const OrtIsolationForm = ({
           )}
         </View>
       ))}
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => handleCheckout()}
-      >
+      <TouchableOpacity style={styles.button} onPress={() => handleCheckout()}>
         <Text style={styles.buttonText}>Place Order</Text>
       </TouchableOpacity>
     </View>

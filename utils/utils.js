@@ -47,7 +47,7 @@ export const createValidationSchema = (fields) => {
   return Yup.object().shape(shape);
 };
 
-export const updateUserPassword = async (newPassword) => {
+export const updateUserPassword = async (newPassword,showAlert) => {
   try {
     const savedUserData = await AsyncStorage.getItem("userData");
     if (savedUserData) {
@@ -60,12 +60,12 @@ export const updateUserPassword = async (newPassword) => {
       await AsyncStorage.setItem("userData", JSON.stringify(userData));
       if (updatedUserData.data.status === "Success") {
       } else {
-        Alert.alert("Error", "An error occurred while changing password");
+        showAlert("Error", "An error occurred while changing password");
       }
     }
   } catch (error) {
     console.log(error);
-    Alert.alert("Error", "An error occurred while changing password");
+    showAlert("Error", "An error occurred while changing password");
   }
 };
 

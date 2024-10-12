@@ -8,7 +8,6 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  Alert,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { useRouter, useLocalSearchParams } from "expo-router";
@@ -17,24 +16,27 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import config from "@/assets/config";
 import OrtIsolationForm from "@/components/Form/OrtIsolationForm";
 import ReusableProductForm from "@/components/Form/ReusableProductForm";
+import Alert from "@/components/Alert/Alert";
 const backendUrl = `${config.backendUrl}`;
 import { useAuth } from "@/context/authcontext/AuthContext";
 import {
   ortIsolationInputs,
   ortVaccinationInputs,
 } from "@/constants/constants";
+import { useAlert } from "@/context/alertContext/AlertContext";
 const ProductForm = () => {
   const { cartItems } = useLocalSearchParams();
   const parsedCartItems = JSON.parse(cartItems);
   const router = useRouter();
   console.log(parsedCartItems);
-const [Success,setSuccess]=useState(false)
+  const [Success, setSuccess] = useState(false);
   const { getUserData } = useAuth();
+  const { showAlert } = useAlert();
   const handleCheckout = async (inputValues) => {
-    const user=await getUserData();
-    console.log(user)
+    const user = await getUserData();
+    console.log(user);
     if (!user.userid) {
-      Alert.alert("Error", "User ID not found. Please log in.");
+      showAlert("Error", "User ID not found. Please log in.");
       return;
     }
 
@@ -59,13 +61,11 @@ const [Success,setSuccess]=useState(false)
         await axios.post(`${backendUrl}/orders/addorders`, order);
       }
 
-      Alert.alert("Success", "Your order has been placed!", [
-        { text: "OK", onPress: () => router.push("/orderconfirmation") },
-      ]);
+      showAlert("Success", "Your order has been placed!", "/orderconfirmation");
       setSuccess(true);
     } catch (error) {
       console.error("Error placing order:", error);
-      Alert.alert(
+      showAlert(
         "Error",
         "There was an issue placing your order. Please try again."
       );
@@ -104,6 +104,7 @@ const [Success,setSuccess]=useState(false)
           inputValues={inputs}
         /> */}
         {componentBasedOnType(parsedCartItems[0].productType)}
+        
       </ScrollView>
     </KeyboardAvoidingView>
   );

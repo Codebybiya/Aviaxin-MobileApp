@@ -795,7 +795,6 @@ export default function OtpPage() {
 
       <View style={styles.formContainer}>
         <OTPInput userData={userData} />
-        <Alert />
       </View>
     </View>
   );

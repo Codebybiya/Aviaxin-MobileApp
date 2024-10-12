@@ -29,11 +29,12 @@ import Newconfrimedorder from "../../newconfrimedorder";
 import Login from "../../auth/Login";
 import { menuItems } from "../../../constants/constants";
 import config from "@/assets/config";
-
+import Alert from "../../../components/Alert/Alert";
+import { useAlert } from "../../../context/alertContext/AlertContext";
+import { useAuth } from "../../../context/authcontext/AuthContext";
 const Stack = createStackNavigator();
 const Tabs = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
-
 // Drawer Button Component
 function DrawerButton() {
   const navigation = useNavigation();
@@ -151,18 +152,7 @@ function CustomDrawerContent(props) {
     fetchUserData();
   }, []);
 
-  const handleLogout = async () => {
-    try {
-      await AsyncStorage.removeItem("userData");
-      props.navigation.navigate("Login");
-    } catch (error) {
-      console.error("Error during logout", error);
-      Alert.alert(
-        "Logout Error",
-        "An error occurred during logout. Please try again."
-      );
-    }
-  };
+  const { handleLogout } = useAuth();
 
   return (
     <DrawerContentScrollView {...props}>
@@ -182,7 +172,7 @@ function CustomDrawerContent(props) {
           )}
           onPress={() =>
             item.route === "logout"
-              ? handleLogout()
+              ? () => handleLogout()
               : props.navigation.navigate(item.route)
           }
         />

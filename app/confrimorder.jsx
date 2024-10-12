@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   TextInput,
   Modal,
-  Alert,
   ActivityIndicator,
   ScrollView,
 } from "react-native";
@@ -22,7 +21,8 @@ import {
 import CustomModel from "@/components/Model/CustomModel";
 import { useAlert } from "../context/alertContext/AlertContext";
 import { Ionicons } from "@expo/vector-icons";
-
+import * as Updates from "expo-updates"; // Import Updates from expo-updates
+import Alert from "@/components/Alert/Alert";
 const backendUrl = `${config.backendUrl}`;
 
 const ConfirmOrder = () => {
@@ -76,7 +76,6 @@ const ConfirmOrder = () => {
             status: status,
           }
         );
-        console.log(resp?.data?.data);
       }
       setOrder((prevOrder) => ({
         ...prevOrder,
@@ -85,8 +84,8 @@ const ConfirmOrder = () => {
         batchNumber: data?.batchNumber,
         confirmedBy: order.userID,
       }));
+      showAlert("Success", "Order confirmed successfully.");
       setModalVisible(false); // Close the modal after confirmation
-      Alert.alert("Success", "Order confirmed successfully.");
     } catch (error) {
       console.error("Failed to confirm order:", error);
       setError("Failed to confirm order.");
@@ -96,7 +95,7 @@ const ConfirmOrder = () => {
   };
 
   const addMoreInfo = async (data) => {
-    console.log(data)
+    console.log(data);
     try {
       const resp = await axios.patch(
         `${backendUrl}/orders/add-more-info/${id}`,
@@ -106,17 +105,16 @@ const ConfirmOrder = () => {
       );
       console.log(resp?.data?.data);
       if (resp.data.status === "success") {
-
         setOrder((prevOrder) => ({
           ...prevOrder,
-          moreInfo: resp?.data?.data?.moreInfo
+          moreInfo: resp?.data?.data?.moreInfo,
         }));
         console.log(order);
-        Alert.alert("Success", "Process added successfully.");
+        showAlert("Success", "Process added successfully.");
       }
     } catch (error) {
       console.error("Failed to add more info:", error);
-      Alert.alert("Error", "Failed to add more info.");
+      showAlert("Error", "Failed to add more info.");
       setError("Failed to add more info.");
     }
   };
@@ -139,11 +137,11 @@ const ConfirmOrder = () => {
 
   const hanadleProcessEdit = async (data) => {
     console.log(data);
-    // try {
+    try {
       const resp = await axios.patch(
         `${backendUrl}/orders/edit-more-info/${id}`,
         {
-          moreinfo: { title: data?.details, description: "Yes",id:processId },
+          moreinfo: { title: data?.details, description: "Yes", id: processId },
           processId: processId,
         }
       );
@@ -151,17 +149,16 @@ const ConfirmOrder = () => {
         console.log(resp?.data?.data);
         setOrder((prevOrder) => ({
           ...prevOrder,
-          moreInfo: resp?.data?.data?.moreInfo
-
+          moreInfo: resp?.data?.data?.moreInfo,
         }));
         console.log(order);
-        Alert.alert("Success", "Process edited successfully.");
+        showAlert("Success", "Process edited successfully.");
       }
-    // } catch (error) {
-    //   console.error("Failed to add more info:", error);
-    //   Alert.alert("Error", "Failed to add more info.");
-    //   setError("Failed to add more info.");
-    // }
+    } catch (error) {
+      console.error("Failed to add more info:", error);
+      showAlert("Error", "Failed to add more info.");
+      setError("Failed to add more info.");
+    }
   };
 
   const startProcessEdit = (id) => {
@@ -335,12 +332,12 @@ const ConfirmOrder = () => {
             <Text style={styles.value}>{order.isolateNumber}</Text>
           </View>
         )}
-        {order?.batchNumber &&
+        {order?.batchNumber && (
           <View style={styles.detailContainer}>
             <Text style={styles.label}>Batch Number:</Text>
             <Text style={styles.value}>{order.batchNumber}</Text>
           </View>
-        }
+        )}
 
         <View style={styles.detailContainer}>
           <Text style={styles.label}>Order Status:</Text>
@@ -353,7 +350,9 @@ const ConfirmOrder = () => {
           order.productID.productType,
           order.status
         )}
-        {order.productID.productType === "isolation" ||order.productID.productType === "vaccine" ? (
+        {order.productID.productType === "isolation" ||
+        (order.productID.productType === "vaccine" &&
+          order.status !== "preparing") ? (
           <CustomModel
             inputs={ortIsolationConfirmationInputs}
             formTitle="Order Details"
@@ -402,6 +401,7 @@ const ConfirmOrder = () => {
           setShow={setProcessModalVisible}
           handleSubmit={hanadleProcessEdit}
         />
+        <Alert/>
       </View>
     </ScrollView>
   );

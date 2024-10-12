@@ -4,7 +4,6 @@ import {
   Text,
   View,
   FlatList,
-  Alert,
   TouchableOpacity,
 } from "react-native";
 import axios from "axios";
@@ -12,7 +11,8 @@ import config from "../assets/config";
 import { Ionicons } from "@expo/vector-icons";
 import CustomModel from "@/components/Model/CustomModel";
 import { adminInputs } from "@/constants/constants";
-
+import Alert from "@/components/Alert/Alert";
+import { useAlert } from "@/context/alertContext/AlertContext";
 const backendUrl = `${config.backendUrl}`;
 
 interface Admins {
@@ -27,13 +27,7 @@ const ViewAdmins: React.FC = () => {
   const [admins, setAdmins] = useState<Admins[]>([]);
   const [show, setShow] = useState<boolean>(false);
   const [id, setId] = useState<string>("");
-
-  const showPopup = (message: string, title: string) => {
-    Alert.alert(title, message, [{ text: "OK" }], {
-      cancelable: true,
-    });
-  };
-
+  const { showAlert } = useAlert();
   const handleUpdate = (id: string) => {
     setShow(true);
     setId(id);
@@ -47,11 +41,11 @@ const ViewAdmins: React.FC = () => {
         body
       );
       if (resp.data.status === "success") {
-        showPopup(resp.data.message, "Admin Updated!");
+        showAlert("Admin Updated!", resp.data.message);
         fetchAdmins(); // Refresh the list after update
       }
     } catch (error) {
-      showPopup("Admin cannot be updated", "Error");
+      showAlert("Error", "Admin cannot be updated");
     }
   };
 
@@ -62,10 +56,10 @@ const ViewAdmins: React.FC = () => {
       );
       if (response.data.status === "Success") {
         setAdmins(admins.filter((admin) => admin._id !== id));
-        showPopup(response.data.message, "Admin Deleted");
+        showAlert("Admin Deleted", response.data.message);
       }
     } catch (error) {
-      showPopup("Admin cannot be deleted", "Error");
+      showAlert("Error", "Admin cannot be deleted");
     }
   };
 
@@ -127,8 +121,11 @@ const ViewAdmins: React.FC = () => {
           id={id}
           setShow={setShow}
           handleSubmit={handleSubmit}
+          formTitle="Update Admin"
+          buttonText="Save Changes]"
         />
       )}
+      
     </View>
   );
 };

@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   FlatList,
   ListRenderItemInfo,
-  Alert,
   ActivityIndicator, // Import ActivityIndicator
 } from "react-native";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
@@ -14,7 +13,8 @@ import { useRouter } from "expo-router";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import config from "@/assets/config";
-
+import { useAlert } from "@/context/alertContext/AlertContext";
+import Alert from "@/components/Alert/Alert";
 const backendUrl = `${config.backendUrl}`;
 
 interface Order {
@@ -28,7 +28,7 @@ const Placeorder: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true); // Add loading state
   const router = useRouter();
-
+  const { showAlert } = useAlert();
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -55,12 +55,12 @@ const Placeorder: React.FC = () => {
 
             setOrders(ordersData);
           } else {
-            Alert.alert("Error", "User ID not found. Please log in.");
+            showAlert("Error", "User ID not found. Please log in.");
           }
         }
       } catch (error) {
         console.error("Failed to fetch orders:", error);
-        Alert.alert("Error", "Unable to fetch orders. Please try again.");
+        showAlert("Error", "Unable to fetch orders. Please try again.");
       } finally {
         setIsLoading(false); // Stop loading
       }
@@ -115,6 +115,7 @@ const Placeorder: React.FC = () => {
           contentContainerStyle={styles.ordersList}
         />
       )}
+      
     </View>
   );
 };

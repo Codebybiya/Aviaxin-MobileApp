@@ -4,14 +4,14 @@ import {
   Text,
   View,
   FlatList,
-  Alert,
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
 import axios from "axios";
 import { Ionicons } from "@expo/vector-icons";
 import config from "../assets/config";
-
+import Alert from "@/components/Alert/Alert";
+import { useAlert } from "@/context/alertContext/AlertContext";
 const backendUrl = `${config.backendUrl}`;
 
 // Update User interface to handle nested user_id structure properly
@@ -29,12 +29,7 @@ interface User {
 const ViewUsers: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-
-  const showPopup = (message: string, title: string) => {
-    Alert.alert(title, message, [{ text: "OK" }], {
-      cancelable: true,
-    });
-  };
+  const { showAlert } = useAlert();
 
   useEffect(() => {
     fetchUsers();
@@ -53,7 +48,7 @@ const ViewUsers: React.FC = () => {
       } else {
         console.error("General error:", error); // Log general error
       }
-      showPopup("Failed to fetch users.", "Error");
+      showAlert("Error", "Failed to fetch users.");
     } finally {
       setLoading(false);
     }
@@ -78,12 +73,12 @@ const ViewUsers: React.FC = () => {
       </View>
       <View style={styles.userActions}>
         <TouchableOpacity
-          onPress={() => showPopup("Update feature coming soon!", "Update")}
+          onPress={() => showAlert("Update", "Update feature coming soon!")}
         >
           <Ionicons name="create-outline" size={24} color="#7DDD51" />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => showPopup("Delete feature coming soon!", "Delete")}
+          onPress={() => showAlert("Delete", "Delete feature coming soon!")}
           style={styles.deleteButton}
         >
           <Ionicons name="trash-outline" size={24} color="#FF3B30" />
@@ -113,6 +108,7 @@ const ViewUsers: React.FC = () => {
       ) : (
         <ActivityIndicator size="large" color="#7DDD51" />
       )}
+      
     </View>
   );
 };

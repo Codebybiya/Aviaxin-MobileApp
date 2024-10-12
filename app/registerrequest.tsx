@@ -4,14 +4,14 @@ import {
   Text,
   View,
   FlatList,
-  Alert,
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
 import axios from "axios";
 import { Ionicons } from "@expo/vector-icons";
 import config from "../assets/config";
-
+import { useAlert } from "@/context/alertContext/AlertContext";
+import Alert from "@/components/Alert/Alert";
 const backendUrl = `${config.backendUrl}`;
 
 interface Microbiologist {
@@ -22,13 +22,14 @@ interface Microbiologist {
   user_id: {
     email: string;
     role: string;
+    _id: string;
   };
 }
 
 const PendingMicrobiologists: React.FC = () => {
   const [microbiologists, setMicrobiologists] = useState<Microbiologist[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-
+  const { showAlert } = useAlert();
   useEffect(() => {
     fetchPendingMicrobiologists();
   }, []);
@@ -41,7 +42,7 @@ const PendingMicrobiologists: React.FC = () => {
       setMicrobiologists(response?.data?.data || []);
     } catch (error) {
       console.error("Error fetching microbiologists:", error);
-      Alert.alert("Error", "Failed to fetch pending microbiologists.");
+      showAlert("Error", "Failed to fetch pending microbiologists.");
     } finally {
       setLoading(false);
     }
@@ -52,11 +53,11 @@ const PendingMicrobiologists: React.FC = () => {
     setConfirming(id); // Show loader for this user
     try {
       await axios.patch(`${backendUrl}/users/confirmMicrobiologist/${id}`);
-      Alert.alert("Success", "Microbiologist confirmed.");
+      showAlert("Success", "Microbiologist confirmed.");
       fetchPendingMicrobiologists(); // Refresh the list
     } catch (error) {
       console.error("Error confirming microbiologist:", error);
-      Alert.alert("Error", "Failed to confirm microbiologist.");
+      showAlert("Error", "Failed to confirm microbiologist.");
     } finally {
       setConfirming(null); // Hide loader
     }
@@ -65,11 +66,11 @@ const PendingMicrobiologists: React.FC = () => {
   const handleDelete = async (id: string) => {
     try {
       await axios.delete(`${backendUrl}/users/deleteMicrobiologist/${id}`);
-      Alert.alert("Success", "Microbiologist deleted.");
+      showAlert("Success", "Microbiologist deleted.");
       fetchPendingMicrobiologists(); // Refresh the list
     } catch (error) {
       console.error("Error deleting microbiologist:", error);
-      Alert.alert("Error", "Failed to delete microbiologist.");
+      showAlert("Error", "Failed to delete microbiologist.");
     }
   };
 

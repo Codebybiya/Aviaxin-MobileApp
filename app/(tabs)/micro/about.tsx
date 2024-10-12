@@ -14,6 +14,8 @@ import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { captilizeFirstLetter, updateUserPassword } from "@/utils/utils";
 import { useAuth } from "@/context/authcontext/AuthContext";
+import { useAlert } from "@/context/alertContext/AlertContext";
+import Alert from "@/components/Alert/Alert";
 
 const About = () => {
   const [user, setUser] = useState({ name: "", email: "", phone: "" });
@@ -23,7 +25,7 @@ const About = () => {
   const [passwordChanged, setPasswordChanged] = useState(false); // New state for success message
   const router = useRouter();
   const { handleLogout } = useAuth();
-
+  const { alert, showAlert } = useAlert();
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -44,20 +46,19 @@ const About = () => {
     fetchUserData();
   }, []);
 
-
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
-      // Show an error message if the passwords don't match, but no success alert
-      alert("Error: Passwords do not match");
+      // Show an error message if the passwords don't match, but no success showAlert
+      showAlert("Error", "Passwords do not match");
       return;
     }
 
     try {
-      await updateUserPassword(newPassword); // Update the password
+      await updateUserPassword(newPassword, showAlert); // Update the password
       setPasswordChanged(true); // Show the success message in the modal
     } catch (error) {
-      console.error("Error updating password:", error);
-      alert("Error: Failed to change password.");
+      console.error("Error:", error);
+      showAlert("Error", "Failed to change password.");
     }
   };
 
@@ -176,13 +177,15 @@ const About = () => {
           />
         </TouchableOpacity>
 
-        {modelView()}
-
-        <TouchableOpacity style={styles.logoutContainer} onPress={handleLogout}>
+        <TouchableOpacity
+          style={styles.logoutContainer}
+          onPress={() => handleLogout()}
+        >
           <FontAwesome name="sign-out" size={36} color="#7DDD51" />
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
       </View>
+      {modelView()}
     </ScrollView>
   );
 };

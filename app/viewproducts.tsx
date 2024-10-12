@@ -6,14 +6,14 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
-  Alert,
 } from "react-native";
 import axios from "axios";
 import config from "../assets/config";
 import { Ionicons } from "@expo/vector-icons";
 import CustomModel from "@/components/Model/CustomModel"; // Assuming this component is implemented for update modal
 import { productInputs } from "@/constants/constants"; // Update the inputs as needed
-
+import Alert from "@/components/Alert/Alert";
+import { useAlert } from "@/context/alertContext/AlertContext";
 const backendUrl = `${config.backendUrl}`;
 
 interface Products {
@@ -27,12 +27,7 @@ const ViewProducts: React.FC = () => {
   const [products, setProducts] = useState<Products[]>([]);
   const [show, setShow] = useState<boolean>(false);
   const [id, setId] = useState<string>("");
-
-  const showPopup = (message: string, title: string) => {
-    Alert.alert(title, message, [{ text: "OK" }], {
-      cancelable: true,
-    });
-  };
+  const { showAlert } = useAlert();
 
   const handleUpdate = (id: string) => {
     setShow(true);
@@ -47,11 +42,11 @@ const ViewProducts: React.FC = () => {
         body
       );
       if (resp.data.status === "Success") {
-        showPopup(resp.data.message, "Product Updated!");
+        showAlert("Product Updated!", resp.data.message);
         fetchProducts(); // Refresh the list after update
       }
     } catch (error) {
-      showPopup("Product cannot be updated", "Error");
+      showAlert("Error", "Product cannot be updated");
     }
   };
 
@@ -62,10 +57,10 @@ const ViewProducts: React.FC = () => {
       );
       if (response.data.status === "Success") {
         setProducts(products.filter((product) => product._id !== id));
-        showPopup(response.data.message, "Product Deleted");
+        showAlert("Product Deleted", response.data.message);
       }
     } catch (error) {
-      showPopup("Product cannot be deleted", "Error");
+      showAlert("Error", "Product cannot be deleted");
     }
   };
 
