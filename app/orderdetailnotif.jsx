@@ -14,7 +14,8 @@ import axios from "axios";
 import config from "@/assets/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { object } from "yup";
-
+import { useAuth } from "@/context/authcontext/AuthContext";
+import {formatConfirmationTime} from "@/utils/utils"
 const backendUrl = `${config.backendUrl}`;
 const formatDate = (dateString) => {
   const options = {
@@ -35,7 +36,8 @@ const OrderDetailNotif = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const fadeAnim = useState(new Animated.Value(0))[0]; // Animation state for fade-in effect
-
+  const { user } = useAuth();
+  const [userrole,setUserrole] = useState("");
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
@@ -44,9 +46,10 @@ const OrderDetailNotif = () => {
         );
         const savedUserData = await AsyncStorage.getItem("userData");
         if (savedUserData) {
-          const { name, userid } = JSON.parse(savedUserData);
-          console.log(userid);
+          const { name, userid,userrole } = JSON.parse(savedUserData);
+          console.log(userrole);
           setConfirmedByName(name);
+          setUserrole(userrole);
         }
 
         if (response.data.data) {
@@ -100,6 +103,28 @@ const OrderDetailNotif = () => {
       </View>
     );
   }
+
+  const handleApprove = async (processId) => {
+    try {
+      const response = await axios.patch(
+        `${backendUrl}/orders/markProcessCompleted/${orderID}`,
+        { processId }
+      );
+      if (response.data.success) {
+        setOrder((prevOrder) => ({
+          ...prevOrder,
+          moreInfo: prevOrder.moreInfo.map((info) =>
+            info.id === id ? { ...info, status: "approved" } : info
+          ),
+        }));
+      } else {
+        throw new Error("Failed to approve order");
+      }
+    } catch (error) {
+      console.error("Failed to approve order:", error);
+      setError("Failed to approve order. Please try again.");
+    }
+  };
 
   const getStatusText = (status) => {
     switch (status) {
@@ -187,8 +212,35 @@ const OrderDetailNotif = () => {
           )}
           {order?.moreInfo?.map((info, index) => (
             <View style={styles.detailContainer} key={index}>
-              <Text style={styles.label}>{info.title}</Text>
-              <Text style={styles.value}>{info.description}</Text>
+              <View style={{ flexDirection: "column", flex: 1 }}>
+                <Text style={styles.label}>{info.title}</Text>
+                <Text
+                  style={[
+                    styles.value,
+                    { fontWeight: "bold", fontStyle: "italic" },
+                  ]}
+                >
+                  {info.status === "approved"
+                    ? confirmedByName
+                    : info.status}
+                </Text>
+                
+                <Text style={{ fontSize: "10px", color: "red" }}>
+                  {info.status === "approved"
+                    ? formatConfirmationTime(info.timeOfApproval)
+                    : "Unknown"}
+                </Text>
+              </View>
+              {/* Approve button for veternarian */}
+              {userrole === "veterinarian" &&
+                info.status !== "approved" && (
+                  <TouchableOpacity
+                    style={styles.approveButton}
+                    onPress={() => handleApprove(info.id)}
+                  >
+                    <Text style={styles.approveButtonText}>Approve</Text>
+                  </TouchableOpacity>
+                )}
             </View>
           ))}
           <View style={styles.detailContainer}>

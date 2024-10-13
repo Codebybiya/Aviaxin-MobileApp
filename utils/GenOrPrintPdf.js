@@ -191,7 +191,7 @@ export const handlePDF = async (action, order, id, showModal) => {
     ? order.moreInfo
         .map(
           (info) =>
-            `<div class="detail-container"><span class="label">${info.title}:</span><span class="value">${info.description}</span></div>`
+            `<div class="detail-container"><span class="label">${info.title}:</span><span class="value">${info.status}</span></div>`
         )
         .join("")
     : "";

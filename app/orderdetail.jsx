@@ -59,10 +59,10 @@ const OrderDetail = () => {
           `${backendUrl}/orders/orderdetail/${id}`
         );
 
-        console.log(response?.data?.data);  
+        console.log(response?.data?.data);
         if (response.data && response.data.data) {
           setOrder(response.data.data);
-          
+
           Animated.timing(fadeAnim, {
             toValue: 1,
             duration: 500,
@@ -468,10 +468,34 @@ const OrderDetail = () => {
               ))}
             </View>
           )}
+          {order.productID.productType === "vaccine" && (
+            <View style={styles.detailContainer}>
+              <Text style={styles.label}>Cultured By:</Text>
+              <Text style={styles.value}>
+                {order.confirmedByUser || "Unknown"}
+              </Text>
+            </View>
+          )}
           {order?.moreInfo?.map((info, index) => (
             <View style={styles.detailContainer} key={index}>
               <Text style={styles.label}>{info.title}</Text>
-              <Text style={styles.value}>{info.description}</Text>
+              <View>
+                <Text
+                  style={[
+                    styles.value,
+                    { fontWeight: "bold", fontStyle: "italic" },
+                  ]}
+                >
+                  {info.status === "approved"
+                    ? order.confirmedByUser
+                    : info.status}
+                </Text>
+                <Text style={{ fontSize: "10px", color: "red" }}>
+                  {info.status === "approved"
+                    ? formatConfirmationTime(info.timeOfApproval)
+                    : "Unknown"}
+                </Text>
+              </View>
             </View>
           ))}
           <View style={styles.detailContainer}>
@@ -483,12 +507,14 @@ const OrderDetail = () => {
 
           {order.status === "confirmed" && (
             <>
-              <View style={styles.detailContainer}>
-                <Text style={styles.label}>Confirmed By:</Text>
-                <Text style={styles.value}>
-                  {order.confirmedByUser || "Unknown"}
-                </Text>
-              </View>
+              {order.productID.productType !== "vaccine" && (
+                <View style={styles.detailContainer}>
+                  <Text style={styles.label}>Cultured By:</Text>
+                  <Text style={styles.value}>
+                    {order.confirmedByUser || "Unknown"}
+                  </Text>
+                </View>
+              )}
               <View style={styles.detailContainer}>
                 <Text style={styles.label}>Confirmation Time:</Text>
                 <Text style={styles.value}>

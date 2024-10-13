@@ -24,6 +24,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Updates from "expo-updates"; // Import Updates from expo-updates
 import Alert from "@/components/Alert/Alert";
 const backendUrl = `${config.backendUrl}`;
+import { formatConfirmationTime } from "@/utils/utils";
 
 const ConfirmOrder = () => {
   const { id } = useLocalSearchParams(); // Get the order ID from the route
@@ -35,6 +36,8 @@ const ConfirmOrder = () => {
   const [confirmingOrder, setConfirmingOrder] = useState(false); // Loading state for order confirmation
   const [processId, setProcessId] = useState(null);
   const [processModalVisible, setProcessModalVisible] = useState(false);
+  const [confirmedByName, setConfirmedByName] = useState("");
+
   const { showAlert } = useAlert();
   useEffect(() => {
     const fetchOrderDetails = async () => {
@@ -94,13 +97,13 @@ const ConfirmOrder = () => {
     }
   };
 
-  const addMoreInfo = async (data) => {
-    console.log(data);
+  const addMoreInfo = async (title) => {
+    console.log(title);
     try {
       const resp = await axios.patch(
         `${backendUrl}/orders/add-more-info/${id}`,
         {
-          moreinfo: { title: data?.details, description: "Yes" },
+          moreinfo: { title: title, status: "pending" },
         }
       );
       console.log(resp?.data?.data);
@@ -135,38 +138,18 @@ const ConfirmOrder = () => {
     return <Text>No order details found.</Text>;
   }
 
-  const hanadleProcessEdit = async (data) => {
-    console.log(data);
-    try {
-      const resp = await axios.patch(
-        `${backendUrl}/orders/edit-more-info/${id}`,
-        {
-          moreinfo: { title: data?.details, description: "Yes", id: processId },
-          processId: processId,
-        }
-      );
-      if (resp.data.status === "success") {
-        console.log(resp?.data?.data);
-        setOrder((prevOrder) => ({
-          ...prevOrder,
-          moreInfo: resp?.data?.data?.moreInfo,
-        }));
-        console.log(order);
-        showAlert("Success", "Process edited successfully.");
-      }
-    } catch (error) {
-      console.error("Failed to add more info:", error);
-      showAlert("Error", "Failed to add more info.");
-      setError("Failed to add more info.");
-    }
-  };
+  // Check if all moreInfo steps are approved
+  const allStepsApproved = order?.moreInfo?.every(
+    (info) => info.status === "approved"
+  );
 
-  const startProcessEdit = (id) => {
-    console.log(id);
-    setProcessModalVisible(true);
-    setProcessId(id);
-  };
-
+  // Find the first missing step from ortVaccinationPrepareInputs
+  const firstMissingStep = allStepsApproved
+    ? ortVaccinationPrepareInputs.find(
+        (step) => !order?.moreInfo?.some((info) => info.title === step.label)
+      )
+    : null;
+  console.log(order.status);
   const getUpdatedStatus = (productType) => {
     if (productType === "isolation") {
       return "confirmed";
@@ -235,7 +218,7 @@ const ConfirmOrder = () => {
         signatureText = "Click to start preparing this order";
       } else if (orderStatus === "preparing") {
         buttonText = "Add Details";
-        signatureText = "Click to add details this  Order";
+        signatureText = "Click to add details this Order";
       }
     }
     return (
@@ -307,6 +290,18 @@ const ConfirmOrder = () => {
               </View>
             )
         )}
+        {order?.isolateNumber && (
+          <View style={styles.detailContainer}>
+            <Text style={styles.label}>Isolation Number:</Text>
+            <Text style={styles.value}>{order.isolateNumber}</Text>
+          </View>
+        )}
+        {order?.batchNumber && (
+          <View style={styles.detailContainer}>
+            <Text style={styles.label}>Batch Number:</Text>
+            <Text style={styles.value}>{order.batchNumber}</Text>
+          </View>
+        )}
         {order?.bodyParts.length > 0 && (
           <View style={styles.detailContainer}>
             <Text style={styles.label}>Body Parts</Text>
@@ -320,25 +315,55 @@ const ConfirmOrder = () => {
         {order?.moreInfo?.map((info, index) => (
           <View style={styles.detailContainer} key={index}>
             <Text style={styles.label}>{info.title}</Text>
-            <Text style={styles.value}>{info.description}</Text>
-            <TouchableOpacity onPress={() => startProcessEdit(info.id)}>
-              <Ionicons name="create-outline" size={28} color="#7DDD51" />
-            </TouchableOpacity>
+            <View>
+              <Text
+                style={[
+                  styles.value,
+                  { fontWeight: "bold", fontStyle: "italic" },
+                ]}
+              >
+                {info.status === "approved"
+                  ? order?.confirmedByUser
+                  : info.status}
+              </Text>
+              {info?.timeOfApproval && (
+                <Text style={{ fontSize: "10px", color: "red" }}>
+                  {info.status === "approved"
+                    ? formatConfirmationTime(info?.timeOfApproval)
+                    : "Unknown"}
+                </Text>
+              )}
+            </View>
           </View>
         ))}
-        {order?.isolateNumber && (
-          <View style={styles.detailContainer}>
-            <Text style={styles.label}>Isolation Number:</Text>
-            <Text style={styles.value}>{order.isolateNumber}</Text>
-          </View>
-        )}
-        {order?.batchNumber && (
-          <View style={styles.detailContainer}>
-            <Text style={styles.label}>Batch Number:</Text>
-            <Text style={styles.value}>{order.batchNumber}</Text>
-          </View>
-        )}
 
+        {/* Display first missing step only if all previous steps are approved */}
+        {!order?.moreInfo && order.status === "preparing" && (
+          <View style={styles.detailContainer}>
+            <Text style={styles.label}>
+              {ortVaccinationPrepareInputs[0]?.label}
+            </Text>
+            <TouchableOpacity
+              style={styles.confirmButton}
+              onPress={() => addMoreInfo(ortVaccinationPrepareInputs[0]?.label)}
+            >
+              <Text style={styles.buttonText}>Mark as Done</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        {order?.moreInfo &&
+          firstMissingStep &&
+          order.status === "preparing" && (
+            <View style={styles.detailContainer}>
+              <Text style={styles.label}>{firstMissingStep.label}</Text>
+              <TouchableOpacity
+                style={styles.confirmButton}
+                onPress={() => addMoreInfo(firstMissingStep.label)}
+              >
+                <Text style={styles.buttonText}>Mark as Done</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         <View style={styles.detailContainer}>
           <Text style={styles.label}>Order Status:</Text>
           <Text style={[styles.value, getStatusStyle(order.status)]}>
@@ -381,7 +406,7 @@ const ConfirmOrder = () => {
             <CustomModel
               inputs={ortVaccinationPrepareInputs}
               formTitle="Order Details"
-              buttonText="Add Completed Process"
+              buttonText="Mark as Done"
               visible={modalVisible}
               onClose={() => setModalVisible(false)}
               id={null}
@@ -394,14 +419,13 @@ const ConfirmOrder = () => {
         <CustomModel
           inputs={ortVaccinationPrepareInputs}
           formTitle="Order Details"
-          buttonText="Save Process"
+          buttonText="Mark as Completed"
           visible={processModalVisible}
           onClose={() => setProcessModalVisible(false)}
           id={null}
           setShow={setProcessModalVisible}
-          handleSubmit={hanadleProcessEdit}
+          handleSubmit={() => "Mark as Completed"}
         />
-        <Alert/>
       </View>
     </ScrollView>
   );

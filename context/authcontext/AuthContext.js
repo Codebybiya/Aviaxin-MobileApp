@@ -142,6 +142,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     const userToSave = resp?.data?.data;
+    console.log(userToSave);
     setUser(userToSave);
     console.log(user);
     if (!userToSave?.userrole) {

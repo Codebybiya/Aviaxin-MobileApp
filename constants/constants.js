@@ -608,7 +608,53 @@ export const ortVaccinationPrepareInputs = [
     validation: {
       required: true,
     },
-    label: "Enter Completed Process",
+    label: "Isolate transfer to BAP agar (48hr):",
+    placeholder: "Enter Completed Process",
+  },
+  {
+    name: "details",
+    type: "text",
+    validation: {
+      required: true,
+    },
+    label:
+      "Inoculate 15mL conical tube containing 10mL BHI and 1.5mL Horse Serum:",
+    placeholder: "Enter Completed Process",
+  },
+  {
+    name: "details",
+    type: "text",
+    validation: {
+      required: true,
+    },
+    label: "15mL conical being inoculated (72hr):",
+    placeholder: "Enter Completed Process",
+  },
+  {
+    name: "details",
+    type: "text",
+    validation: {
+      required: true,
+    },
+    label: "Purity Results:",
+    placeholder: "Enter Completed Process",
+  },
+  {
+    name: "details",
+    type: "text",
+    validation: {
+      required: true,
+    },
+    label: " Inoculate 1-liter of BHI broth with ORT (72hr):",
+    placeholder: "Enter Completed Process",
+  },
+  {
+    name: "details",
+    type: "text",
+    validation: {
+      required: true,
+    },
+    label: "Purity Results:",
     placeholder: "Enter Completed Process",
   },
 ];

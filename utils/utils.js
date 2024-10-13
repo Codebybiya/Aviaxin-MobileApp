@@ -89,3 +89,9 @@ export const getRoleScreen = (role) => {
 
  return null;
 };
+
+
+export const formatConfirmationTime = (time) => {
+  const date = new Date(time);
+  return date.toLocaleString(); // Format date and time into a readable string
+};
