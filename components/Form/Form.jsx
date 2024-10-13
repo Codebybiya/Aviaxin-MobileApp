@@ -43,7 +43,7 @@ const CustomForm = ({ inputs, handleSubmit, buttonText }) => {
     validationSchema: createValidationSchema(inputs),
   });
   return (
-    <View style={{ width: "100%"}}>
+    <View style={{ width: "100%" }}>
       <View
         style={{
           width: "100%",
@@ -56,6 +56,7 @@ const CustomForm = ({ inputs, handleSubmit, buttonText }) => {
           renderItem={renderInput}
           keyExtractor={(item) => item.name}
           numColumns={inputs?.length > 4 ? 2 : 1} // 2 columns if length > 4, else 1 column
+          key={inputs?.length > 4 ? "h" : "v"} // Horizontal or vertical
         />
       </View>
       <TouchableOpacity style={styles.button} onPress={formik.handleSubmit}>

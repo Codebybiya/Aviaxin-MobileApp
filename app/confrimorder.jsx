@@ -338,19 +338,23 @@ const ConfirmOrder = () => {
         ))}
 
         {/* Display first missing step only if all previous steps are approved */}
-        {!order?.moreInfo && order.status === "preparing" && (
-          <View style={styles.detailContainer}>
-            <Text style={styles.label}>
-              {ortVaccinationPrepareInputs[0]?.label}
-            </Text>
-            <TouchableOpacity
-              style={styles.confirmButton}
-              onPress={() => addMoreInfo(ortVaccinationPrepareInputs[0]?.label)}
-            >
-              <Text style={styles.buttonText}>Mark as Done</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+        {!order?.moreInfo &&
+          order.status === "preparing" &&
+          firstMissingStep && (
+            <View style={styles.detailContainer}>
+              <Text style={styles.label}>
+                {ortVaccinationPrepareInputs[0]?.label}
+              </Text>
+              <TouchableOpacity
+                style={styles.confirmButton}
+                onPress={() =>
+                  addMoreInfo(ortVaccinationPrepareInputs[0]?.label)
+                }
+              >
+                <Text style={styles.buttonText}>Mark as Done</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         {order?.moreInfo &&
           firstMissingStep &&
           order.status === "preparing" && (

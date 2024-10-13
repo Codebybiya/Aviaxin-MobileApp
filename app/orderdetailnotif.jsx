@@ -105,16 +105,17 @@ const OrderDetailNotif = () => {
   }
 
   const handleApprove = async (processId) => {
+    console.log(processId)
     try {
       const response = await axios.patch(
         `${backendUrl}/orders/markProcessCompleted/${orderID}`,
         { processId }
       );
-      if (response.data.success) {
+      if (response.data.status==="success") {
         setOrder((prevOrder) => ({
           ...prevOrder,
           moreInfo: prevOrder.moreInfo.map((info) =>
-            info.id === id ? { ...info, status: "approved" } : info
+            info._id === processId ? { ...info, status: "approved" } : info
           ),
         }));
       } else {
@@ -236,7 +237,7 @@ const OrderDetailNotif = () => {
                 info.status !== "approved" && (
                   <TouchableOpacity
                     style={styles.approveButton}
-                    onPress={() => handleApprove(info.id)}
+                    onPress={() => handleApprove(info._id)}
                   >
                     <Text style={styles.approveButtonText}>Approve</Text>
                   </TouchableOpacity>
