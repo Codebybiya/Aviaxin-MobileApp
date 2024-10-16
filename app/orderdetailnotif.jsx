@@ -15,7 +15,7 @@ import config from "@/assets/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { object } from "yup";
 import { useAuth } from "@/context/authcontext/AuthContext";
-import {formatConfirmationTime} from "@/utils/utils"
+import { formatConfirmationTime } from "@/utils/utils";
 const backendUrl = `${config.backendUrl}`;
 const formatDate = (dateString) => {
   const options = {
@@ -37,7 +37,7 @@ const OrderDetailNotif = () => {
   const [loading, setLoading] = useState(true);
   const fadeAnim = useState(new Animated.Value(0))[0]; // Animation state for fade-in effect
   const { user } = useAuth();
-  const [userrole,setUserrole] = useState("");
+  const [userrole, setUserrole] = useState("");
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
@@ -46,7 +46,7 @@ const OrderDetailNotif = () => {
         );
         const savedUserData = await AsyncStorage.getItem("userData");
         if (savedUserData) {
-          const { name, userid,userrole } = JSON.parse(savedUserData);
+          const { name, userid, userrole } = JSON.parse(savedUserData);
           console.log(userrole);
           setConfirmedByName(name);
           setUserrole(userrole);
@@ -105,18 +105,16 @@ const OrderDetailNotif = () => {
   }
 
   const handleApprove = async (processId) => {
-    console.log(processId)
+    console.log(processId);
     try {
       const response = await axios.patch(
         `${backendUrl}/orders/markProcessCompleted/${orderID}`,
         { processId }
       );
-      if (response.data.status==="success") {
+      if (response.data.status === "success") {
         setOrder((prevOrder) => ({
           ...prevOrder,
-          moreInfo: prevOrder.moreInfo.map((info) =>
-            info._id === processId ? { ...info, status: "approved" } : info
-          ),
+          moreInfo: response?.data?.data?.moreInfo,
         }));
       } else {
         throw new Error("Failed to approve order");
@@ -128,9 +126,12 @@ const OrderDetailNotif = () => {
   };
 
   const getStatusText = (status) => {
+    console.log(status);
     switch (status) {
       case "pending":
         return "Order Placed";
+      case "preparing":
+        return "Order Preparing";
       case "shipped":
         return "Shipped";
       case "delivered":
@@ -213,8 +214,28 @@ const OrderDetailNotif = () => {
           )}
           {order?.moreInfo?.map((info, index) => (
             <View style={styles.detailContainer} key={index}>
+              <Text style={styles.label}>{info.title}</Text>
               <View style={{ flexDirection: "column", flex: 1 }}>
-                <Text style={styles.label}>{info.title}</Text>
+                <Text
+                  style={[
+                    styles.value,
+                    { fontWeight: "bold", fontStyle: "italic" },
+                  ]}
+                >
+                  {info.status === "pending" || info.status === "approved"
+                    ? info.markedBy.firstname + " " + info.markedBy.lastname
+                    : info.status}
+                </Text>
+
+                {info.timeOfMarking && (
+                  <Text style={{ fontSize: 10, color: "red" }}>
+                    {info.status === "pending" || info.status === "approved"
+                      ? formatConfirmationTime(info.timeOfMarking)
+                      : "Unknown"}
+                  </Text>
+                )}
+              </View>
+              <View style={{ flexDirection: "column", flex: 1 }}>
                 <Text
                   style={[
                     styles.value,
@@ -222,26 +243,29 @@ const OrderDetailNotif = () => {
                   ]}
                 >
                   {info.status === "approved"
-                    ? confirmedByName
+                    ? info?.approvedBy?.firstname +
+                      " " +
+                      info?.approvedBy?.lastname
                     : info.status}
                 </Text>
-                
-                <Text style={{ fontSize: "10px", color: "red" }}>
-                  {info.status === "approved"
-                    ? formatConfirmationTime(info.timeOfApproval)
-                    : "Unknown"}
-                </Text>
+
+                {info.timeOfApproval && (
+                  <Text style={{ fontSize: 10, color: "red" }}>
+                    {info.status === "approved"
+                      ? formatConfirmationTime(info.timeOfApproval)
+                      : "Unknown"}
+                  </Text>
+                )}
               </View>
               {/* Approve button for veternarian */}
-              {userrole === "veterinarian" &&
-                info.status !== "approved" && (
-                  <TouchableOpacity
-                    style={styles.approveButton}
-                    onPress={() => handleApprove(info._id)}
-                  >
-                    <Text style={styles.approveButtonText}>Approve</Text>
-                  </TouchableOpacity>
-                )}
+              {userrole === "veterinarian" && info.status !== "approved" && (
+                <TouchableOpacity
+                  style={styles.approveButton}
+                  onPress={() => handleApprove(info._id)}
+                >
+                  <Text style={styles.approveButtonText}>Approve</Text>
+                </TouchableOpacity>
+              )}
             </View>
           ))}
           <View style={styles.detailContainer}>

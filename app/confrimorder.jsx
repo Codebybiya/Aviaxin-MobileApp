@@ -4,8 +4,6 @@ import {
   Text,
   View,
   TouchableOpacity,
-  TextInput,
-  Modal,
   ActivityIndicator,
   ScrollView,
 } from "react-native";
@@ -20,9 +18,6 @@ import {
 } from "@/constants/constants";
 import CustomModel from "@/components/Model/CustomModel";
 import { useAlert } from "../context/alertContext/AlertContext";
-import { Ionicons } from "@expo/vector-icons";
-import * as Updates from "expo-updates"; // Import Updates from expo-updates
-import Alert from "@/components/Alert/Alert";
 const backendUrl = `${config.backendUrl}`;
 import { formatConfirmationTime } from "@/utils/utils";
 
@@ -37,11 +32,17 @@ const ConfirmOrder = () => {
   const [processId, setProcessId] = useState(null);
   const [processModalVisible, setProcessModalVisible] = useState(false);
   const [confirmedByName, setConfirmedByName] = useState("");
-
+  const [user, setUser] = useState(null);
   const { showAlert } = useAlert();
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
+        const savedUserData = await AsyncStorage.getItem("userData");
+        if (savedUserData) {
+          const { userid } = JSON.parse(savedUserData);
+          console.log(userid);
+          setUser(userid);
+        }
         setLoading(true); // Start loader
         const response = await axios.get(
           `${backendUrl}/orders/orderdetail/${id}`
@@ -103,7 +104,7 @@ const ConfirmOrder = () => {
       const resp = await axios.patch(
         `${backendUrl}/orders/add-more-info/${id}`,
         {
-          moreinfo: { title: title, status: "pending" },
+          moreinfo: { title: title, status: "pending", markedBy: user },
         }
       );
       console.log(resp?.data?.data);
@@ -149,7 +150,6 @@ const ConfirmOrder = () => {
         (step) => !order?.moreInfo?.some((info) => info.title === step.label)
       )
     : null;
-  console.log(order.status);
   const getUpdatedStatus = (productType) => {
     if (productType === "isolation") {
       return "confirmed";
@@ -217,52 +217,41 @@ const ConfirmOrder = () => {
         buttonText = "Prepare Order";
         signatureText = "Click to start preparing this order";
       } else if (orderStatus === "preparing") {
-        buttonText = "Add Details";
+        buttonText = "Confirm Order";
         signatureText = "Click to add details this Order";
       }
     }
     return (
       <View>
-        {order.productID.productType === "vaccine" &&
-        order.status === "preparing" ? (
-          <View style={{ flexDirection: "row", justifyContent: "center" }}>
+        {order.productID.productType !== "vaccine" &&
+          order.status === "pending" && (
             <TouchableOpacity
-              style={{
-                backgroundColor: "#7DDD51",
-                paddingVertical: 15,
-                paddingHorizontal: 20,
-                borderRadius: 30,
-                alignSelf: "center",
-                marginTop: 20,
-              }}
-              onPress={() => setModalVisible(true)}
-            >
-              <Text style={styles.buttonText}>{buttonText}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                backgroundColor: "#7DDD51",
-                paddingVertical: 15,
-                paddingHorizontal: 20,
-                borderRadius: 30,
-                alignSelf: "center",
-                marginTop: 20,
-                marginLeft: 20,
-              }}
+              style={styles.confirmButton}
               onPress={() => handleConfirmOrder(order)}
             >
               <Text style={styles.buttonText}>Confirm Order</Text>
             </TouchableOpacity>
-          </View>
-        ) : (
+          )}
+        {order.productID.productType === "vaccine" &&
+        order.status === "pending" ? (
           <TouchableOpacity
             style={styles.confirmButton}
             onPress={() => setModalVisible(true)}
           >
             <Text style={styles.buttonText}>{buttonText}</Text>
           </TouchableOpacity>
+        ) : (
+          order.productID.productType !== "vaccine" &&
+          order.status === "preparing" &&
+          ortVaccinationPrepareInputs.length === order.moreInfo.length && (
+            <TouchableOpacity
+              style={styles.confirmButton}
+              onPress={() => handleConfirmOrder(order)}
+            >
+              <Text style={styles.buttonText}>Confirm Order</Text>
+            </TouchableOpacity>
+          )
         )}
-
         <Text style={styles.signatureText}>
           {orderStatus === "preparing" ? "" : signatureText}
         </Text>
@@ -315,7 +304,27 @@ const ConfirmOrder = () => {
         {order?.moreInfo?.map((info, index) => (
           <View style={styles.detailContainer} key={index}>
             <Text style={styles.label}>{info.title}</Text>
-            <View>
+            <View style={{ flexDirection: "column", flex: 1 }}>
+              <Text
+                style={[
+                  styles.value,
+                  { fontWeight: "bold", fontStyle: "italic" },
+                ]}
+              >
+                {info.status === "pending" || info.status === "approved"
+                  ? info.markedBy.firstname + " " + info.markedBy.lastname
+                  : info.status}
+              </Text>
+
+              {info.timeOfMarking && (
+                <Text style={{ fontSize: 10, color: "red" }}>
+                  {info.status === "pending" || info.status === "approved"
+                    ? formatConfirmationTime(info.timeOfMarking)
+                    : "Unknown"}
+                </Text>
+              )}
+            </View>
+            <View style={{ flexDirection: "column", flex: 1 }}>
               <Text
                 style={[
                   styles.value,
@@ -323,20 +332,22 @@ const ConfirmOrder = () => {
                 ]}
               >
                 {info.status === "approved"
-                  ? order?.confirmedByUser
+                  ? info?.approvedBy?.firstname +
+                    " " +
+                    info?.approvedBy?.lastname
                   : info.status}
               </Text>
-              {info?.timeOfApproval && (
-                <Text style={{ fontSize: "10px", color: "red" }}>
+
+              {info.timeOfApproval && (
+                <Text style={{ fontSize: 10, color: "red" }}>
                   {info.status === "approved"
-                    ? formatConfirmationTime(info?.timeOfApproval)
+                    ? formatConfirmationTime(info.timeOfApproval)
                     : "Unknown"}
                 </Text>
               )}
             </View>
           </View>
         ))}
-
         {/* Display first missing step only if all previous steps are approved */}
         {!order?.moreInfo &&
           order.status === "preparing" &&
@@ -474,7 +485,8 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    color: "#333",
+    color: "#218838", // Darker green for labels
+    flex: 1,
   },
   value: {
     fontSize: 16,

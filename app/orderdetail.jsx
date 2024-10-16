@@ -490,7 +490,7 @@ const OrderDetail = () => {
                     ? order.confirmedByUser
                     : info.status}
                 </Text>
-                <Text style={{ fontSize: "10px", color: "red" }}>
+                <Text style={{ fontSize: 10, color: "red" }}>
                   {info.status === "approved"
                     ? formatConfirmationTime(info.timeOfApproval)
                     : "Unknown"}

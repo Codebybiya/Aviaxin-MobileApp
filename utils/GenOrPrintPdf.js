@@ -190,8 +190,25 @@ export const handlePDF = async (action, order, id, showModal) => {
   const moreInfoHTML = order?.moreInfo
     ? order.moreInfo
         .map(
-          (info) =>
-            `<div class="detail-container"><span class="label">${info.title}:</span><span class="value">${info.status}</span></div>`
+          (info) => `
+            <div class="detail-container">
+              <span class="label">${info.title}:</span>
+              <div class="value">
+                <span>Marked By: ${info.markedBy?.firstname} ${
+            info.markedBy?.lastname
+          }</span><br>
+                <span>Marked Time: ${formatConfirmationTime(
+                  info.timeOfMarking
+                )}</span><br>
+                <span>Approved By: ${info.approvedBy?.firstname} ${
+            info.approvedBy?.lastname
+          }</span><br>
+                <span>Approval Time: ${formatConfirmationTime(
+                  info.timeOfApproval
+                )}</span>
+              </div>
+            </div>
+          `
         )
         .join("")
     : "";
