@@ -658,20 +658,12 @@ export const ortVaccinationPrepareInputs = [
     validation: {
       required: true,
     },
-    label: "Purity Results:",
+    label: "Purity Results 2:",
     options: [
       { label: "Yes", value: "yes" },
       { label: "No", value: "no" },
     ],
     placeholder: "Enter Completed Process",
   },
-  {
-    name: "details",
-    type: "text",
-    validation: {
-      required: true,
-    },
-    label: "Colony counts per/1mL of Live ORT (48 hr):",
-    placeholder: "Enter Completed Process",
-  },
+ 
 ];
