@@ -665,5 +665,9 @@ export const ortVaccinationPrepareInputs = [
     ],
     placeholder: "Enter Completed Process",
   },
- 
+  
 ];
+
+export const cfuCountsInputs=[
+  
+]

@@ -1,134 +1,147 @@
-import React, { useState } from "react";
-import { ScrollView, View, TextInput, Button, StyleSheet, Text } from "react-native";
-import { useAlert } from "@/context/alertContext/AlertContext";
-const BottlesTable = ({ doses, bottles, batchNumber, onSubmit }) => {
-    const { showAlert } = useAlert();   
-  const [bottleValues, setBottleValues] = useState(
-    Array(doses * bottles).fill("") // Create an array to store input values for each bottle
-  );
-
-  // Handler to update values
-  const handleInputChange = (index, value) => {
-    const updatedValues = [...bottleValues];
-    updatedValues[index] = value;
-    setBottleValues(updatedValues);
-  };
-
-  // Calculate bottles per dose
-  const bottlesPerDose = Math.floor(bottles / doses);
-  const extraBottles = bottles % doses;
-
-  // Function to submit the data
-  const handleSubmit = () => {
-    if (bottleValues.every((value) => value !== "")) {
-      onSubmit(bottleValues);
-    } else {
-      showAlert("Please fill in all bottle values before submitting.");
-    }
-  };
-
-  return (
-    <ScrollView>
-      <View style={styles.tableContainer}>
-        <View style={styles.table}>
-          {/* Header Row */}
-          <View style={styles.row}>
-            <Text style={[styles.cell, styles.headerCell]} colSpan={2}>
-              Batch No
-            </Text>
+import {
+    View,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    Button,
+  } from "react-native";
+  import { useAlert } from "@/context/alertContext/AlertContext";
+  import { useState } from "react";
+  
+  const BottlesTable = ({ doses, bottles, batchNumber, onSubmit }) => {
+    const { showAlert } = useAlert();
+    const [bottleValues, setBottleValues] = useState(
+      Array(bottles).fill("")
+    );
+  
+    // Handler to update values
+    const handleInputChange = (index, value) => {
+      const updatedValues = [...bottleValues];
+      updatedValues[index] = value;
+      setBottleValues(updatedValues);
+    };
+  
+    // Calculate bottles per dose
+    const bottlesPerDose = Math.floor(bottles / doses);
+    const extraBottles = bottles % doses;
+  
+    // Function to submit the data
+    const handleSubmit = () => {
+      if (!bottleValues.includes("")) {
+        // Create the data array in the format {doseNo, bottleNo, count}
+        const formattedData = [];
+        let bottleCounter = 0;
+  
+        for (let doseIndex = 0; doseIndex < doses; doseIndex++) {
+          const currentBottles =
+            bottlesPerDose + (doseIndex === doses - 1 ? extraBottles : 0);
+  
+          for (let bottleIndex = 0; bottleIndex < currentBottles; bottleIndex++) {
+            formattedData.push({
+              doseNo: doseIndex + 1,
+              bottleNo: bottleIndex + 1,
+              count: bottleValues[bottleCounter],
+            });
+            bottleCounter++;
+          }
+        }
+  
+        onSubmit(formattedData); // Send the formatted data to onSubmit
+      } else {
+        showAlert("error", "Please fill in all bottle values before submitting.");
+      }
+    };
+  
+    return (
+      <ScrollView>
+        <View style={styles.container}>
+          <View style={styles.headerRow}>
+            <Text
+              style={[styles.cell, styles.headerCell]}
+            >{`Batch No: ${batchNumber}`}</Text>
             <Text style={[styles.cell, styles.headerCell]}>Doses</Text>
             <Text style={[styles.cell, styles.headerCell]}>Bottles</Text>
             <Text style={[styles.cell, styles.headerCell]}>CFU/mL</Text>
           </View>
-
+  
           {/* Data Rows */}
           {Array.from({ length: doses }).map((_, doseIndex) => {
-            const currentBottles = bottlesPerDose + (doseIndex === doses - 1 ? extraBottles : 0);
-
+            const currentBottles =
+              bottlesPerDose + (doseIndex === doses - 1 ? extraBottles : 0);
+  
             return (
-              <View key={doseIndex}>
-                <View style={styles.row}>
-                  {doseIndex === 0 && (
-                    <Text style={[styles.cell, styles.batchCell]} rowSpan={doses}>
-                      Batch {batchNumber}
-                    </Text>
-                  )}
-
-                  <Text style={styles.cell}>Dose {doseIndex + 1}</Text>
-
-                  {/* Bottles and inputs for each dose */}
-                  {Array.from({ length: currentBottles }).map((_, bottleIndex) => {
-                    const bottleGlobalIndex = doseIndex * bottlesPerDose + bottleIndex;
-                    return (
-                      <View style={styles.row} key={bottleIndex}>
-                        <Text style={styles.cell}>Bottle {bottleIndex + 1}</Text>
-                        <TextInput
-                          style={styles.input}
-                          value={bottleValues[bottleGlobalIndex]}
-                          onChangeText={(value) => handleInputChange(bottleGlobalIndex, value)}
-                          placeholder={`Bottle ${bottleIndex + 1} CFU`}
-                          keyboardType="numeric"
-                        />
-                      </View>
-                    );
-                  })}
-                </View>
+              <View key={doseIndex} style={styles.doseBlock}>
+                {/* Dose Number */}
+                <Text style={styles.doseLabel}>{`Dose ${doseIndex + 1}`}</Text>
+  
+                {/* Bottles and inputs for each dose */}
+                {Array.from({ length: currentBottles }).map((_, bottleIndex) => {
+                  const bottleGlobalIndex =
+                    doseIndex * bottlesPerDose + bottleIndex;
+  
+                  return (
+                    <View key={bottleIndex} style={styles.inputRow}>
+                      <Text style={styles.cell}>{`Bottle ${
+                        bottleIndex + 1
+                      }`}</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={bottleValues[bottleGlobalIndex]}
+                        onChangeText={(value) =>
+                          handleInputChange(bottleGlobalIndex, value)
+                        }
+                        placeholder={`CFU/mL for Bottle ${bottleIndex + 1}`}
+                        keyboardType="numeric"
+                      />
+                    </View>
+                  );
+                })}
               </View>
             );
           })}
-
+  
           {/* Submit Button */}
           <View style={styles.submitButton}>
-            <Button title="Submit" onPress={handleSubmit} />
+            <Button title="Save The Counts" onPress={handleSubmit} />
           </View>
         </View>
-      </View>
-    </ScrollView>
-  );
-};
-
-const styles = StyleSheet.create({
-  tableContainer: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#f5f5f5",
-  },
-  table: {
-    borderWidth: 1,
-    borderColor: "#000",
-  },
-  row: {
-    flexDirection: "row",
-    borderBottomWidth: 1,
-    borderBottomColor: "#000",
-    alignItems: "center",
-  },
-  cell: {
-    flex: 1,
-    padding: 8,
-    textAlign: "center",
-    borderRightWidth: 1,
-    borderRightColor: "#000",
-  },
-  headerCell: {
-    fontWeight: "bold",
-    backgroundColor: "#ddd",
-  },
-  batchCell: {
-    flex: 2,
-    backgroundColor: "#f0f0f0",
-  },
-  input: {
-    flex: 1,
-    padding: 8,
-    borderWidth: 1,
-    borderColor: "#000",
-    textAlign: "center",
-  },
-  submitButton: {
-    marginTop: 20,
-    paddingHorizontal: 10,
-  },
-});
-
-export default BottlesTable;
+      </ScrollView>
+    );
+  };
+  
+  const styles = StyleSheet.create({
+    container: { flex: 1, padding: 16, backgroundColor: "#fff" },
+    headerRow: {
+      flexDirection: "row",
+      justifyContent: "space-around",
+      paddingBottom: 10,
+    },
+    cell: {
+      flex: 1,
+      padding: 8,
+      borderColor: "#dddddd",
+      borderWidth: 1,
+      textAlign: "center",
+    },
+    headerCell: { fontWeight: "bold", backgroundColor: "#f1f8ff" },
+    doseBlock: { marginBottom: 20 },
+    doseLabel: {
+      fontWeight: "bold",
+      marginBottom: 10,
+      textAlign: "center",
+      fontSize: 16,
+    },
+    inputRow: { flexDirection: "row", alignItems: "center", marginBottom: 5 },
+    input: {
+      flex: 1,
+      borderColor: "#dddddd",
+      borderWidth: 1,
+      padding: 8,
+      marginLeft: 5,
+    },
+    submitButton: { marginTop: 20 },
+  });
+  
+  export default BottlesTable;
+  

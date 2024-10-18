@@ -556,7 +556,8 @@ import {
   getStatusText,
   getStatusStyle,
 } from "@/utils/utils"; // Move utility functions to utils
-import BottlesTable from "@/components/BottlesTable/BottlesTable";
+import BottlesModel from "@/components/BottlesModel/BottlesModel";
+import { Table, Row, Rows } from "react-native-table-component";
 const backendUrl = `${config.backendUrl}`;
 
 const ConfirmOrder = () => {
@@ -618,18 +619,6 @@ const ConfirmOrder = () => {
         };
       }
 
-      if (
-        order.productID.productType === "vaccine" &&
-        order.status === "preparing"
-      ) {
-        return {
-          ...commonProps,
-          inputs: ortVaccinationPrepareInputs,
-          buttonText: "Mark as Done",
-          handleSubmit: addOrderInfo,
-        };
-      }
-
       return null;
     };
 
@@ -657,8 +646,32 @@ const ConfirmOrder = () => {
     );
   };
 
+  const BottlesTable = ({ tableData }) => {
+    const tableHead = ["Doses", "Bottles", "CFU/mL"];
+    const tableRows = tableData.map((data) => [
+      `Dose ${data.doseNo}`,
+      `Bottle ${data.bottleNo}`,
+      data.count,
+    ]);
+
+    return (
+      <ScrollView>
+        <View style={{flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff'}}>
+          <Table borderStyle={{ borderWidth: 1 }}>
+            <Row data={tableHead} style={styles.head} textStyle={styles.text} />
+            <Rows data={tableRows} textStyle={styles.text} />
+          </Table>
+        </View>
+      </ScrollView>
+    );
+  };
+
   const addMoreInfo = async (title) => {
     await addOrderInfo(title, id, setOrder, user, showAlert, setError);
+  };
+
+  const addCounts = async (data) => {
+    await addCfuCounts(data, id, setOrder, user, showAlert, setError);
   };
 
   const allStepsApproved = order?.moreInfo?.every(
@@ -672,14 +685,11 @@ const ConfirmOrder = () => {
         } else if (j === order.moreInfo.length - 1) {
           return steps[i];
         }
-        console.log(order.moreInfo[j].title);
       }
     }
     return null;
   };
 
-
-  
   //   const allStepsApproved = order?.moreInfo?.every(
   //     (info) => info.status === "approved"
   //   );
@@ -714,18 +724,43 @@ const ConfirmOrder = () => {
           <InfoStep key={index} info={info} />
         ))}
 
+        {order?.cfuCounts && (
+          <View style={styles.detailContainer}>
+            <Text style={styles.label}>
+              Colony counts per/1mL of Live ORT (48 hr):
+            </Text>
+            <BottlesTable tableData={order?.cfuCounts} />
+          </View>
+        )}
+
         {/* Render Missing Step (if any) */}
         {firstMissingStep && order.status === "preparing" && (
           <MissingStep step={firstMissingStep} addMoreInfo={addMoreInfo} />
         )}
 
-        {ortVaccinationPrepareInputs.length === order.moreInfo.length && (
-          <BottlesTable
-            doses={order?.doses}
-            bottles={order?.bottles}
-            batchNumber={order?.batchNumber}
-          />
-        )}
+        {ortVaccinationPrepareInputs.length === order.moreInfo.length &&
+          !order?.cfuCounts && (
+            <View style={styles.detailContainer}>
+              <Text style={styles.label}>
+                Colony counts per/1mL of Live ORT (48 hr):
+              </Text>
+              <View style={styles.submitButton}>
+                <Button
+                  title="Add Counts"
+                  onPress={() => setModalVisible(true)}
+                />
+              </View>
+            </View>
+          )}
+
+        <BottlesModel
+          bottles={order?.bottles}
+          doses={order?.doses}
+          setShow={setModalVisible}
+          visible={modalVisible}
+          batchNumber={order?.batchNumber}
+          handleSubmit={addCounts}
+        />
 
         {/* Render Order Action Buttons */}
         <OrderActions
@@ -850,6 +885,31 @@ const addOrderInfo = async (title, id, setOrder, user, showAlert, setError) => {
   }
 };
 
+// Adding cfu counts
+
+const addCfuCounts = async (data, id, setOrder, user, showAlert, setError) => {
+  try {
+    const resp = await axios.patch(
+      `${backendUrl}/orders/add-cfu-counts/${id}`,
+      {
+        cfuCounts: data,
+      }
+    );
+    if (resp.data.status === "success") {
+      setOrder((prevOrder) => ({
+        ...prevOrder,
+        cfuCounts: resp?.data?.data?.cfuCounts,
+      }));
+      console.log(order);
+      showAlert("Success", "CFU counts added successfully.");
+    }
+  } catch (error) {
+    console.error("Failed to add CFU counts:", error);
+    showAlert("Error", "Failed to add CFU counts.");
+    setError("Failed to add CFU counts.");
+  }
+};
+
 // Reusable component for rendering order details
 const OrderDetails = ({ order, inputs }) => (
   <>
@@ -958,7 +1018,8 @@ const OrderActions = ({
     {order.productID.productType === "vaccine" &&
     order.status === "preparing" &&
     order?.moreInfo?.length === ortVaccinationPrepareInputs.length &&
-    allStepsApproved ? (
+    allStepsApproved &&
+    order?.cfuCounts ? (
       <TouchableOpacity
         style={styles.confirmButton}
         onPress={() => handleConfirmOrder(order)}
@@ -1063,6 +1124,9 @@ const OpenSpecificModel = ({
 };
 
 const styles = StyleSheet.create({
+  head: { height: 40, backgroundColor: "#f1f8ff" },
+  text: { margin: 6, textAlign: "center" },
+
   scrollView: {
     backgroundColor: "#F0FFF0",
   },
