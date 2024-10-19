@@ -558,6 +558,7 @@ import {
 } from "@/utils/utils"; // Move utility functions to utils
 import BottlesModel from "@/components/BottlesModel/BottlesModel";
 import { Table, Row, Rows } from "react-native-table-component";
+import Checkbox from "expo-checkbox";
 const backendUrl = `${config.backendUrl}`;
 
 const ConfirmOrder = () => {
@@ -569,7 +570,7 @@ const ConfirmOrder = () => {
   const [confirmingOrder, setConfirmingOrder] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [processModalVisible, setProcessModalVisible] = useState(false);
-
+  const [purity, setPurity] = useState(false);
   const [user, setUser] = useState(null);
   const { showAlert } = useAlert();
 
@@ -656,7 +657,14 @@ const ConfirmOrder = () => {
 
     return (
       <ScrollView>
-        <View style={{flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff'}}>
+        <View
+          style={{
+            flex: 1,
+            padding: 16,
+            paddingTop: 30,
+            backgroundColor: "#fff",
+          }}
+        >
           <Table borderStyle={{ borderWidth: 1 }}>
             <Row data={tableHead} style={styles.head} textStyle={styles.text} />
             <Rows data={tableRows} textStyle={styles.text} />
@@ -666,8 +674,8 @@ const ConfirmOrder = () => {
     );
   };
 
-  const addMoreInfo = async (title) => {
-    await addOrderInfo(title, id, setOrder, user, showAlert, setError);
+  const addMoreInfo = async (title, purity) => {
+    await addOrderInfo(title, id, setOrder, user, showAlert, setError, purity);
   };
 
   const addCounts = async (data) => {
@@ -735,7 +743,12 @@ const ConfirmOrder = () => {
 
         {/* Render Missing Step (if any) */}
         {firstMissingStep && order.status === "preparing" && (
-          <MissingStep step={firstMissingStep} addMoreInfo={addMoreInfo} />
+          <MissingStep
+            step={firstMissingStep}
+            addMoreInfo={addMoreInfo}
+            purity={purity}
+            setPurity={setPurity}
+          />
         )}
 
         {ortVaccinationPrepareInputs.length === order.moreInfo.length &&
@@ -864,11 +877,24 @@ const confirmOrder = async (
 };
 
 // Custom hook for adding more info
-const addOrderInfo = async (title, id, setOrder, user, showAlert, setError) => {
+const addOrderInfo = async (
+  title,
+  id,
+  setOrder,
+  user,
+  showAlert,
+  setError,
+  purity
+) => {
   console.log(title);
   try {
     const resp = await axios.patch(`${backendUrl}/orders/add-more-info/${id}`, {
-      moreinfo: { title: title, status: "pending", markedBy: user },
+      moreinfo: {
+        title: title,
+        status: "pending",
+        markedBy: user,
+        purity: purity ? purity : null,
+      },
     });
     if (resp.data.status === "success") {
       setOrder((prevOrder) => ({
@@ -978,7 +1004,9 @@ const InfoStep = ({ info }) => (
       </View>
     )}
     <Text style={styles.label}>{info.title}</Text>
-
+    {info.purity && (
+      <Text style={styles.label}>{info.purity === false ? "No" : "Yes"}</Text>
+    )}
     <View style={{}}>
       <Text style={[styles.value, { fontWeight: "bold", fontStyle: "italic" }]}>
         {info.status === "approved"
@@ -995,12 +1023,23 @@ const InfoStep = ({ info }) => (
 );
 
 // Missing step component
-const MissingStep = ({ step, addMoreInfo }) => (
+const MissingStep = ({ step, addMoreInfo, purity, setPurity }) => (
   <View style={styles.detailContainer}>
+    {console.log(purity)}
     <Text style={styles.label}>{step.label}</Text>
+    {step.label.includes("Purity Results") &&
+      step?.options?.map((option, index) => (
+        <View key={index} style={styles.checkboxContainer}>
+          <Checkbox
+            value={option?.label?.includes("Yes") ? purity : !purity}
+            onValueChange={() => setPurity((prevState) => !prevState)}
+          />
+          <Text style={styles.checkboxLabel}>{option.label}</Text>
+        </View>
+      ))}
     <TouchableOpacity
       style={styles.confirmButton}
-      onPress={() => addMoreInfo(step.label)}
+      onPress={() => addMoreInfo(step.label, purity)}
     >
       <Text style={styles.buttonText}>Mark as Done</Text>
     </TouchableOpacity>
@@ -1045,83 +1084,6 @@ const OrderActions = ({
     ) : null}
   </>
 );
-
-const OpenSpecificModel = ({
-  order,
-  modalVisible,
-  setModalVisible,
-  processModalVisible,
-  setProcessModalVisible,
-}) => {
-  const getModelProps = () => {
-    const commonProps = {
-      formTitle: "Order Details",
-      visible: modalVisible,
-      onClose: () => setModalVisible(false),
-      id: null,
-      setShow: setModalVisible,
-    };
-
-    if (
-      order.productID.productType === "isolation" ||
-      (order.productID.productType === "vaccine" &&
-        order.status !== "preparing")
-    ) {
-      return {
-        ...commonProps,
-        inputs: ortIsolationConfirmationInputs,
-        buttonText:
-          order.status === "pending" ? "Prepare Order" : "Confirm Order",
-        handleSubmit: confirmOrder(
-          data,
-          id,
-          order,
-          setOrder,
-          setConfirmingOrder,
-          showAlert,
-          setModalVisible
-        ),
-      };
-    }
-
-    if (
-      order.productID.productType === "vaccine" &&
-      order.status === "preparing"
-    ) {
-      return {
-        ...commonProps,
-        inputs: ortVaccinationPrepareInputs,
-        buttonText: "Mark as Done",
-        handleSubmit: addOrderInfo,
-      };
-    }
-
-    return null;
-  };
-
-  const modelProps = getModelProps();
-
-  if (loading) return <Loader />;
-  if (error) return <ErrorMessage message={error} />;
-  if (!order) return <Text>No order details found.</Text>;
-
-  return (
-    <>
-      {modelProps && <CustomModel {...modelProps} />}
-
-      <CustomModel
-        inputs={ortVaccinationPrepareInputs}
-        formTitle="Order Details"
-        buttonText="Mark as Completed"
-        visible={processModalVisible}
-        onClose={() => setProcessModalVisible(false)}
-        id={null}
-        setShow={setProcessModalVisible}
-        handleSubmit={() => "Mark as Completed"}
-      />
-    </>
-  );
-};
 
 const styles = StyleSheet.create({
   head: { height: 40, backgroundColor: "#f1f8ff" },
@@ -1205,11 +1167,20 @@ const styles = StyleSheet.create({
   statusDefault: {
     color: "#666",
   },
+  checkboxContainer: {
+    flexDirection: "row",
+  },
+  checkboxLabel: {
+    marginLeft: 8,
+    fontSize: 16,
+    color: "#333",
+  },
   tableContainer: {
     flex: 1,
     padding: 20,
     backgroundColor: "#f5f5f5",
   },
+
   table: {
     borderWidth: 1,
     borderColor: "#000",

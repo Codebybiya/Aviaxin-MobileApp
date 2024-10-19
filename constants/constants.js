@@ -602,34 +602,34 @@ export const ortIsolationConfirmationInputs = [
 ];
 
 export const ortVaccinationPrepareInputs = [
-  {
-    name: "details",
-    type: "text",
-    validation: {
-      required: true,
-    },
-    label: "Isolate transfer to BAP agar (48hr):",
-    placeholder: "Enter Completed Process",
-  },
-  {
-    name: "details",
-    type: "text",
-    validation: {
-      required: true,
-    },
-    label:
-      "Inoculate 15mL conical tube containing 10mL BHI and 1.5mL Horse Serum:",
-    placeholder: "Enter Completed Process",
-  },
-  {
-    name: "details",
-    type: "text",
-    validation: {
-      required: true,
-    },
-    label: "15mL conical being inoculated (72hr):",
-    placeholder: "Enter Completed Process",
-  },
+  // {
+  //   name: "details",
+  //   type: "text",
+  //   validation: {
+  //     required: true,
+  //   },
+  //   label: "Isolate transfer to BAP agar (48hr):",
+  //   placeholder: "Enter Completed Process",
+  // },
+  // {
+  //   name: "details",
+  //   type: "text",
+  //   validation: {
+  //     required: true,
+  //   },
+  //   label:
+  //     "Inoculate 15mL conical tube containing 10mL BHI and 1.5mL Horse Serum:",
+  //   placeholder: "Enter Completed Process",
+  // },
+  // {
+  //   name: "details",
+  //   type: "text",
+  //   validation: {
+  //     required: true,
+  //   },
+  //   label: "15mL conical being inoculated (72hr):",
+  //   placeholder: "Enter Completed Process",
+  // },
   {
     name: "details",
     type: "text",
