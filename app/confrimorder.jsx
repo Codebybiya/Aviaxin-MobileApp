@@ -569,6 +569,7 @@ const ConfirmOrder = () => {
   const [loading, setLoading] = useState(true);
   const [confirmingOrder, setConfirmingOrder] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [cfuModel, setCfuModel] = useState(false);
   const [processModalVisible, setProcessModalVisible] = useState(false);
   const [purity, setPurity] = useState(false);
   const [user, setUser] = useState(null);
@@ -647,9 +648,10 @@ const ConfirmOrder = () => {
     );
   };
 
-  const BottlesTable = ({ tableData }) => {
-    const tableHead = ["Doses", "Bottles", "CFU/mL"];
+  const BottlesTable = ({ batchNo,tableData }) => {
+    const tableHead = ["Batch","Doses", "Bottles", "CFU/mL"];
     const tableRows = tableData.map((data) => [
+      `Batch ${batchNo}`,
       `Dose ${data.doseNo}`,
       `Bottle ${data.bottleNo}`,
       data.count,
@@ -708,11 +710,13 @@ const ConfirmOrder = () => {
   if (error) return <ErrorMessage message={error} />;
   if (!order) return <Text>No order details found.</Text>;
 
-  const firstMissingStep = getFirstMissingStep(
-    order,
-    ortVaccinationPrepareInputs
-  );
-  console.log();
+  const firstMissingStep =
+    order?.moreInfo?.length === 0
+      ? ortVaccinationPrepareInputs[0]
+      : allStepsApproved
+      ? getFirstMissingStep(order, ortVaccinationPrepareInputs)
+      : null;
+  console.log(firstMissingStep);
   return (
     <ScrollView style={styles.scrollView}>
       <View style={styles.container}>
@@ -732,12 +736,12 @@ const ConfirmOrder = () => {
           <InfoStep key={index} info={info} />
         ))}
 
-        {order?.cfuCounts && (
+        {order?.cfuCounts && order?.cfuCounts.length !== 0 && (
           <View style={styles.detailContainer}>
             <Text style={styles.label}>
               Colony counts per/1mL of Live ORT (48 hr):
             </Text>
-            <BottlesTable tableData={order?.cfuCounts} />
+            <BottlesTable tableData={order?.cfuCounts} batchNo={order?.batchNumber} />
           </View>
         )}
 
@@ -752,16 +756,13 @@ const ConfirmOrder = () => {
         )}
 
         {ortVaccinationPrepareInputs.length === order.moreInfo.length &&
-          !order?.cfuCounts && (
+          order?.cfuCounts.length===0 && (
             <View style={styles.detailContainer}>
               <Text style={styles.label}>
                 Colony counts per/1mL of Live ORT (48 hr):
               </Text>
               <View style={styles.submitButton}>
-                <Button
-                  title="Add Counts"
-                  onPress={() => setModalVisible(true)}
-                />
+                <Button title="Add Counts" onPress={() => setCfuModel(true)} />
               </View>
             </View>
           )}
@@ -769,8 +770,8 @@ const ConfirmOrder = () => {
         <BottlesModel
           bottles={order?.bottles}
           doses={order?.doses}
-          setShow={setModalVisible}
-          visible={modalVisible}
+          setShow={setCfuModel}
+          visible={cfuModel}
           batchNumber={order?.batchNumber}
           handleSubmit={addCounts}
         />
@@ -887,28 +888,27 @@ const addOrderInfo = async (
   purity
 ) => {
   console.log(title);
-  try {
-    const resp = await axios.patch(`${backendUrl}/orders/add-more-info/${id}`, {
-      moreinfo: {
-        title: title,
-        status: "pending",
-        markedBy: user,
-        purity: purity ? purity : null,
-      },
-    });
-    if (resp.data.status === "success") {
-      setOrder((prevOrder) => ({
-        ...prevOrder,
-        moreInfo: resp?.data?.data?.moreInfo,
-      }));
-      console.log(order);
-      showAlert("Success", "Process added successfully.");
-    }
-  } catch (error) {
-    console.error("Failed to add more info:", error);
-    showAlert("Error", "Failed to add more info.");
-    setError("Failed to add more info.");
+  // try {
+  const resp = await axios.patch(`${backendUrl}/orders/add-more-info/${id}`, {
+    moreinfo: {
+      title: title,
+      status: "pending",
+      markedBy: user,
+      purity: purity ? purity : null,
+    },
+  });
+  if (resp.data.status === "success") {
+    setOrder((prevOrder) => ({
+      ...prevOrder,
+      moreInfo: resp?.data?.data?.moreInfo,
+    }));
+    showAlert("Success", "Process added successfully.");
   }
+  // } catch (error) {
+  //   console.error("Failed to add more info:", error);
+  //   showAlert("Error", "Failed to add more info.");
+  //   setError("Failed to add more info.");
+  // }
 };
 
 // Adding cfu counts
@@ -926,7 +926,6 @@ const addCfuCounts = async (data, id, setOrder, user, showAlert, setError) => {
         ...prevOrder,
         cfuCounts: resp?.data?.data?.cfuCounts,
       }));
-      console.log(order);
       showAlert("Success", "CFU counts added successfully.");
     }
   } catch (error) {
