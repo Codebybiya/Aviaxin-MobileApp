@@ -648,8 +648,8 @@ const ConfirmOrder = () => {
     );
   };
 
-  const BottlesTable = ({ batchNo,tableData }) => {
-    const tableHead = ["Batch","Doses", "Bottles", "CFU/mL"];
+  const BottlesTable = ({ batchNo, tableData }) => {
+    const tableHead = ["Batch", "Doses", "Bottles", "CFU/mL"];
     const tableRows = tableData.map((data) => [
       `Batch ${batchNo}`,
       `Dose ${data.doseNo}`,
@@ -741,22 +741,28 @@ const ConfirmOrder = () => {
             <Text style={styles.label}>
               Colony counts per/1mL of Live ORT (48 hr):
             </Text>
-            <BottlesTable tableData={order?.cfuCounts} batchNo={order?.batchNumber} />
+            <BottlesTable
+              tableData={order?.cfuCounts}
+              batchNo={order?.batchNumber}
+            />
           </View>
         )}
 
         {/* Render Missing Step (if any) */}
-        {firstMissingStep && order.status === "preparing" && (
-          <MissingStep
-            step={firstMissingStep}
-            addMoreInfo={addMoreInfo}
-            purity={purity}
-            setPurity={setPurity}
-          />
-        )}
+        {firstMissingStep &&
+          order.status === "preparing" &&
+          firstMissingStep?.label !== " Live ORT Media Completed:" && (
+            <MissingStep
+              step={firstMissingStep}
+              addMoreInfo={addMoreInfo}
+              purity={purity}
+              setPurity={setPurity}
+            />
+          )}
 
-        {ortVaccinationPrepareInputs.length === order.moreInfo.length &&
-          order?.cfuCounts.length===0 && (
+        {ortVaccinationPrepareInputs.length - 1 === order.moreInfo.length &&
+          order?.cfuCounts.length === 0 &&
+          allStepsApproved && (
             <View style={styles.detailContainer}>
               <Text style={styles.label}>
                 Colony counts per/1mL of Live ORT (48 hr):
@@ -764,6 +770,27 @@ const ConfirmOrder = () => {
               <View style={styles.submitButton}>
                 <Button title="Add Counts" onPress={() => setCfuModel(true)} />
               </View>
+            </View>
+          )}
+
+        {ortVaccinationPrepareInputs.length - 1 === order.moreInfo.length &&
+          order?.cfuCounts &&
+          order?.cfuCounts.length > 0 && (
+            <View style={styles.detailContainer}>
+              <Text style={styles.label}>Live ORT Media Completed: </Text>
+              <TouchableOpacity
+                style={styles.confirmButton}
+                onPress={() =>
+                  addMoreInfo(
+                    ortVaccinationPrepareInputs?.[
+                      ortVaccinationPrepareInputs.length - 1
+                    ]?.label,
+                    purity
+                  )
+                }
+              >
+                <Text style={styles.buttonText}>Mark as Done</Text>
+              </TouchableOpacity>
             </View>
           )}
 
@@ -1024,7 +1051,6 @@ const InfoStep = ({ info }) => (
 // Missing step component
 const MissingStep = ({ step, addMoreInfo, purity, setPurity }) => (
   <View style={styles.detailContainer}>
-    {console.log(purity)}
     <Text style={styles.label}>{step.label}</Text>
     {step.label.includes("Purity Results") &&
       step?.options?.map((option, index) => (
@@ -1056,7 +1082,7 @@ const OrderActions = ({
     {order.productID.productType === "vaccine" &&
     order.status === "preparing" &&
     order?.moreInfo?.length === ortVaccinationPrepareInputs.length &&
-    allStepsApproved &&
+    allStepsApproved  &&
     order?.cfuCounts ? (
       <TouchableOpacity
         style={styles.confirmButton}
@@ -1073,7 +1099,8 @@ const OrderActions = ({
         <Text style={styles.buttonText}>Prepare Order</Text>
       </TouchableOpacity>
     ) : order.productID.productType === "isolation" &&
-      order.status === "pending" ? (
+      order.status === "pending" &&
+      !order?.confirmedBy ? (
       <TouchableOpacity
         style={styles.confirmButton}
         onPress={() => setModalVisible(true)}

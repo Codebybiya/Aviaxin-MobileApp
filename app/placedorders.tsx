@@ -70,7 +70,7 @@ const Placeorder: React.FC = () => {
   }, []);
 
   const handleOrderDetailNavigation = (orderId: string) => {
-    router.push({ pathname: "/orderdetail", params: { id: orderId } });
+    router.push({ pathname: "/orderdetailnotif", params: { orderID: orderId } });
   };
 
   const renderItem = ({ item }: ListRenderItemInfo<Order>) => (

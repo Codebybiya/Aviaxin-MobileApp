@@ -79,7 +79,7 @@ const NewConfirmedOrder: React.FC = () => {
 
         <TouchableOpacity
           onPress={() =>
-            router.push({ pathname: "/orderdetail", params: { id: item.id } })
+            router.push({ pathname: "/confrimorder", params: { id: item.id } })
           }
         >
           <Text style={styles.orderDetails}>See Details</Text>
