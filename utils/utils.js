@@ -93,5 +93,5 @@ export const getRoleScreen = (role) => {
 
 export const formatConfirmationTime = (time) => {
   const date = new Date(time);
-  return date.toLocaleString(); // Format date and time into a readable string
+  return date.toLocaleDateString('en-GB'); // "DD/MM/YYYY" format
 };

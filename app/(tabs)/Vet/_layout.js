@@ -30,6 +30,7 @@ import Productform from "../../productform";
 import Orderstatus from "../../orderstatus";
 import Placeorder from "../../placedorders";
 import Orderdetail from "../../orderdetail";
+import ConfirmOrder from "../../confrimorder";
 import OrderDetailNotif from "../../orderdetailnotif";
 import Cart from "./cart";
 import Login from "../../auth/Login";
@@ -76,6 +77,7 @@ function HomeStack() {
         name="OrderDetailNotification"
         component={OrderDetailNotif}
       />
+      
     </Stack.Navigator>
   );
 }

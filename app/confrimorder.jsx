@@ -545,6 +545,7 @@ import config from "@/assets/config";
 import { useLocalSearchParams } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
+  datePickupInputs,
   ortIsolationConfirmationInputs,
   ortVaccinationInputs,
   ortVaccinationPrepareInputs,
@@ -571,6 +572,7 @@ const ConfirmOrder = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [cfuModel, setCfuModel] = useState(false);
   const [processModalVisible, setProcessModalVisible] = useState(false);
+  const [pickupModel, setPickupModel] = useState(false);
   const [purity, setPurity] = useState(false);
   const [user, setUser] = useState(null);
   const { showAlert } = useAlert();
@@ -684,6 +686,28 @@ const ConfirmOrder = () => {
     await addCfuCounts(data, id, setOrder, user, showAlert, setError);
   };
 
+  const addPickUpDate = async (data) => {
+    try {
+      const resp = await axios.patch(
+        `${backendUrl}/orders/add-pickup-date/${id}`,
+        {
+          pickUpDate: data,
+        }
+      );
+      if (resp.data.status === "success") {
+        setOrder((prevOrder) => ({
+          ...prevOrder,
+          pickUpDate: resp?.data?.data?.pickUpDate,
+        }));
+        showAlert("Success", "Pickup date added successfully.");
+      }
+    } catch (error) {
+      console.error("Failed to add Pickup date:", error);
+      showAlert("Error", "Failed to add Pickup date.");
+      setError("Failed to add Pickup date.");
+    }
+  };
+
   const allStepsApproved = order?.moreInfo?.every(
     (info) => info.status === "approved"
   );
@@ -700,12 +724,6 @@ const ConfirmOrder = () => {
     return null;
   };
 
-  //   const allStepsApproved = order?.moreInfo?.every(
-  //     (info) => info.status === "approved"
-  //   );
-
-  //   // Find the first missing step from ortVaccinationPrepareInputs
-  // const firstMissingStep = AAAA
   if (loading) return <Loader />;
   if (error) return <ErrorMessage message={error} />;
   if (!order) return <Text>No order details found.</Text>;
@@ -736,7 +754,7 @@ const ConfirmOrder = () => {
           <InfoStep key={index} info={info} />
         ))}
 
-        {order?.cfuCounts && order?.cfuCounts.length !== 0 && (
+        {order?.cfuCounts && order?.cfuCounts.length > 0 && (
           <View style={styles.detailContainer}>
             <Text style={styles.label}>
               Colony counts per/1mL of Live ORT (48 hr):
@@ -793,6 +811,29 @@ const ConfirmOrder = () => {
               </TouchableOpacity>
             </View>
           )}
+        {ortVaccinationPrepareInputs.length !== order.moreInfo.length &&
+          order?.cfuCounts &&
+          order?.cfuCounts.length > 0 && (
+            <View style={styles.detailContainer}>
+              <Text style={styles.label}>Enter PickUpDate </Text>
+              <TouchableOpacity
+                style={styles.confirmButton}
+                onPress={() => setPickupModel(true)}
+              >
+                <Text style={styles.buttonText}>Pick Up Product</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+        <CustomModel
+          visible={pickupModel}
+          setShow={setPickupModel}
+          inputs={datePickupInputs}
+          handleSubmit={addPickUpDate}
+          formTitle="Pickup Your Order"
+          buttonText="Confirm Pickup"
+          onClose={() => setPickupModel(false)}
+        />
 
         <BottlesModel
           bottles={order?.bottles}
@@ -1082,8 +1123,9 @@ const OrderActions = ({
     {order.productID.productType === "vaccine" &&
     order.status === "preparing" &&
     order?.moreInfo?.length === ortVaccinationPrepareInputs.length &&
-    allStepsApproved  &&
-    order?.cfuCounts ? (
+    allStepsApproved &&
+    order?.cfuCounts &&
+    !order?.pickUpDate ? (
       <TouchableOpacity
         style={styles.confirmButton}
         onPress={() => handleConfirmOrder(order)}

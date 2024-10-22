@@ -583,12 +583,7 @@ const OrderDetailNotif = () => {
                 label="Time of Confirmation:"
                 value={formatDate(order.confirmationTime)}
               />
-              {/* <TouchableOpacity
-                onPress={() => console.log("red")}
-                style={styles.confirmButton}
-              >
-                <Text style={styles.buttonText}>Pickup Your Product</Text>
-              </TouchableOpacity> */}
+             
             </>
           )}
         </View>

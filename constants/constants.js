@@ -676,4 +676,14 @@ export const ortVaccinationPrepareInputs = [
   },
 ];
 
-export const cfuCountsInputs = [];
+export const datePickupInputs = [
+  {
+    name: "pickUpDate",
+    type: "date",
+    validation: {
+      required: true,
+    },
+    label: "Select Pickup Date:",
+    placeholder: "Enter Pickup Date",
+  },
+];

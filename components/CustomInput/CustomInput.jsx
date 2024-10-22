@@ -1,8 +1,16 @@
-import { users } from "@/constants/constants";
 import { FontAwesome } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import React, { useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  Button,
+  Platform,
+  TouchableOpacity,
+} from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 const CustomInput = ({
   placeholder,
@@ -16,6 +24,15 @@ const CustomInput = ({
   touched,
   pickerItems,
 }) => {
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const handleDateChange = (event, selectedDate) => {
+    setShowDatePicker(Platform.OS === "ios"); // For iOS, we want the picker to stay open
+    console.log(showDatePicker);
+    const currentDate = selectedDate || value;
+    handleChange(name)(currentDate); // Update the date value in the parent form
+  };
+
   return (
     <View>
       <View style={styles.inputContainer}>
@@ -36,10 +53,7 @@ const CustomInput = ({
             ]}
             onValueChange={handleChange(name)}
           >
-            <Picker.Item
-              label={placeholder || "Select an option"}
-              value=""
-            />
+            <Picker.Item label={placeholder || "Select an option"} value="" />
 
             {pickerItems?.map((item, index) => (
               <Picker.Item
@@ -50,6 +64,20 @@ const CustomInput = ({
               />
             ))}
           </Picker>
+        ) : type === "date" ? (
+          <>
+            <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.button}>
+              <Text>red</Text>
+            </TouchableOpacity>
+            {showDatePicker && (
+              <DateTimePicker
+                value={value || new Date()} // Set default value or current date
+                mode="date"
+                display="default"
+                onChange={handleDateChange}
+              />
+            )}
+          </>
         ) : (
           <TextInput
             style={styles.textInput}
