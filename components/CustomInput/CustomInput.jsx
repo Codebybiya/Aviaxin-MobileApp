@@ -1,16 +1,162 @@
+// import { FontAwesome } from "@expo/vector-icons";
+// import { Picker } from "@react-native-picker/picker";
+// import React, { useState } from "react";
+// import {
+//   StyleSheet,
+//   Text,
+//   TextInput,
+//   View,
+//   Button,
+//   Platform,
+//   TouchableOpacity,
+// } from "react-native";
+
+// const CustomInput = ({
+//   placeholder,
+//   type,
+//   name,
+//   value,
+//   icon,
+//   handleChange,
+//   handleBlur,
+//   error,
+//   touched,
+//   pickerItems,
+// }) => {
+//   const [showDatePicker, setShowDatePicker] = useState(false);
+
+//   const handleDateChange = (event, selectedDate) => {
+//     setShowDatePicker(Platform.OS === "ios"); // For iOS, we want the picker to stay open
+//     console.log(showDatePicker);
+//     const currentDate = selectedDate || value;
+//     handleChange(name)(currentDate); // Update the date value in the parent form
+//   };
+
+//   return (
+//     <View>
+//       <View style={styles.inputContainer}>
+//         <FontAwesome
+//           name={icon}
+//           size={24}
+//           color="#7DDD51"
+//           style={styles.icon}
+//         />
+//         {type === "select" ? (
+//           <Picker
+//             selectedValue={value}
+//             style={[
+//               styles.textInput,
+//               {
+//                 color: value ? "#7DDD51" : "#000", // Change selected value color conditionally
+//               },
+//             ]}
+//             onValueChange={handleChange(name)}
+//           >
+//             <Picker.Item label={placeholder || "Select an option"} value="" />
+
+//             {pickerItems?.map((item, index) => (
+//               <Picker.Item
+//                 key={index}
+//                 label={item.label}
+//                 value={item.value}
+//                 color="#7DDD51"
+//               />
+//             ))}
+//           </Picker>
+//         ) : type === "date" ? (
+//           <>
+//             <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.button}>
+//               <Text>red</Text>
+//             </TouchableOpacity>
+//             {/* {showDatePicker && (
+//               <DateTimePicker
+//                 value={value || new Date()} // Set default value or current date
+//                 mode="date"
+//                 display="default"
+//                 onChange={handleDateChange}
+//               />
+//             )} */}
+//           </>
+//         ) : (
+//           <TextInput
+//             style={styles.textInput}
+//             secureTextEntry={type === "password"}
+//             placeholder={placeholder}
+//             keyboardType={type === "number" ? "phone-pad" : "default"}
+//             onChangeText={handleChange(name)}
+//             onBlur={() => handleBlur(name)}
+//             value={value}
+//           />
+//         )}
+//       </View>
+//       {error && touched && <Text style={styles.errorText}>{error}</Text>}
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: "#7DDD51",
+//     justifyContent: "center",
+//     alignItems: "center",
+//     width: "100%",
+//   },
+
+//   button: {
+//     backgroundColor: "#7DDD51",
+//     padding: 10,
+//     borderRadius: 5,
+//     marginTop: 20,
+//   },
+//   buttonText: {
+//     color: "white",
+//     fontSize: 16,
+//     textAlign: "center",
+//   },
+//   inputContainer: {
+//     flexDirection: "row",
+//     alignItems: "center",
+//     borderWidth: 1,
+//     borderColor: "#ccc",
+//     borderRadius: 5,
+//     paddingHorizontal: 10,
+//     paddingVertical: 2,
+//     marginTop: 10,
+//   },
+
+//   icon: {
+//     marginRight: 10,
+//   },
+//   textInput: {
+//     flex: 1,
+//     paddingVertical: 10,
+//   },
+//   errorText: {
+//     color: "red",
+//     fontSize: 12,
+//   },
+//   label1: {
+//     padding: 10,
+//     alignItems: "center",
+//     textAlign: "center",
+//   },
+
+//   picker: {
+//     width: "100%",
+//     padding: 10,
+//   },
+// });
+
+// export default CustomInput;
 import { FontAwesome } from "@expo/vector-icons";
-import { Picker } from "@react-native-picker/picker";
 import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
   TextInput,
   View,
-  Button,
-  Platform,
-  TouchableOpacity,
 } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
 
 const CustomInput = ({
   placeholder,
@@ -24,13 +170,22 @@ const CustomInput = ({
   touched,
   pickerItems,
 }) => {
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [inputValue, setInputValue] = useState(value || "");
+  const [inputError, setInputError] = useState("");
 
-  const handleDateChange = (event, selectedDate) => {
-    setShowDatePicker(Platform.OS === "ios"); // For iOS, we want the picker to stay open
-    console.log(showDatePicker);
-    const currentDate = selectedDate || value;
-    handleChange(name)(currentDate); // Update the date value in the parent form
+  const validateDate = (date) => {
+    const datePattern = /^\d{4}-\d{2}-\d{2}$/; // Regex pattern for YYYY-MM-DD
+    return datePattern.test(date);
+  };
+
+  const handleDateInputChange = (text) => {
+    setInputValue(text);
+    if (!validateDate(text)) {
+      setInputError("Date must be in YYYY-MM-DD format.");
+    } else {
+      setInputError("");
+      handleChange(name)(text); // Update the parent form with valid date
+    }
   };
 
   return (
@@ -54,7 +209,6 @@ const CustomInput = ({
             onValueChange={handleChange(name)}
           >
             <Picker.Item label={placeholder || "Select an option"} value="" />
-
             {pickerItems?.map((item, index) => (
               <Picker.Item
                 key={index}
@@ -66,17 +220,15 @@ const CustomInput = ({
           </Picker>
         ) : type === "date" ? (
           <>
-            <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.button}>
-              <Text>red</Text>
-            </TouchableOpacity>
-            {showDatePicker && (
-              <DateTimePicker
-                value={value || new Date()} // Set default value or current date
-                mode="date"
-                display="default"
-                onChange={handleDateChange}
-              />
-            )}
+            <TextInput
+              style={styles.textInput}
+              placeholder={placeholder || "YYYY-MM-DD"}
+              value={inputValue}
+              onChangeText={handleDateInputChange}
+              onBlur={() => handleBlur(name)}
+              keyboardType="numeric" // Use numeric keyboard for date input
+              maxLength={10} // Limit input length for the date format
+            />
           </>
         ) : (
           <TextInput
@@ -90,7 +242,9 @@ const CustomInput = ({
           />
         )}
       </View>
-      {error && touched && <Text style={styles.errorText}>{error}</Text>}
+      {(inputError || (error && touched)) && (
+        <Text style={styles.errorText}>{inputError || error}</Text>
+      )}
     </View>
   );
 };
@@ -150,3 +304,4 @@ const styles = StyleSheet.create({
 });
 
 export default CustomInput;
+

@@ -678,8 +678,22 @@ const ConfirmOrder = () => {
     );
   };
 
-  const addMoreInfo = async (title, purity) => {
-    await addOrderInfo(title, id, setOrder, user, showAlert, setError, purity);
+  const addMoreInfo = async (title, purity, pickupDate) => {
+    let pickUpDate = null;
+    if (title.pickUpDate) {
+      title = "Pickup Date";
+      pickUpDate = title.pickUpDate;
+    }
+    await addOrderInfo(
+      title,
+      id,
+      setOrder,
+      user,
+      showAlert,
+      setError,
+      purity,
+      pickUpDate
+    );
   };
 
   const addCounts = async (data) => {
@@ -687,25 +701,23 @@ const ConfirmOrder = () => {
   };
 
   const addPickUpDate = async (data) => {
-    try {
-      const resp = await axios.patch(
-        `${backendUrl}/orders/add-pickup-date/${id}`,
-        {
-          pickUpDate: data,
-        }
-      );
-      if (resp.data.status === "success") {
-        setOrder((prevOrder) => ({
-          ...prevOrder,
-          pickUpDate: resp?.data?.data?.pickUpDate,
-        }));
-        showAlert("Success", "Pickup date added successfully.");
-      }
-    } catch (error) {
-      console.error("Failed to add Pickup date:", error);
-      showAlert("Error", "Failed to add Pickup date.");
-      setError("Failed to add Pickup date.");
+    // try {
+    const resp = await axios.patch(
+      `${backendUrl}/orders/add-pickup-date/${id}`,
+      data
+    );
+    if (resp.data.status === "success") {
+      setOrder((prevOrder) => ({
+        ...prevOrder,
+        pickUpDate: resp?.data?.data?.pickUpDate,
+      }));
+      showAlert("Success", "Pickup date added successfully.");
     }
+    // } catch (error) {
+    //   console.error("Failed to add Pickup date:", error);
+    //   showAlert("Error", "Failed to add Pickup date.");
+    //   setError("Failed to add Pickup date.");
+    // }
   };
 
   const allStepsApproved = order?.moreInfo?.every(
@@ -775,10 +787,11 @@ const ConfirmOrder = () => {
               addMoreInfo={addMoreInfo}
               purity={purity}
               setPurity={setPurity}
+              setPickupModel={setPickupModel}
             />
           )}
 
-        {ortVaccinationPrepareInputs.length - 1 === order.moreInfo.length &&
+        {ortVaccinationPrepareInputs.length - 2 === order.moreInfo.length &&
           order?.cfuCounts.length === 0 &&
           allStepsApproved && (
             <View style={styles.detailContainer}>
@@ -791,7 +804,7 @@ const ConfirmOrder = () => {
             </View>
           )}
 
-        {ortVaccinationPrepareInputs.length - 1 === order.moreInfo.length &&
+        {ortVaccinationPrepareInputs.length - 2 === order.moreInfo.length &&
           order?.cfuCounts &&
           order?.cfuCounts.length > 0 && (
             <View style={styles.detailContainer}>
@@ -811,25 +824,31 @@ const ConfirmOrder = () => {
               </TouchableOpacity>
             </View>
           )}
-        {ortVaccinationPrepareInputs.length !== order.moreInfo.length &&
+        {/* {ortVaccinationPrepareInputs.length !== order.moreInfo.length &&
           order?.cfuCounts &&
           order?.cfuCounts.length > 0 && (
             <View style={styles.detailContainer}>
-              <Text style={styles.label}>Enter PickUpDate </Text>
-              <TouchableOpacity
-                style={styles.confirmButton}
-                onPress={() => setPickupModel(true)}
-              >
-                <Text style={styles.buttonText}>Pick Up Product</Text>
-              </TouchableOpacity>
+              <Text style={styles.label}>
+                {order?.pickUpDate ? "Pickup Date" : "Enter PickUpDate"}{" "}
+              </Text>
+              {order?.pickUpDate ? (
+                <Text style={styles.text}>{formatConfirmationTime(order?.pickUpDate)}</Text>
+              ) : (
+                <TouchableOpacity
+                  style={styles.confirmButton}
+                  onPress={() => setPickupModel(true)}
+                >
+                  <Text style={styles.buttonText}>Pick Up Product</Text>
+                </TouchableOpacity>
+              )}
             </View>
-          )}
+          )} */}
 
         <CustomModel
           visible={pickupModel}
           setShow={setPickupModel}
           inputs={datePickupInputs}
-          handleSubmit={addPickUpDate}
+          handleSubmit={addMoreInfo}
           formTitle="Pickup Your Order"
           buttonText="Confirm Pickup"
           onClose={() => setPickupModel(false)}
@@ -953,7 +972,8 @@ const addOrderInfo = async (
   user,
   showAlert,
   setError,
-  purity
+  purity,
+  pickupDate
 ) => {
   console.log(title);
   // try {
@@ -963,6 +983,7 @@ const addOrderInfo = async (
       status: "pending",
       markedBy: user,
       purity: purity ? purity : null,
+      pickUpDate: pickupDate ? pickupDate : null,
     },
   });
   if (resp.data.status === "success") {
@@ -1074,6 +1095,9 @@ const InfoStep = ({ info }) => (
     {info.purity && (
       <Text style={styles.label}>{info.purity === false ? "No" : "Yes"}</Text>
     )}
+    {info.pickUpDate && (
+      <Text style={styles.label}>{formatConfirmationTime(pickUpDate)}</Text>
+    )}
     <View style={{}}>
       <Text style={[styles.value, { fontWeight: "bold", fontStyle: "italic" }]}>
         {info.status === "approved"
@@ -1090,7 +1114,13 @@ const InfoStep = ({ info }) => (
 );
 
 // Missing step component
-const MissingStep = ({ step, addMoreInfo, purity, setPurity }) => (
+const MissingStep = ({
+  step,
+  addMoreInfo,
+  purity,
+  setPurity,
+  setPickupModel,
+}) => (
   <View style={styles.detailContainer}>
     <Text style={styles.label}>{step.label}</Text>
     {step.label.includes("Purity Results") &&
@@ -1103,12 +1133,21 @@ const MissingStep = ({ step, addMoreInfo, purity, setPurity }) => (
           <Text style={styles.checkboxLabel}>{option.label}</Text>
         </View>
       ))}
-    <TouchableOpacity
-      style={styles.confirmButton}
-      onPress={() => addMoreInfo(step.label, purity)}
-    >
-      <Text style={styles.buttonText}>Mark as Done</Text>
-    </TouchableOpacity>
+    {step.label.includes("Pickup Date") ? (
+      <TouchableOpacity
+        style={styles.confirmButton}
+        onPress={() => setPickupModel(true)}
+      >
+        <Text style={styles.buttonText}>Pick Up Product</Text>
+      </TouchableOpacity>
+    ) : (
+      <TouchableOpacity
+        style={styles.confirmButton}
+        onPress={() => addMoreInfo(step.label, purity)}
+      >
+        <Text style={styles.buttonText}>Mark as Done</Text>
+      </TouchableOpacity>
+    )}
   </View>
 );
 
@@ -1122,10 +1161,9 @@ const OrderActions = ({
   <>
     {order.productID.productType === "vaccine" &&
     order.status === "preparing" &&
-    order?.moreInfo?.length === ortVaccinationPrepareInputs.length &&
+    order?.moreInfo?.length >= ortVaccinationPrepareInputs.length &&
     allStepsApproved &&
-    order?.cfuCounts &&
-    !order?.pickUpDate ? (
+    order?.cfuCounts ? (
       <TouchableOpacity
         style={styles.confirmButton}
         onPress={() => handleConfirmOrder(order)}
@@ -1141,8 +1179,7 @@ const OrderActions = ({
         <Text style={styles.buttonText}>Prepare Order</Text>
       </TouchableOpacity>
     ) : order.productID.productType === "isolation" &&
-      order.status === "pending" &&
-      !order?.confirmedBy ? (
+      order.status === "pending" ? (
       <TouchableOpacity
         style={styles.confirmButton}
         onPress={() => setModalVisible(true)}
