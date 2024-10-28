@@ -163,40 +163,6 @@
 //     return order.status; // Default to current status if no changes
 //   };
 
-//   const getStatusText = (status) => {
-//     switch (status) {
-//       case "pending":
-//         return "Order Placed";
-//       case "preparing":
-//         return "Order Preparing";
-//       case "shipped":
-//         return "Shipped";
-//       case "confirmed":
-//         return "Isolation Completed";
-//       case "cancelled":
-//         return "Cancelled";
-//       default:
-//         return "Unknown Status";
-//     }
-//   };
-
-//   const getStatusStyle = (status) => {
-//     switch (status) {
-//       case "pending":
-//         return styles.statusPending;
-//       case "preparing":
-//         return styles.statusPending;
-//       case "shipped":
-//         return styles.statusShipped;
-//       case "confirmed":
-//         return styles.statusConfirmed;
-//       case "cancelled":
-//         return styles.statusCancelled;
-//       default:
-//         return styles.statusDefault;
-//     }
-//   };
-
 //   const renderButtonBasedOnProductType = (type, orderStatus) => {
 //     let buttonText = "";
 //     let signatureText = "";
@@ -677,6 +643,39 @@ const ConfirmOrder = () => {
       </ScrollView>
     );
   };
+  const getStatusText = (status) => {
+    switch (status) {
+      case "pending":
+        return "Order Placed";
+      case "preparing":
+        return "Order Preparing";
+      case "shipped":
+        return "Shipped";
+      case "confirmed":
+        return "Isolation Completed";
+      case "cancelled":
+        return "Cancelled";
+      default:
+        return "Unknown Status";
+    }
+  };
+
+  const getStatusStyle = (status) => {
+    switch (status) {
+      case "pending":
+        return styles.statusPending;
+      case "preparing":
+        return styles.statusPending;
+      case "shipped":
+        return styles.statusShipped;
+      case "confirmed":
+        return styles.statusConfirmed;
+      case "cancelled":
+        return styles.statusCancelled;
+      default:
+        return styles.statusDefault;
+    }
+  };
 
   const addMoreInfo = async (title, purity, pickupDate) => {
     let pickUpDate = null;
@@ -779,17 +778,15 @@ const ConfirmOrder = () => {
         )}
 
         {/* Render Missing Step (if any) */}
-        {firstMissingStep &&
-          order.status === "preparing" &&
-          firstMissingStep?.label !== " Live ORT Media Completed:" && (
-            <MissingStep
-              step={firstMissingStep}
-              addMoreInfo={addMoreInfo}
-              purity={purity}
-              setPurity={setPurity}
-              setPickupModel={setPickupModel}
-            />
-          )}
+        {firstMissingStep && order.status === "preparing" && (
+          <MissingStep
+            step={firstMissingStep}
+            addMoreInfo={addMoreInfo}
+            purity={purity}
+            setPurity={setPurity}
+            setPickupModel={setPickupModel}
+          />
+        )}
 
         {ortVaccinationPrepareInputs.length - 2 === order.moreInfo.length &&
           order?.cfuCounts.length === 0 &&
@@ -804,45 +801,10 @@ const ConfirmOrder = () => {
             </View>
           )}
 
-        {ortVaccinationPrepareInputs.length - 2 === order.moreInfo.length &&
-          order?.cfuCounts &&
-          order?.cfuCounts.length > 0 && (
-            <View style={styles.detailContainer}>
-              <Text style={styles.label}>Live ORT Media Completed: </Text>
-              <TouchableOpacity
-                style={styles.confirmButton}
-                onPress={() =>
-                  addMoreInfo(
-                    ortVaccinationPrepareInputs?.[
-                      ortVaccinationPrepareInputs.length - 1
-                    ]?.label,
-                    purity
-                  )
-                }
-              >
-                <Text style={styles.buttonText}>Mark as Done</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        {/* {ortVaccinationPrepareInputs.length !== order.moreInfo.length &&
-          order?.cfuCounts &&
-          order?.cfuCounts.length > 0 && (
-            <View style={styles.detailContainer}>
-              <Text style={styles.label}>
-                {order?.pickUpDate ? "Pickup Date" : "Enter PickUpDate"}{" "}
-              </Text>
-              {order?.pickUpDate ? (
-                <Text style={styles.text}>{formatConfirmationTime(order?.pickUpDate)}</Text>
-              ) : (
-                <TouchableOpacity
-                  style={styles.confirmButton}
-                  onPress={() => setPickupModel(true)}
-                >
-                  <Text style={styles.buttonText}>Pick Up Product</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          )} */}
+        <View style={styles.detailContainer}>
+          <Text style={styles.label}>Order Status:</Text>
+          <Text style={[styles.value, getStatusStyle(order?.status)]}>{getStatusText(order.status)}</Text>
+        </View>
 
         <CustomModel
           visible={pickupModel}
