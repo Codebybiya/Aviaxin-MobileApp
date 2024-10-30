@@ -32,10 +32,10 @@ import Placeorder from "../../placedorders";
 import Orderdetail from "../../orderdetail";
 import ConfirmOrder from "../../confrimorder";
 import OrderDetailNotif from "../../orderdetailnotif";
-import Cart from "./cart";
 import Login from "../../auth/Login";
 import { menuItems } from "../../../constants/constants";
 import { useAuth } from "../../../context/authcontext/AuthContext";
+
 const Stack = createStackNavigator();
 const Tabs = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -63,7 +63,7 @@ function HomeStack() {
         name="Home"
         component={HomeTab}
         options={{
-          headerLeft: () => <DrawerButton />, // Ensure Drawer icon is present
+          headerLeft: () => <DrawerButton />,
           headerTitle: "Vet Dashboard",
           headerTitleAlign: "center",
         }}
@@ -77,7 +77,6 @@ function HomeStack() {
         name="OrderDetailNotification"
         component={OrderDetailNotif}
       />
-      
     </Stack.Navigator>
   );
 }
@@ -89,7 +88,7 @@ function NotificationStack() {
         name="Notifications"
         component={NotificationScreen}
         options={{
-          headerLeft: () => <DrawerButton />, // Drawer icon for this stack
+          headerLeft: () => <DrawerButton />,
           headerTitle: "Notifications",
           headerTitleAlign: "center",
         }}
@@ -105,7 +104,7 @@ function AboutStack() {
         name="About"
         component={About}
         options={{
-          headerLeft: () => <DrawerButton />, // Drawer icon for this stack
+          headerLeft: () => <DrawerButton />,
           headerTitle: "About",
           headerTitleAlign: "center",
         }}
@@ -114,26 +113,8 @@ function AboutStack() {
   );
 }
 
-function CartStack() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="Cart"
-        component={Cart}
-        options={{
-          headerLeft: () => <DrawerButton />, // Drawer icon for this stack
-          headerTitle: "Cart",
-          headerTitleAlign: "center",
-        }}
-      />
-    </Stack.Navigator>
-  );
-}
-
-// Root Tabs with Unread Count and Cart Item Count
 function RootTabs() {
   const [unreadCount, setUnreadCount] = useState(0);
-  const [cartItemCount, setCartItemCount] = useState(0);
 
   const fetchUnreadNotifications = async () => {
     const storedUserData = await AsyncStorage.getItem("userData");
@@ -146,16 +127,6 @@ function RootTabs() {
       } catch (error) {
         console.error("Error fetching unread notifications:", error);
       }
-    }
-  };
-
-  const fetchCartItemCount = async () => {
-    try {
-      const existingCart = await AsyncStorage.getItem("cartItems");
-      const parsedCartItems = existingCart ? JSON.parse(existingCart) : [];
-      setCartItemCount(parsedCartItems.length);
-    } catch (error) {
-      console.error("Failed to fetch cart items count:", error);
     }
   };
 
@@ -176,7 +147,6 @@ function RootTabs() {
     });
 
     fetchUnreadNotifications();
-    fetchCartItemCount();
 
     return () => {
       socket.disconnect();
@@ -186,7 +156,6 @@ function RootTabs() {
   useFocusEffect(
     React.useCallback(() => {
       fetchUnreadNotifications();
-      fetchCartItemCount();
     }, [])
   );
 
@@ -205,8 +174,6 @@ function RootTabs() {
             iconName = focused ? "bell" : "bell-o";
           } else if (route.name === "About") {
             iconName = focused ? "user" : "user-o";
-          } else if (route.name === "CartTab") {
-            iconName = "shopping-cart";
           }
 
           return (
@@ -222,11 +189,6 @@ function RootTabs() {
                   <Text style={styles.badgeText}>{unreadCount}</Text>
                 </View>
               )}
-              {route.name === "CartTab" && cartItemCount > 0 && (
-                <View style={styles.badgeContainer}>
-                  <Text style={styles.badgeText}>{cartItemCount}</Text>
-                </View>
-              )}
             </View>
           );
         },
@@ -235,7 +197,6 @@ function RootTabs() {
         tabBarStyle: {
           backgroundColor: "#ffffff",
           borderTopColor: "transparent",
-
           height: 70,
           paddingBottom: 5,
           paddingTop: 7,
@@ -244,21 +205,18 @@ function RootTabs() {
           fontSize: 12,
           fontWeight: "600",
         },
-        headerShown: false,
       })}
     >
       <Tabs.Screen name="HomeTab" component={HomeStack} />
-      <Tabs.Screen name="CartTab" component={CartStack} />
       <Tabs.Screen name="Notifications" component={NotificationStack} />
       <Tabs.Screen name="About" component={AboutStack} />
     </Tabs.Navigator>
   );
 }
 
-// Custom Drawer Content
 function CustomDrawerContent(props) {
   const [user, setUser] = useState({ name: "", email: "" });
-  const navigation = useNavigation(); // Use navigation hook to navigate
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -278,12 +236,11 @@ function CustomDrawerContent(props) {
 
     fetchUserData();
   }, []);
-  
+
   const { handleLogout } = useAuth();
 
   return (
     <DrawerContentScrollView {...props}>
-      {/* Custom Drawer Header */}
       <View style={styles.drawerHeader}>
         <Image
           source={require("@/assets/images/logo2.png")}
@@ -317,7 +274,6 @@ function CustomDrawerContent(props) {
   );
 }
 
-// Root Drawer
 function RootDrawer() {
   return (
     <Drawer.Navigator
@@ -328,64 +284,22 @@ function RootDrawer() {
           backgroundColor: "#ffffff",
           borderTopRightRadius: 50,
           borderBottomRightRadius: 50,
-          marginTop: 0, // Removed extra margin from top
         },
       }}
     >
-      <Drawer.Screen
-        name="Home"
-        component={RootTabs}
-        options={{
-          drawerLabel: () => null,
-          drawerIcon: ({ color, size }) => (
-            <FontAwesome name="home" size={size} color={color} />
-          ),
-        }}
-      />
-      <Drawer.Screen
-        name="Notifications"
-        component={NotificationStack}
-        options={{
-          drawerLabel: () => null,
-          drawerIcon: ({ color, size }) => (
-            <FontAwesome name="bell" size={size} color={color} />
-          ),
-        }}
-      />
-      <Drawer.Screen
-        name="About"
-        component={AboutStack}
-        options={{
-          drawerLabel: () => null,
-          drawerIcon: ({ color, size }) => (
-            <FontAwesome name="info-circle" size={size} color={color} />
-          ),
-        }}
-      />
-      <Drawer.Screen
-        name="Login"
-        component={Login}
-        options={{
-          drawerLabel: () => null,
-          drawerIcon: ({ color, size }) => (
-            <FontAwesome name="sign-in" size={size} color={color} />
-          ),
-        }}
-      />
+      <Drawer.Screen name="Home" component={RootTabs} />
+      <Drawer.Screen name="Login" component={Login} />
     </Drawer.Navigator>
   );
 }
 
-// Main App Layout
-// Main App Layout
 export default function RootLayout() {
   return (
     <SafeAreaView style={styles.container}>
-      {/* Manage the StatusBar to remove any extra gap */}
       <StatusBar
         barStyle="dark-content"
         backgroundColor="transparent"
-        translucent={true} // Set to true to overlay the content under the status bar
+        translucent
       />
       <RootDrawer />
     </SafeAreaView>

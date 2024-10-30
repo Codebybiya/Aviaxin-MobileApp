@@ -74,7 +74,6 @@ const Pendingplaceorder: React.FC = () => {
       <View style={styles.orderTextContainer}>
         <Text style={styles.orderTitle}>{item.productName}</Text>
         <Text style={styles.orderDate}>{item.date}</Text>
-        <Text style={styles.productPrice}>${item.productPrice}</Text>
 
         <TouchableOpacity
           onPress={() =>
@@ -121,7 +120,6 @@ const Pendingplaceorder: React.FC = () => {
           ListFooterComponent={renderFooter}
         />
       )}
-      
     </View>
   );
 };

@@ -3,63 +3,57 @@ import {
   StyleSheet,
   Text,
   View,
-  TextInput,
-  TouchableOpacity,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import config from "@/assets/config";
-import OrtIsolationForm from "@/components/Form/OrtIsolationForm";
 import ReusableProductForm from "@/components/Form/ReusableProductForm";
-import Alert from "@/components/Alert/Alert";
-const backendUrl = `${config.backendUrl}`;
 import { useAuth } from "@/context/authcontext/AuthContext";
+import { useAlert } from "@/context/alertContext/AlertContext";
 import {
   ortIsolationInputs,
   ortVaccinationInputs,
 } from "@/constants/constants";
-import { useAlert } from "@/context/alertContext/AlertContext";
+
+const backendUrl = `${config.backendUrl}`;
+
 const ProductForm = () => {
-  const { cartItems } = useLocalSearchParams();
-  const parsedCartItems = JSON.parse(cartItems);
+  const { productId, productType, productName, productPrice, quantity } =
+    useLocalSearchParams(); // Access params directly
+
   const router = useRouter();
-  console.log(parsedCartItems);
-  const [Success, setSuccess] = useState(false);
+  const [success, setSuccess] = useState(false);
   const { getUserData } = useAuth();
   const { showAlert } = useAlert();
+
   const handleCheckout = async (inputValues) => {
     const user = await getUserData();
-    console.log(user);
     if (!user.userid) {
       showAlert("Error", "User ID not found. Please log in.");
       return;
     }
 
     try {
-      const orders = parsedCartItems.map((item) => ({
+      const order = {
         userID: user.userid,
-        productID: item.productID,
-        productType: item.productType,
-        quantity: item.quantity,
+        productID: productId,
+        productType,
+        quantity,
         veterinarianName: inputValues?.veterinarianName,
         colonyName: inputValues?.colonyName,
         ortConfirmed: inputValues?.ortConfirmed,
         bottles: inputValues?.bottles,
         doses: inputValues?.doses,
         bodyParts: inputValues?.bodyParts,
-      }));
+      };
 
-      for (const order of orders) {
-        console.log("Sending order to:", `${backendUrl}/orders/addorders`);
-        console.log("Order data:", orders);
+      console.log("Sending order to:", `${backendUrl}/orders/addorders`);
+      console.log("Order data:", order);
 
-        await axios.post(`${backendUrl}/orders/addorders`, order);
-      }
+      await axios.post(`${backendUrl}/orders/addorders`, order);
 
       showAlert("Success", "Your order has been placed!", "/orderconfirmation");
       setSuccess(true);
@@ -71,9 +65,9 @@ const ProductForm = () => {
       );
     }
   };
-  const componentBasedOnType = (type) => {
-    console.log(type);
-    if (type === "isolation")
+
+  const renderFormBasedOnType = (type) => {
+    if (type === "isolation") {
       return (
         <ReusableProductForm
           inputs={ortIsolationInputs}
@@ -81,7 +75,7 @@ const ProductForm = () => {
           handleCheckout={handleCheckout}
         />
       );
-    else if (type === "vaccine")
+    } else if (type === "vaccine") {
       return (
         <ReusableProductForm
           inputs={ortVaccinationInputs}
@@ -89,6 +83,7 @@ const ProductForm = () => {
           handleCheckout={handleCheckout}
         />
       );
+    }
   };
 
   return (
@@ -97,14 +92,7 @@ const ProductForm = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {/* <OrtIsolationForm
-          cartItems={parsedCartItems}
-          user={user}
-          handleInput={handleInput}
-          inputValues={inputs}
-        /> */}
-        {componentBasedOnType(parsedCartItems[0].productType)}
-        
+        {renderFormBasedOnType(productType)}
       </ScrollView>
     </KeyboardAvoidingView>
   );

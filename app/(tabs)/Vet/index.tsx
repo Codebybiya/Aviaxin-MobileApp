@@ -126,18 +126,25 @@ const HomeTab = () => {
                   style={styles.productImage}
                 />
                 <Text style={styles.productName}>{item.productName}</Text>
-                <Text style={styles.productTag}>Trending Now</Text>
-                <Text style={styles.productPrice}>${item.productPrice}</Text>
+                <Text style={styles.productTag}>
+                  This product is owned by Aviaxin{" "}
+                </Text>
                 <TouchableOpacity
                   style={styles.detailButton}
                   onPress={() =>
                     router.push({
-                      pathname: "/productdetail",
-                      params: { productId: item._id },
+                      pathname: "/productform", // Directly navigate to product form
+                      params: {
+                        productId: item._id,
+                        productType: item.productType,
+                        productName: item.productName,
+                        productPrice: item.productPrice.toString(),
+                        quantity: "1", // Set the default quantity if needed
+                      },
                     })
                   }
                 >
-                  <Text style={styles.detailButtonText}>View Details</Text>
+                  <Text style={styles.detailButtonText}>Order Now</Text>
                 </TouchableOpacity>
               </View>
             ))}

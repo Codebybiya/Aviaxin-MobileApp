@@ -70,7 +70,10 @@ const Placeorder: React.FC = () => {
   }, []);
 
   const handleOrderDetailNavigation = (orderId: string) => {
-    router.push({ pathname: "/orderdetailnotif", params: { orderID: orderId } });
+    router.push({
+      pathname: "/orderdetailnotif",
+      params: { orderID: orderId },
+    });
   };
 
   const renderItem = ({ item }: ListRenderItemInfo<Order>) => (
@@ -82,7 +85,7 @@ const Placeorder: React.FC = () => {
       <View style={styles.orderTextContainer}>
         <Text style={styles.orderTitle}>{item.productName}</Text>
         <Text style={styles.orderDate}>{item.date}</Text>
-        <Text style={styles.productPrice}>${item.productPrice.toFixed(2)}</Text>
+
         <TouchableOpacity onPress={() => handleOrderDetailNavigation(item.id)}>
           <Text style={styles.orderDetails}>See Details</Text>
         </TouchableOpacity>
@@ -115,7 +118,6 @@ const Placeorder: React.FC = () => {
           contentContainerStyle={styles.ordersList}
         />
       )}
-      
     </View>
   );
 };

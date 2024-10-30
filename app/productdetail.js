@@ -1,3 +1,143 @@
+// import React, { useState, useEffect } from "react";
+// import { useRouter, useLocalSearchParams } from "expo-router";
+// import {
+//   StyleSheet,
+//   Text,
+//   View,
+//   Image,
+//   TouchableOpacity,
+//   ScrollView,
+//   ActivityIndicator,
+// } from "react-native";
+// import axios from "axios";
+// import config from "@/assets/config";
+// import { useAlert } from "@/context/alertContext/AlertContext";
+
+// const backendUrl = `${config.backendUrl}`;
+
+// const ProductDetail = () => {
+//   const { productId } = useLocalSearchParams();
+//   const router = useRouter();
+//   const [product, setProduct] = useState(null);
+//   const [quantity, setQuantity] = useState(1);
+//   const [loading, setLoading] = useState(true);
+//   const { showAlert } = useAlert();
+
+//   useEffect(() => {
+//     if (productId) {
+//       fetchProductDetails(productId);
+//     }
+//   }, [productId]);
+
+//   const fetchProductDetails = async (id) => {
+//     try {
+//       setLoading(true);
+//       const response = await axios.get(`${backendUrl}/products/products/${id}`);
+//       if (response.status === 200 && response.data.data) {
+//         setProduct(response.data.data);
+//       } else {
+//         console.log("Product not found.");
+//       }
+//     } catch (error) {
+//       console.error("Failed to fetch product details:", error);
+//       showAlert(
+//         "Error",
+//         "An error occurred while fetching the product details."
+//       );
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const navigateToProductForm = () => {
+//     if (!product) return;
+
+//     router.push({
+//       pathname: "/productform", // Ensure this is the correct path to ProductForm
+//       params: {
+//         cartItems: JSON.stringify([
+//           {
+//             productID: product._id,
+//             productType: product.productType,
+//             productName: product.productName,
+//             productPrice: product.productPrice,
+//             quantity,
+//             imagePath: product.imagePath,
+//           },
+//         ]),
+//       },
+//     });
+//   };
+
+//   if (loading) {
+//     return (
+//       <View style={styles.loaderContainer}>
+//         <ActivityIndicator size="large" color="#7DDD51" />
+//         <Text style={styles.loadingText}>Loading product details...</Text>
+//       </View>
+//     );
+//   }
+
+//   if (!product) {
+//     return (
+//       <View style={styles.container}>
+//         <Text style={styles.errorText}>Product not found.</Text>
+//       </View>
+//     );
+//   }
+
+//   const totalPrice = product.productPrice * quantity;
+
+//   return (
+//     <ScrollView contentContainerStyle={styles.scrollContainer}>
+//       <View style={styles.card}>
+//         <View style={styles.imageContainer}>
+//           <Image
+//             source={{ uri: `${product.imagePath}` }}
+//             style={styles.productImage}
+//           />
+//         </View>
+
+//         <View style={styles.productInfoCard}>
+//           <Text style={styles.productTitle}>{product.productName}</Text>
+//           <Text style={styles.description}>{product.productDescription}</Text>
+//           <Text style={styles.productPrice}>Price: Per Contract</Text>
+
+//           <View style={styles.counterContainer}>
+//             <TouchableOpacity
+//               style={[styles.counterButton, { backgroundColor: "#e4b05d" }]}
+//               onPress={() => setQuantity((prev) => Math.max(prev - 1, 1))}
+//             >
+//               <Text style={styles.counterButtonText}>-</Text>
+//             </TouchableOpacity>
+//             <Text style={styles.counterText}>{quantity}</Text>
+//             <TouchableOpacity
+//               style={[styles.counterButton, { backgroundColor: "#e4b05d" }]}
+//               onPress={() => setQuantity((prev) => prev + 1)}
+//             >
+//               <Text style={styles.counterButtonText}>+</Text>
+//             </TouchableOpacity>
+//           </View>
+
+//           <View style={styles.totalContainer}>
+//             <Text style={styles.totalLabel}>Total:</Text>
+//             <Text style={styles.totalPrice}>${totalPrice.toFixed(2)}</Text>
+//           </View>
+//         </View>
+
+//         <TouchableOpacity
+//           style={[styles.orderButton, styles.orderButtonGreen]}
+//           onPress={navigateToProductForm}
+//         >
+//           <Text style={styles.orderButtonText}>Go to Product Form</Text>
+//         </TouchableOpacity>
+//       </View>
+//     </ScrollView>
+//   );
+// };
+
+// export default ProductDetail;
+
 import React, { useState, useEffect } from "react";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import {
@@ -8,13 +148,11 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
-  Platform,
 } from "react-native";
 import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import config from "@/assets/config";
 import { useAlert } from "@/context/alertContext/AlertContext";
-import Alert from "@/components/Alert/Alert";
+
 const backendUrl = `${config.backendUrl}`;
 
 const ProductDetail = () => {
@@ -23,7 +161,8 @@ const ProductDetail = () => {
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
-  const { alert, showAlert } = useAlert();
+  const { showAlert } = useAlert();
+
   useEffect(() => {
     if (productId) {
       fetchProductDetails(productId);
@@ -50,33 +189,20 @@ const ProductDetail = () => {
     }
   };
 
-  const handleAddToCart = async () => {
+  const navigateToProductForm = () => {
     if (!product) return;
 
-    const cartItem = {
-      productID: product._id,
-      productType: product.productType,
-      productName: product.productName,
-      productPrice: product.productPrice,
-      quantity,
-      imagePath: product.imagePath,
-    };
-
-    try {
-      const existingCart = await AsyncStorage.getItem("cartItems");
-      let cartItems = existingCart ? JSON.parse(existingCart) : [];
-
-      cartItems.push(cartItem);
-
-      await AsyncStorage.setItem("cartItems", JSON.stringify(cartItems));
-      showAlert("Success", "Product added to cart!", {
-        pathname: "./Vet/cart",
-        params: { cartItems: JSON.stringify(cartItems) },
-      });
-    } catch (error) {
-      console.error("Failed to add to cart:", error);
-      showAlert("Error", "Failed to add product to cart. Please try again.");
-    }
+    // Navigate to ProductForm with product details as parameters
+    router.push({
+      pathname: "/productform", // Adjust this to your actual route if needed
+      params: {
+        productId: product._id,
+        productType: product.productType,
+        productName: product.productName,
+        productPrice: product.productPrice.toString(),
+        quantity: quantity.toString(), // Ensure all params are strings
+      },
+    });
   };
 
   if (loading) {
@@ -101,7 +227,6 @@ const ProductDetail = () => {
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.card}>
-        {/* Product Image */}
         <View style={styles.imageContainer}>
           <Image
             source={{ uri: `${product.imagePath}` }}
@@ -109,21 +234,11 @@ const ProductDetail = () => {
           />
         </View>
 
-        {/* Product Info Card */}
         <View style={styles.productInfoCard}>
-          {/* Product Title */}
           <Text style={styles.productTitle}>{product.productName}</Text>
-
-          {/* Product Description */}
           <Text style={styles.description}>{product.productDescription}</Text>
+          <Text style={styles.productPrice}>Price: Per Contract</Text>
 
-          {/* Product Price */}
-          <Text style={styles.productPrice}>
-            {/* ${product.productPrice.toFixed(2)} */}
-            Price: Per Contract
-          </Text>
-
-          {/* Quantity Selector */}
           <View style={styles.counterContainer}>
             <TouchableOpacity
               style={[styles.counterButton, { backgroundColor: "#e4b05d" }]}
@@ -140,18 +255,17 @@ const ProductDetail = () => {
             </TouchableOpacity>
           </View>
 
-          {/* Total Price */}
           <View style={styles.totalContainer}>
             <Text style={styles.totalLabel}>Total:</Text>
             <Text style={styles.totalPrice}>${totalPrice.toFixed(2)}</Text>
           </View>
         </View>
-        {/* Add to Cart Button */}
+
         <TouchableOpacity
           style={[styles.orderButton, styles.orderButtonGreen]}
-          onPress={handleAddToCart}
+          onPress={navigateToProductForm}
         >
-          <Text style={styles.orderButtonText}>Add to Cart</Text>
+          <Text style={styles.orderButtonText}>Go to Product Form</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

@@ -583,7 +583,6 @@ const OrderDetailNotif = () => {
                 label="Time of Confirmation:"
                 value={formatDate(order.confirmationTime)}
               />
-             
             </>
           )}
         </View>
