@@ -610,6 +610,7 @@ const ErrorMessage = ({ error }) => (
 const OrderDetailsCard = ({ label, value }) => (
   <View style={styles.detailContainer}>
     <Text style={styles.label}>{label}</Text>
+
     <Text style={styles.value}>{value}</Text>
   </View>
 );
@@ -658,17 +659,43 @@ const BottlesTable = ({ batchNo, tableData }) => {
 const MoreInfoList = ({ moreInfo, userrole, handleApprove }) =>
   moreInfo?.map((info, index) => (
     <View style={styles.detailContainer} key={index}>
-      <Text style={[styles.value, { fontWeight: "bold", fontStyle: "italic" }]}>
-        {info.status === "pending" || info.status === "approved"
-          ? info.markedBy.firstname + " " + info.markedBy.lastname
-          : info.status}
-      </Text>
+      {info.markedBy && (
+        <View style={{}}>
+          <Text
+            style={[styles.value, { fontWeight: "bold", fontStyle: "italic" }]}
+          >
+            {info.status === "pending" || info.status === "approved"
+              ? info.markedBy.firstname + " " + info.markedBy.lastname
+              : info.status}
+          </Text>
+          <Text style={{ fontSize: 10, color: "red" }}>
+            {formatConfirmationTime(info.timeOfMarking)}
+          </Text>
+        </View>
+      )}
       <Text style={styles.label}>{info.title}</Text>
-      <Text style={[styles.value, { fontWeight: "bold", fontStyle: "italic" }]}>
-        {info.status === "approved"
-          ? info.approvedBy.firstname + " " + info.approvedBy.lastname
-          : info.status}
-      </Text>
+      {info.purity && (
+        <Text style={styles.label}>{info.purity === false ? "No" : "Yes"}</Text>
+      )}
+      {info.pickUpDate && (
+        <Text style={styles.label}>
+          {formatConfirmationTime(info.pickUpDate)}
+        </Text>
+      )}
+      <View style={{}}>
+        <Text
+          style={[styles.value, { fontWeight: "bold", fontStyle: "italic" }]}
+        >
+          {info.status === "approved"
+            ? info.approvedBy.firstname + " " + info.approvedBy.lastname
+            : info.status}
+        </Text>
+        {info.timeOfApproval && (
+          <Text style={{ fontSize: 10, color: "red" }}>
+            {formatConfirmationTime(info.timeOfApproval)}
+          </Text>
+        )}
+      </View>
       {userrole === "veterinarian" && info.status !== "approved" && (
         <TouchableOpacity
           style={styles.approveButton}

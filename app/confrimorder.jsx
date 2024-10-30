@@ -677,17 +677,18 @@ const ConfirmOrder = () => {
     }
   };
 
-  const addMoreInfo = async (title, purity, pickupDate) => {
+  const addMoreInfo =  async(title, purity, pickupDate) => {
     let pickUpDate = null;
     if (title.pickUpDate) {
-      title = "Pickup Date";
       pickUpDate = title.pickUpDate;
+      title = "Pickup Date";
     }
+    console.log(pickUpDate);
     await addOrderInfo(
-      title,
-      id,
-      setOrder,
-      user,
+        title,
+        id,
+        setOrder,
+        user,
       showAlert,
       setError,
       purity,
@@ -778,15 +779,19 @@ const ConfirmOrder = () => {
         )}
 
         {/* Render Missing Step (if any) */}
-        {firstMissingStep && order.status === "preparing" && (
-          <MissingStep
-            step={firstMissingStep}
-            addMoreInfo={addMoreInfo}
-            purity={purity}
-            setPurity={setPurity}
-            setPickupModel={setPickupModel}
-          />
-        )}
+        {firstMissingStep &&
+          order.status === "preparing" &&
+          (ortVaccinationPrepareInputs.length - 2 === order.moreInfo.length
+            ? order?.cfuCounts.length > 0
+            : true) && ( // Allow steps to render before `cfuCounts` is added
+            <MissingStep
+              step={firstMissingStep}
+              addMoreInfo={addMoreInfo}
+              purity={purity}
+              setPurity={setPurity}
+              setPickupModel={setPickupModel}
+            />
+          )}
 
         {ortVaccinationPrepareInputs.length - 2 === order.moreInfo.length &&
           order?.cfuCounts.length === 0 &&
@@ -803,7 +808,9 @@ const ConfirmOrder = () => {
 
         <View style={styles.detailContainer}>
           <Text style={styles.label}>Order Status:</Text>
-          <Text style={[styles.value, getStatusStyle(order?.status)]}>{getStatusText(order.status)}</Text>
+          <Text style={[styles.value, getStatusStyle(order?.status)]}>
+            {getStatusText(order.status)}
+          </Text>
         </View>
 
         <CustomModel
@@ -1058,7 +1065,7 @@ const InfoStep = ({ info }) => (
       <Text style={styles.label}>{info.purity === false ? "No" : "Yes"}</Text>
     )}
     {info.pickUpDate && (
-      <Text style={styles.label}>{formatConfirmationTime(pickUpDate)}</Text>
+      <Text style={styles.label}>{formatConfirmationTime(info.pickUpDate )}</Text>
     )}
     <View style={{}}>
       <Text style={[styles.value, { fontWeight: "bold", fontStyle: "italic" }]}>
