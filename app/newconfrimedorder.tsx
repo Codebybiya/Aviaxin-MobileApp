@@ -118,7 +118,6 @@ const NewConfirmedOrder: React.FC = () => {
           ListFooterComponent={renderFooter}
         />
       )}
-      
     </View>
   );
 };
