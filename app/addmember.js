@@ -21,7 +21,7 @@ const backendUrl = `${config.backendUrl}`; // Use backendUrl from the config
 
 const Register = () => {
   const router = useRouter();
-  const {showAlert}=useAlert()
+  const { showAlert } = useAlert();
   const [selectedRole, setSelectedRole] = useState("microbiologist"); // State to manage selected role
   const [location, setLocation] = useState(""); // State to manage selected location
   const [client, setClient] = useState(""); // State to manage selected location
@@ -64,7 +64,8 @@ const Register = () => {
     const registerLink =
       selectedRole === "client"
         ? `${backendUrl}/admin/addClient`
-        : `${backendUrl}/users/register`;
+        : `${backendUrl}/users/sendOTP/${values.email}`;
+
     if (selectedRole === "client") {
       userData = {
         clientName: values.firstname + " " + values.lastname,
@@ -74,7 +75,8 @@ const Register = () => {
         password: values.password,
         location_id: values.location,
       };
-    } else {
+    }
+    else{
       userData = {
         firstName: values.firstname,
         lastName: values.lastname,
@@ -90,9 +92,20 @@ const Register = () => {
     const resp = await axios.post(registerLink, userData);
     if (resp.data.status.toLowerCase() === "success") {
       const role = selectedRole[0].toUpperCase() + selectedRole.slice(1);
-      showAlert("success", `${role} added successfully`);
-    }
-    else{
+      if (selectedRole !== "client") {
+        showAlert("success", "OTP sent successfully, check your email!");
+        console.log(userData)
+        setTimeout(() => {
+          // router.push("./OtpPage");
+          router.push({
+            pathname: "../auth/OtpPage",
+            params: userData,
+          });
+        }, 2000);
+      } else {
+        showAlert("success", `${role} added successfully`);
+      }
+    } else {
       console.log("Error adding member");
     }
     console.log(userData);
@@ -175,7 +188,7 @@ const Register = () => {
           handleSubmit={handleSubmit}
         />
       );
-    } else if (selectedRole === "vet") {
+    } else if (selectedRole === "veterinarian") {
       return (
         <CustomForm
           inputs={vetInputs(clients)}
@@ -208,7 +221,7 @@ const Register = () => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button2}
-          onPress={() => setSelectedRole("vet")}
+          onPress={() => setSelectedRole("veterinarian")}
         >
           <Text style={styles.buttonText}>Add Vet</Text>
         </TouchableOpacity>

@@ -8,7 +8,7 @@ const { backendUrl } = config;
 
 const OTPInput = ({ userData }) => {
   const [code, setCode] = useState("");
-  const { showAlert } = useAlert;
+  const { showAlert } = useAlert();
   const handleCodeChange = (newCode) => {
     setCode(newCode);
 
@@ -21,6 +21,7 @@ const OTPInput = ({ userData }) => {
 
   const handleRegister = async (userData, enteredOtp) => {
     console.log("Reached registration handler");
+    console.log(userData);
     userData = { ...userData, otpCode: enteredOtp };
 
     try {

@@ -770,7 +770,7 @@ const { width, height } = Dimensions.get("window");
 
 export default function OtpPage() {
   const userData = useLocalSearchParams();
-
+console.log(userData)
   return (
     <View style={styles.container}>
       <Svg
