@@ -150,13 +150,9 @@
 
 // export default CustomInput;
 import { FontAwesome } from "@expo/vector-icons";
+import { Picker } from "@react-native-picker/picker";
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 
 const CustomInput = ({
   placeholder,
@@ -204,6 +200,8 @@ const CustomInput = ({
               styles.textInput,
               {
                 color: value ? "#7DDD51" : "#000", // Change selected value color conditionally
+                border: "none",
+                width: "100%",
               },
             ]}
             onValueChange={handleChange(name)}
@@ -304,4 +302,3 @@ const styles = StyleSheet.create({
 });
 
 export default CustomInput;
-

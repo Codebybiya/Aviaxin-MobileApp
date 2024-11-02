@@ -474,6 +474,172 @@ export const registerInputs = [
   },
 ];
 
+export const microInputs = (locations) => {
+  return [
+    {
+      name: "firstname",
+      type: "text",
+      placeholder: "First Name",
+      icon: "user",
+      validation: {
+        required: "true",
+      },
+    },
+    {
+      name: "lastname",
+      type: "text",
+      placeholder: "Last Name",
+      icon: "user",
+      validation: {
+        required: "true",
+      },
+    },
+    {
+      name: "email",
+      type: "email",
+      placeholder: "Email",
+      icon: "envelope",
+      validation: {
+        required: true,
+        email: true,
+      },
+    },
+    {
+      name: "phno",
+      type: "number",
+      placeholder: "Phone No",
+      icon: "phone",
+      validation: {
+        required: true,
+        minLength: 10,
+        maxLength: 15,
+      },
+    },
+    {
+      name: "password",
+      type: "password",
+      placeholder: "Password",
+      icon: "lock",
+      validation: {
+        required: true,
+        minLength: 6,
+      },
+    },
+    {
+      name: "confirmPassword",
+      type: "password",
+      placeholder: "Confirm Password",
+      icon: "lock",
+      validation: {
+        required: true,
+        minLength: 6,
+      },
+    },
+
+    {
+      name: "location",
+      type: "select",
+      placeholder: "Select Location",
+      icon: "location",
+      pickerItems: locations.map((location) => ({
+        label: `Aviaxin ${location?.companyLocation}`,
+        value: location?._id,
+        key: location?._id,
+      })),
+      validation: {
+        required: "true",
+      },
+    },
+  ];
+};
+
+export const vetInputs = (clients) => {
+  return [
+    {
+      name: "firstname",
+      type: "text",
+      placeholder: "First Name",
+      icon: "user",
+      validation: {
+        required: "true",
+      },
+    },
+    {
+      name: "lastname",
+      type: "text",
+      placeholder: "Last Name",
+      icon: "user",
+      validation: {
+        required: "true",
+      },
+    },
+    {
+      name: "email",
+      type: "email",
+      placeholder: "Email",
+      icon: "envelope",
+      validation: {
+        required: true,
+        email: true,
+      },
+    },
+    {
+      name: "phno",
+      type: "number",
+      placeholder: "Phone No",
+      icon: "phone",
+      validation: {
+        required: true,
+        minLength: 10,
+        maxLength: 15,
+      },
+    },
+    {
+      name: "password",
+      type: "password",
+      placeholder: "Password",
+      icon: "lock",
+      validation: {
+        required: true,
+        minLength: 6,
+      },
+    },
+    {
+      name: "confirmPassword",
+      type: "password",
+      placeholder: "Confirm Password",
+      icon: "lock",
+      validation: {
+        required: true,
+        minLength: 6,
+      },
+    },
+    {
+      name: "client",
+      type: "select",
+      placeholder: "Select a client",
+      validation: {
+        required: true,
+      },
+      pickerItems: clients.map((client) => ({
+        label: client?.clientName,
+        value: client?._id,
+      })),
+    },
+  ];
+};
+
+export const clients = [
+  {
+    location: "SD",
+    client: ["Dakota Provision", "Standard Nutition", "J&R Feeds"],
+  },
+];
+
+// {label:"Dakota Provision",value:"Dakota Provision"},
+//   {label:"Standard Nutition",value:"Standard Nutition"},
+//   {label:"J&R Feeds",value:"J&R Feeds"},
+
 export const users = [
   // {label:"Admin",value:"admin"},
   // {label:"SuperAdmin",value:"superadmin"},

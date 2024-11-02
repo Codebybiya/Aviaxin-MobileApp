@@ -6,61 +6,195 @@ import {
   TextInput,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import * as Yup from "yup";
 import { Formik } from "formik";
 import axios from "axios";
 import config from "@/assets/config"; // Import your config file
+import CustomForm from "@/components/Form/Form";
+import { clients, microInputs, vetInputs } from "@/constants/constants";
+import { useAlert } from "@/context/alertContext/AlertContext";
 
 const backendUrl = `${config.backendUrl}`; // Use backendUrl from the config
 
 const Register = () => {
   const router = useRouter();
-  const [selectedRole, setSelectedRole] = useState(""); // State to manage selected role
+  const {showAlert}=useAlert()
+  const [selectedRole, setSelectedRole] = useState("microbiologist"); // State to manage selected role
+  const [location, setLocation] = useState(""); // State to manage selected location
+  const [client, setClient] = useState(""); // State to manage selected location
+  const [clients, setClients] = useState([]);
+  const [locations, setLocations] = useState([]);
+  const [clientsToDisplay, setClientsToDisplay] = useState([]);
+  const fetchClients = async () => {
+    try {
+      console.log(locations);
+      const resp = await axios.get(`${backendUrl}/admin/fetchClients`);
+      if (resp.data.status === "success") {
+        const allClients = resp.data.data;
+        setClients(allClients);
+      }
+    } catch (error) {
+      setClients([]);
+      setClient("");
+      console.log("Error fetching clients");
+    }
+  };
 
-  // Validation schema
-  const validationSchema = Yup.object().shape({
-    firstName: Yup.string()
-      .required("First name is required")
-      .label("First Name"),
-    lastName: Yup.string().required("Last name is required").label("Last Name"),
-    phoneNumber: Yup.string()
-      .required("Phone number is required")
-      .min(10, "Phone number is too short")
-      .label("Phone Number"),
-    role: Yup.string().required("Role is required").label("Sign In As"),
-    email: Yup.string()
-      .required("Email is required")
-      .email()
-      .label("Enter Your Email"),
-    password: Yup.string()
-      .required("Password is required")
-      .min(4)
-      .label("Enter Your Password"),
-    confirmPassword: Yup.string()
-      .oneOf([Yup.ref("password"), null], "Passwords must match")
-      .required("Confirm password is required"),
-  });
+  const fetchLocations = async () => {
+    try {
+      const resp = await axios.get(`${backendUrl}/admin/fetchLocations`);
+      if (resp.data.status === "success") {
+        setLocations(resp.data.data);
+      }
+    } catch (error) {
+      console.log("Error fetching locations");
+    }
+  };
 
-  const handleSubmit = (values) => {
-    const userData = {
-      firstName: values.firstName,
-      lastName: values.lastName,
-      phNo: values.phoneNumber,
-      role: values.role,
-      email: values.email,
-      password: values.password,
-    };
+  useEffect(() => {
+    fetchLocations();
+    fetchClients();
+  }, [locations.length]);
 
-    axios
-      .post(`${backendUrl}/users/register`, userData)
-      .then((res) => {
-        console.log(res.data);
-        router.push("/auth/Login");
-      })
-      .catch((e) => console.log(e));
+  const handleSubmit = async (values) => {
+    let userData = {};
+    const registerLink =
+      selectedRole === "client"
+        ? `${backendUrl}/admin/addClient`
+        : `${backendUrl}/users/register`;
+    if (selectedRole === "client") {
+      userData = {
+        clientName: values.firstname + " " + values.lastname,
+        phNo: values.phno,
+        role: selectedRole,
+        email: values.email,
+        password: values.password,
+        location_id: values.location,
+      };
+    } else {
+      userData = {
+        firstName: values.firstname,
+        lastName: values.lastname,
+        phNo: values.phno,
+        role: selectedRole,
+        email: values.email,
+        password: values.password,
+        location: values.location,
+        client: values.client,
+      };
+    }
+
+    const resp = await axios.post(registerLink, userData);
+    if (resp.data.status.toLowerCase() === "success") {
+      const role = selectedRole[0].toUpperCase() + selectedRole.slice(1);
+      showAlert("success", `${role} added successfully`);
+    }
+    else{
+      console.log("Error adding member");
+    }
+    console.log(userData);
+    //   .catch((e) => console.log(e));
+  };
+
+  // const OtherInputs = () => {
+  //   const changeLocation = (val) => {
+  //     console.log(val);
+  //     const findLocation = locations.find((item) => item._id === val);
+  //     setLocation(findLocation);
+  //     const findClients = findLocation ? clients?.filter((item) => item.location_id === findLocation._id) : [];
+  //     console.log(findClients);
+  //     if (!findClients.length > 0) {
+  //       setClient(null);
+  //     }
+  //     setClientsToDisplay(findClients);
+  //   };
+
+  //   const changeClient = (val) => {
+  //     const findClient = clients.find((item) => item._id === val);
+  //     setClientsToDisplay(findClient);
+  //   };
+  //   return (
+  //     <View style={styles.formContainer}>
+  //       <Picker
+  //         selectedValue={location ? location._id : "Select a location"}
+  //         style={[
+  //           styles.textInput,
+  //           {
+  //             color: location ? "#7DDD51" : "#000", // Change selected value color conditionally
+  //             width: "100%",
+  //             marginTop: -10,
+  //           },
+  //         ]}
+  //         onValueChange={(val) => changeLocation(val)}
+  //       >
+  //         <Picker.Item label={"Select a location"} value="" />
+  //         {locations?.map((item, index) => (
+  //           <Picker.Item
+  //             key={index}
+  //             label={item.companyLocation}
+  //             value={item._id}
+  //             color="#7DDD51"
+  //           />
+  //         ))}
+  //       </Picker>
+  //       <Picker
+  //         selectedValue={client ? client._id : "Select a client"}
+  //         style={[
+  //           styles.textInput,
+  //           {
+  //             color: client ? "#7DDD51" : "#000", // Change selected value color conditionally
+  //             width: "100%",
+  //           },
+  //         ]}
+  //         onValueChange={(val) => changeClient(val)}
+  //       >
+  //         <Picker.Item label={"Select a client"} value="" />
+  //         {clientsToDisplay?.map((item, index) => (
+  //           <Picker.Item
+  //             key={index}
+  //             label={item.clientName}
+  //             value={item._id}
+  //             color="#7DDD51"
+  //           />
+  //         ))}
+  //       </Picker>
+  //     </View>
+  //   );
+  // };
+
+  const FormBasedOnRole = ({ selectedRole, OtherInputs }) => {
+    if (selectedRole === "microbiologist") {
+      return (
+        <CustomForm
+          inputs={microInputs(locations)}
+          buttonText="Add Member"
+          oneInputInCol={true}
+          handleSubmit={handleSubmit}
+        />
+      );
+    } else if (selectedRole === "vet") {
+      return (
+        <CustomForm
+          inputs={vetInputs(clients)}
+          buttonText="Add Member"
+          oneInputInCol={true}
+          // OtherInputs={OtherInputs}
+          handleSubmit={handleSubmit}
+        />
+      );
+    } else {
+      return (
+        <CustomForm
+          inputs={microInputs(locations)}
+          buttonText="Add Member"
+          oneInputInCol={true}
+          handleSubmit={handleSubmit}
+        />
+      );
+    }
   };
 
   return (
@@ -86,164 +220,7 @@ const Register = () => {
         </TouchableOpacity>
       </View>
 
-      {selectedRole !== "" && (
-        <View style={styles.formContainer}>
-          <Formik
-            initialValues={{
-              firstName: "",
-              lastName: "",
-              phoneNumber: "",
-              role: selectedRole, // Set initial role based on button clicked
-              email: "",
-              password: "",
-              confirmPassword: "",
-            }}
-            onSubmit={(values) => handleSubmit(values)}
-            validationSchema={validationSchema}
-          >
-            {({
-              handleChange,
-              handleSubmit,
-              handleBlur,
-              values,
-              errors,
-              touched,
-              setFieldValue,
-            }) => (
-              <View style={styles.form}>
-                <View style={styles.inputContainer}>
-                  <FontAwesome
-                    name="user"
-                    size={24}
-                    color="#7DDD51"
-                    style={styles.icon}
-                  />
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder="First Name"
-                    onChangeText={handleChange("firstName")}
-                    onBlur={handleBlur("firstName")}
-                    value={values.firstName}
-                    placeholderTextColor="#888"
-                  />
-                </View>
-                {touched.firstName && errors.firstName && (
-                  <Text style={styles.errorText}>{errors.firstName}</Text>
-                )}
-
-                <View style={styles.inputContainer}>
-                  <FontAwesome
-                    name="user"
-                    size={24}
-                    color="#7DDD51"
-                    style={styles.icon}
-                  />
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder="Last Name"
-                    onChangeText={handleChange("lastName")}
-                    onBlur={handleBlur("lastName")}
-                    value={values.lastName}
-                    placeholderTextColor="#888"
-                  />
-                </View>
-                {touched.lastName && errors.lastName && (
-                  <Text style={styles.errorText}>{errors.lastName}</Text>
-                )}
-
-                <View style={styles.inputContainer}>
-                  <FontAwesome
-                    name="phone"
-                    size={24}
-                    color="#7DDD51"
-                    style={styles.icon}
-                  />
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder="Phone Number"
-                    onChangeText={handleChange("phoneNumber")}
-                    onBlur={handleBlur("phoneNumber")}
-                    value={values.phoneNumber}
-                    keyboardType="phone-pad"
-                    placeholderTextColor="#888"
-                  />
-                </View>
-                {touched.phoneNumber && errors.phoneNumber && (
-                  <Text style={styles.errorText}>{errors.phoneNumber}</Text>
-                )}
-
-                <View style={styles.inputContainer}>
-                  <FontAwesome
-                    name="envelope"
-                    size={24}
-                    color="#7DDD51"
-                    style={styles.icon}
-                  />
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder="Email"
-                    onChangeText={handleChange("email")}
-                    onBlur={handleBlur("email")}
-                    value={values.email}
-                    keyboardType="email-address"
-                    placeholderTextColor="#888"
-                  />
-                </View>
-
-                {touched.email && errors.email && (
-                  <Text style={styles.errorText}>{errors.email}</Text>
-                )}
-
-                <View style={styles.inputContainer}>
-                  <FontAwesome
-                    name="lock"
-                    size={24}
-                    color="#7DDD51"
-                    style={styles.icon}
-                  />
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder="Password"
-                    onChangeText={handleChange("password")}
-                    onBlur={handleBlur("password")}
-                    value={values.password}
-                    secureTextEntry
-                    placeholderTextColor="#888"
-                  />
-                </View>
-                {touched.password && errors.password && (
-                  <Text style={styles.errorText}>{errors.password}</Text>
-                )}
-
-                <View style={styles.inputContainer}>
-                  <FontAwesome
-                    name="lock"
-                    size={24}
-                    color="#7DDD51"
-                    style={styles.icon}
-                  />
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder="Confirm Password"
-                    onChangeText={handleChange("confirmPassword")}
-                    onBlur={handleBlur("confirmPassword")}
-                    value={values.confirmPassword}
-                    secureTextEntry
-                    placeholderTextColor="#888"
-                  />
-                </View>
-                {touched.confirmPassword && errors.confirmPassword && (
-                  <Text style={styles.errorText}>{errors.confirmPassword}</Text>
-                )}
-
-                <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                  <Text style={styles.buttonText}>Add {selectedRole}</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          </Formik>
-        </View>
-      )}
+      <FormBasedOnRole selectedRole={selectedRole} />
     </View>
   );
 };
@@ -256,23 +233,18 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#fff",
   },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    marginBottom: 12,
-    paddingHorizontal: 10,
-    backgroundColor: "#f9f9f9",
+
+  icon: {
+    marginRight: 10,
   },
   textInput: {
     flex: 1,
-    padding: 8,
-    fontSize: 16,
-  },
-  icon: {
-    marginRight: 10,
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginTop: 10,
   },
   buttonRow: {
     flexDirection: "row",
