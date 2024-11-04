@@ -14,6 +14,7 @@ import axios from "axios";
 import config from "@/assets/config";
 import { useAlert } from "@/context/alertContext/AlertContext";
 import Alert from "@/components/Alert/Alert";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const backendUrl = `${config.backendUrl}`;
 
 interface Order {
@@ -29,15 +30,24 @@ const Pendingplaceorder: React.FC = () => {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(true); // Loading state
   const router = useRouter();
+  const [userId, setUserId] = useState(null);
   const { showAlert } = useAlert();
   useEffect(() => {
+    const fetchUserData = async () => {
+      const savedUserData = await AsyncStorage.getItem("userData");
+      if (savedUserData) {
+        const { userid } = JSON.parse(savedUserData);
+        setUserId(userid);
+      }
+    };
+    fetchUserData();
     fetchOrders(); // Initial fetch
   }, []);
 
   const fetchOrders = async () => {
     try {
       const response = await axios.get(
-        `${backendUrl}/orders/getallordersbymic?page=${page}&limit=10&status=pending`
+        `${backendUrl}/orders/getallordersbymic/${userId}?page=${page}&limit=10&status=pending`
       );
       console.log("response", response.data);
 

@@ -14,6 +14,7 @@ import axios from "axios";
 import config from "@/assets/config";
 import { useAlert } from "@/context/alertContext/AlertContext";
 import Alert from "@/components/Alert/Alert";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const backendUrl = `${config.backendUrl}`;
 
 interface Order {
@@ -29,17 +30,26 @@ const NewConfirmedOrder: React.FC = () => {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false); // Single loader state for all fetches
   const router = useRouter();
+  const [userId, setUserId] = useState(null);
+
   const { showAlert } = useAlert();
   useEffect(() => {
+    const fetchUserData = async () => {
+      const savedUserData = await AsyncStorage.getItem("userData");
+      if (savedUserData) {
+        const { userid } = JSON.parse(savedUserData);
+        setUserId(userid);
+      }
+    };
+    fetchUserData();
     fetchOrders(); // Initial fetch
   }, []);
-
   const fetchOrders = async () => {
     setLoading(true); // Show loader for all fetches
 
     try {
       const response = await axios.get(
-        `${backendUrl}/orders/getallconordersbymic?page=${page}&limit=10&status=confirmed`
+        `${backendUrl}/orders/getallconordersbymic/${userId}?page=${page}&limit=10&status=confirmed`
       );
 
       const ordersData = response.data.data.map((order: any) => ({
