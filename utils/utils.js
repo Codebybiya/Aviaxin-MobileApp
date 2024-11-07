@@ -47,7 +47,7 @@ export const createValidationSchema = (fields) => {
   return Yup.object().shape(shape);
 };
 
-export const updateUserPassword = async (newPassword,showAlert) => {
+export const updateUserPassword = async (newPassword, showAlert) => {
   try {
     const savedUserData = await AsyncStorage.getItem("userData");
     if (savedUserData) {
@@ -85,13 +85,14 @@ export const getRoleScreen = (role) => {
       return "../(tabs)/admin";
     case "admin":
       return "../(tabs)/admin";
+    case "client":
+      return "../(tabs)/client";
   }
 
- return null;
+  return null;
 };
-
 
 export const formatConfirmationTime = (time) => {
   const date = new Date(time);
-  return date.toLocaleDateString('en-GB'); // "DD/MM/YYYY" format
+  return date.toLocaleDateString("en-GB"); // "DD/MM/YYYY" format
 };

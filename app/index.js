@@ -71,6 +71,8 @@ const Home = () => {
       router.replace("../(tabs)/micro");
     } else if (role === "superadmin") {
       router.replace("../(tabs)/admin");
+    }else if (role === "client") {
+      router.replace("../(tabs)/client");
     }
   };
 

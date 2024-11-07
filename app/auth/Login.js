@@ -74,6 +74,7 @@ const Login = () => {
           >
             <Picker.Item label="Veterinarian" value="veterinarian" />
             <Picker.Item label="Microbiologist" value="microbiologist" />
+            <Picker.Item label="Client" value="client" />
           </Picker>
         </View>
 
