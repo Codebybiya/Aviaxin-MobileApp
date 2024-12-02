@@ -23,11 +23,8 @@ const Register = () => {
   const router = useRouter();
   const { showAlert } = useAlert();
   const [selectedRole, setSelectedRole] = useState("microbiologist"); // State to manage selected role
-  const [location, setLocation] = useState(""); // State to manage selected location
-  const [client, setClient] = useState(""); // State to manage selected location
   const [clients, setClients] = useState([]);
   const [locations, setLocations] = useState([]);
-  const [clientsToDisplay, setClientsToDisplay] = useState([]);
   const fetchClients = async () => {
     try {
       console.log(locations);
@@ -38,7 +35,6 @@ const Register = () => {
       }
     } catch (error) {
       setClients([]);
-      setClient("");
       console.log("Error fetching clients");
     }
   };

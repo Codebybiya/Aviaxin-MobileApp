@@ -11,7 +11,6 @@ import Svg, { Path } from "react-native-svg";
 import { Picker } from "@react-native-picker/picker";
 import LoginForm from "../../components/Form/LoginForm"; // New Component
 import Register from "./Register"; // Existing Component
-import Alert from "../../components/Alert/Alert";
 import { router } from "expo-router";
 import { getRoleScreen } from "../../utils/utils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -80,13 +79,11 @@ const Login = () => {
 
         <LoginForm selectedRole={selectedRole} />
 
-        <TouchableOpacity onPress={() => setShowRegisterForm(true)}>
+        <TouchableOpacity onPress={() => router.push("../auth/Register")}>
           <Text style={styles.signupText}>SignUp Account Request</Text>
         </TouchableOpacity>
 
-        {showRegisterForm && (
-          <Register show={showRegisterForm} setShow={setShowRegisterForm} />
-        )}
+
       </View>
     </View>
   );

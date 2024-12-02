@@ -192,15 +192,19 @@ export const handlePDF = async (action, order, id, showModal) => {
         .map(
           (info) => `
             <div class="detail-container">
+            <div>
+            <span>${info.markedBy?.firstname} ${
+              info.markedBy?.lastname
+            }</span>
+            <br>
+            <span>${formatConfirmationTime(
+              info.timeOfMarking
+            )}</span>
+            </div>
               <span class="label">${info.title}:</span>
               <div class="value">
-                <span>Marked By: ${info.markedBy?.firstname} ${
-            info.markedBy?.lastname
-          }</span><br>
-                <span>Marked Time: ${formatConfirmationTime(
-                  info.timeOfMarking
-                )}</span><br>
-                <span>Approved By: ${info.approvedBy?.firstname} ${
+             <br>
+                <span> ${info.approvedBy?.firstname} ${
             info.approvedBy?.lastname
           }</span><br>
                 <span>Approval Time: ${formatConfirmationTime(

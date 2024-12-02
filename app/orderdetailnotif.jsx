@@ -17,6 +17,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "@/context/authcontext/AuthContext";
 import { formatConfirmationTime } from "@/utils/utils";
 import { Table, Row, Rows } from "react-native-table-component";
+import { handlePDF } from "@/utils/GenOrPrintPdf";
 
 // Backend URL configuration
 const backendUrl = `${config.backendUrl}`;
@@ -173,6 +174,9 @@ const OrderDetailNotif = () => {
                 label="Time of Confirmation:"
                 value={formatDate(order.confirmationTime)}
               />
+              <TouchableOpacity onPress={()=>handlePDF("generate",order,orderID,false)} style={styles.button}>
+                <Text style={styles.buttonText}>Print Confirmation</Text>
+              </TouchableOpacity>
             </>
           )}
         </View>
@@ -294,6 +298,7 @@ const MoreInfoList = ({ moreInfo, userrole, handleApprove }) =>
           <Text style={styles.approveButtonText}>Approve</Text>
         </TouchableOpacity>
       )}
+
     </View>
   ));
 
