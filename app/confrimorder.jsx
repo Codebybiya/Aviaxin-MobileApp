@@ -29,6 +29,7 @@ import {
 import BottlesModel from "@/components/BottlesModel/BottlesModel";
 import { Table, Row, Rows } from "react-native-table-component";
 import Checkbox from "expo-checkbox";
+import { handlePDF } from "@/utils/GenOrPrintPdf";
 const backendUrl = `${config.backendUrl}`;
 
 const ConfirmOrder = () => {
@@ -48,6 +49,7 @@ const ConfirmOrder = () => {
 
   useEffect(() => {
     fetchOrderDetails(id, setOrder, setLoading, setError, setUser); // Using a custom hook for fetching data
+  
   }, [id]);
 
   const handleConfirmOrder = async (data) => {
@@ -351,6 +353,13 @@ const ConfirmOrder = () => {
           processModalVisible={processModalVisible}
           setProcessModalVisible={setProcessModalVisible}
         />
+        {
+          order?.status==="confirmed" && (
+            <TouchableOpacity onPress={()=>handlePDF("generate",order,id,false)} style={styles.confirmButton}>
+            <Text style={styles.buttonText}>Print Confirmation</Text>
+          </TouchableOpacity>
+          )
+        }
       </View>
     </ScrollView>
   );
@@ -374,6 +383,7 @@ const fetchOrderDetails = async (
     }
     setLoading(true);
     const response = await axios.get(`${backendUrl}/orders/orderdetail/${id}`);
+    console.log(response.data.data);
     setOrder(response.data.data);
   } catch (error) {
     setError("Failed to load order details.");

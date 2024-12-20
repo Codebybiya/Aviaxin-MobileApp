@@ -667,6 +667,15 @@ export const ortIsolationInputs = [
     label: "Colony Name",
   },
   {
+    name: "purchaseOrderNo",
+    type: "text",
+    validation: {
+      required: "true",
+    },
+    placeholder: "XYZ",
+    label: "Purchase Order No",
+  },
+  {
     name: "ortConfirmed",
     type: "select",
     placeholder: "ORT Confirmed",
@@ -698,6 +707,15 @@ export const ortVaccinationInputs = [
     },
     placeholder: "XYZ",
     label: "Colony Name",
+  },
+  {
+    name: "purchaseOrderNo",
+    type: "text",
+    validation: {
+      required: "true",
+    },
+    placeholder: "XYZ",
+    label: "Purchase Order No",
   },
   {
     name: "ortConfirmed",
