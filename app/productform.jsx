@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
-  Text,
-  View,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
@@ -48,6 +46,7 @@ const ProductForm = () => {
         bottles: inputValues?.bottles,
         doses: inputValues?.doses,
         bodyParts: inputValues?.bodyParts,
+        purchaseOrderNo: inputValues?.purchaseOrderNo,
       };
 
       console.log("Sending order to:", `${backendUrl}/orders/addorders`);

@@ -445,7 +445,8 @@ export const registerInputs = [
     icon: "lock",
     validation: {
       required: true,
-      minLength: 6,
+      // minLength: 6,
+      password:true,
     },
   },
   {
@@ -455,7 +456,7 @@ export const registerInputs = [
     icon: "lock",
     validation: {
       required: true,
-      minLength: 6,
+      // minLength: 6,
     },
   },
 
@@ -522,7 +523,9 @@ export const microInputs = (locations) => {
       icon: "lock",
       validation: {
         required: true,
-        minLength: 6,
+        password:true,
+        match: "password",
+
       },
     },
     {
@@ -601,7 +604,7 @@ export const vetInputs = (clients) => {
       icon: "lock",
       validation: {
         required: true,
-        minLength: 6,
+        password:true
       },
     },
     {
@@ -612,6 +615,7 @@ export const vetInputs = (clients) => {
       validation: {
         required: true,
         minLength: 6,
+        match: "password",
       },
     },
     {

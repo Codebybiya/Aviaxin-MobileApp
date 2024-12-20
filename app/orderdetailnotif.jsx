@@ -122,6 +122,8 @@ const OrderDetailNotif = () => {
             value={order.veterinarianName}
           />
           <OrderDetailsCard label="Site Name:" value={order.colonyName} />
+          {console.log(order)}
+          <OrderDetailsCard label="Purchase Order No:" value={order.purchaseOrderNo} />
           <OrderDetailsCard
             label="ORT Confirmed Previously:"
             value={order.ortConfirmed ? "Yes" : "No"}

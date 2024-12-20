@@ -85,14 +85,17 @@ import RoleBasedForm from "@/components/Form/RoleBasedForm";
 import { microInputs, vetInputs } from "../../constants/constants";
 import { useAlert } from "@/context/alertContext/AlertContext";
 import { fetchClients, fetchLocations, registerUser } from "../../utils/utils";
+import { useRouter } from "expo-router";
 
 const Register = () => {
+  const router = useRouter();
   const { showAlert } = useAlert();
   const [selectedRole, setSelectedRole] = useState("microbiologist");
   const [clients, setClients] = useState([]);
   const [locations, setLocations] = useState([]);
   
   const handleSubmit = async (values) => {
+    console.log(values);
     await registerUser(values, selectedRole, showAlert, router);
   };
 

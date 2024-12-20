@@ -125,8 +125,16 @@ export const createValidationSchema = (fields) => {
       );
     }
 
+    if (field.validation.password) {
+      validation = validation.matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+=[\]{}|;':",.<>?/\\`~]).{6,}$/,
+        `${field.placeholder} must be at least 6 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character`
+      );
+    }
+
     shape[field.name] = validation;
   });
+
   return Yup.object().shape(shape);
 };
 
