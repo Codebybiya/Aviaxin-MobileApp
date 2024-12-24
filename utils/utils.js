@@ -5,6 +5,89 @@ import axios from "axios";
 import { Alert } from "react-native";
 const backendUrl = `${config.backendUrl}`;
 // Function to create Yup validation schema
+
+export const fetchClients = async () => {
+  try {
+    const response = await axios.get(`${backendUrl}/admin/fetchClients`);
+    if (response.data.status === "success") {
+      return response.data.data;
+    }
+  } catch (error) {
+    console.error("Error fetching clients:", error);
+  }
+  return [];
+};
+
+export const fetchLocations = async () => {
+  try {
+    const response = await axios.get(`${backendUrl}/admin/fetchLocations`);
+    if (response.data.status === "success") {
+      return response.data.data;
+    }
+  } catch (error) {
+    console.error("Error fetching locations:", error);
+  }
+  return [];
+};
+
+export const registerUser = async (values, selectedRole, showAlert, router) => {
+  let userData = {};
+  const registerLink =
+    selectedRole === "client"
+      ? `${backendUrl}/admin/addClient`
+      : `${backendUrl}/users/sendOTP/${values.email}`;
+
+  // Prepare user data based on the selected role
+  if (selectedRole === "client") {
+    userData = {
+      clientName: `${values.firstname} ${values.lastname}`,
+      phNo: values.phno,
+      role: selectedRole,
+      email: values.email,
+      password: values.password,
+      location_id: values.location,
+    };
+  } else {
+    userData = {
+      firstName: values.firstname,
+      lastName: values.lastname,
+      phNo: values.phno,
+      role: selectedRole,
+      email: values.email,
+      password: values.password,
+      location: values.location,
+      client: values.client,
+    };
+  }
+
+  try {
+    const resp = await axios.post(registerLink, userData);
+
+    if (resp.data.status.toLowerCase() === "success") {
+      const role = selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1);
+      if (selectedRole !== "client") {
+        showAlert("success", "OTP sent successfully, check your email!");
+
+        // Navigate to the OTP page with user data
+        setTimeout(() => {
+          router.push({
+            pathname: "../auth/OtpPage",
+            params: userData,
+          });
+        }, 2000);
+      } else {
+        showAlert("success", `${role} added successfully`);
+      }
+    } else {
+      showAlert("error", "Error registering user");
+    }
+  } catch (error) {
+    console.error("Error during registration:", error);
+    showAlert("error", "Registration failed. Please try again.");
+  }
+
+  console.log("User Data:", userData);
+};
 export const createValidationSchema = (fields) => {
   const shape = {};
 
@@ -42,12 +125,20 @@ export const createValidationSchema = (fields) => {
       );
     }
 
+    if (field.validation.password) {
+      validation = validation.matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+=[\]{}|;':",.<>?/\\`~]).{6,}$/,
+        `${field.placeholder} must be at least 6 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character`
+      );
+    }
+
     shape[field.name] = validation;
   });
+
   return Yup.object().shape(shape);
 };
 
-export const updateUserPassword = async (newPassword,showAlert) => {
+export const updateUserPassword = async (newPassword, showAlert) => {
   try {
     const savedUserData = await AsyncStorage.getItem("userData");
     if (savedUserData) {
@@ -85,13 +176,14 @@ export const getRoleScreen = (role) => {
       return "../(tabs)/admin";
     case "admin":
       return "../(tabs)/admin";
+    case "client":
+      return "../(tabs)/client";
   }
 
- return null;
+  return null;
 };
-
 
 export const formatConfirmationTime = (time) => {
   const date = new Date(time);
-  return date.toLocaleDateString('en-GB'); // "DD/MM/YYYY" format
+  return date.toLocaleDateString("en-GB"); // "DD/MM/YYYY" format
 };

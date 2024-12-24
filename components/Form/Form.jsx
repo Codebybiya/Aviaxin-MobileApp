@@ -10,7 +10,13 @@ import {
 } from "react-native";
 import { createValidationSchema } from "@/utils/utils";
 
-const CustomForm = ({ inputs, handleSubmit, buttonText }) => {
+const CustomForm = ({
+  inputs,
+  handleSubmit,
+  buttonText,
+  oneInputInCol,
+  OtherInputs,
+}) => {
   const renderInput = ({ item }) => {
     return (
       <View
@@ -47,7 +53,8 @@ const CustomForm = ({ inputs, handleSubmit, buttonText }) => {
       <View
         style={{
           width: "100%",
-          flexDirection: inputs?.length > 4 ? "row" : "column",
+          flexDirection:
+            inputs?.length > 4 && !oneInputInCol ? "row" : "column",
           justifyContent: "space-between", // Ensure spacing between rows
         }}
       >
@@ -55,9 +62,10 @@ const CustomForm = ({ inputs, handleSubmit, buttonText }) => {
           data={inputs}
           renderItem={renderInput}
           keyExtractor={(item) => item.name}
-          numColumns={inputs?.length > 4 ? 2 : 1} // 2 columns if length > 4, else 1 column
+          numColumns={inputs?.length > 4 && !oneInputInCol ? 2 : 1} // 2 columns if length > 4, else 1 column
           key={inputs?.length > 4 ? "h" : "v"} // Horizontal or vertical
         />
+        {OtherInputs && OtherInputs()}
       </View>
       <TouchableOpacity style={styles.button} onPress={formik.handleSubmit}>
         <Text style={styles.buttonText}>

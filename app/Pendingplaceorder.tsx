@@ -5,17 +5,17 @@ import {
   View,
   TouchableOpacity,
   FlatList,
-  ListRenderItemInfo,
-  ActivityIndicator, // Import ActivityIndicator for the loading spinner
+  ActivityIndicator,
 } from "react-native";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import axios from "axios";
 import config from "@/assets/config";
 import { useAlert } from "@/context/alertContext/AlertContext";
-import Alert from "@/components/Alert/Alert";
-const backendUrl = `${config.backendUrl}`;
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
+const backendUrl = `${config.backendUrl}`;
+// Define the structure for an Order item
 interface Order {
   id: string;
   productName: string;
@@ -23,50 +23,85 @@ interface Order {
   date: string;
 }
 
-const Pendingplaceorder: React.FC = () => {
+interface User {
+  userid: string;
+  userrole: string;
+}
+const Pendingplaceorder = () => {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(true); // Loading state
+  const [page, setPage] = useState<number>(1);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
+  const [userId, setUserId] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const { showAlert } = useAlert();
+
   useEffect(() => {
-    fetchOrders(); // Initial fetch
+    const fetchUserData = async () => {
+      const savedUserData = await AsyncStorage.getItem("userData");
+      if (savedUserData) {
+        const userData: User = JSON.parse(savedUserData);
+        setUser(userData);
+        setUserId(userData.userid);
+      }
+    };
+
+    fetchUserData();
   }, []);
 
+  useEffect(() => {
+    if (userId) {
+      fetchOrders(); // Only fetch orders when userId is available
+    }
+  }, [userId]);
+
   const fetchOrders = async () => {
+    setLoading(true);
     try {
-      const response = await axios.get(
-        `${backendUrl}/orders/getallordersbymic?page=${page}&limit=10&status=pending`
-      );
-      console.log("response", response.data);
-
-      const ordersData = response.data.data.map((order: any) => ({
-        id: order._id,
-        productName: order.productID
-          ? order.productID.productName
-          : "Unknown Product",
-        productPrice: order.productID ? order.productID.productPrice : 0,
-        date: `Placed on ${new Date(order.createdAt).toLocaleDateString()}`,
-      }));
-
-      setOrders((prevOrders) => [...prevOrders, ...ordersData]);
-      setHasMore(response.data.hasMore);
-
-      if (response.data.hasMore) {
-        setPage((prevPage) => prevPage + 1);
+      let response = null;
+      if (user?.userrole !== "client") {
+        response = await axios.get(
+          `${backendUrl}/orders/getallconordersbymic/${userId}?page=${page}&limit=10&status=pending`
+        );
       } else {
-        setHasMore(false);
+        response = await axios.get(
+          `${backendUrl}/orders/getallordersbyclient/${userId}?page=${page}&limit=10&status=pending`
+        );
+      }
+
+      if (response?.data?.status === "success") {
+        const ordersData = response.data.data.map(
+          (order: any): Order => ({
+            id: order._id,
+            productName: order.productID
+              ? order.productID.productName
+              : "Unknown Product",
+            productPrice: order.productID ? order.productID.productPrice : 0,
+            date: `Placed on ${new Date(order.createdAt).toLocaleDateString()}`,
+          })
+        );
+
+        setOrders((prevOrders) => [...prevOrders, ...ordersData]);
+        setHasMore(response.data.hasMore);
+
+        if (response.data.hasMore) {
+          setPage((prevPage) => prevPage + 1);
+        } else {
+          setHasMore(false);
+        }
+      } else {
+        showAlert("Error", "Unable to fetch orders. Please try again.");
       }
     } catch (error) {
       console.error("Failed to fetch orders:", error);
       showAlert("Error", "Unable to fetch orders. Please try again.");
     } finally {
-      setLoading(false); // Set loading to false after data is fetched
+      setLoading(false);
     }
   };
 
-  const renderItem = ({ item }: ListRenderItemInfo<Order>) => (
+  const renderItem = ({ item }: { item: Order }) => (
     <View style={styles.orderContainer}>
       <View style={styles.orderIconContainer}>
         <FontAwesome name="shopping-cart" size={28} color="#ffffff" />
@@ -74,14 +109,29 @@ const Pendingplaceorder: React.FC = () => {
       <View style={styles.orderTextContainer}>
         <Text style={styles.orderTitle}>{item.productName}</Text>
         <Text style={styles.orderDate}>{item.date}</Text>
-
-        <TouchableOpacity
-          onPress={() =>
-            router.push({ pathname: "/confrimorder", params: { id: item.id } })
-          }
-        >
-          <Text style={styles.orderDetails}>See Details</Text>
-        </TouchableOpacity>
+        {user?.userrole === "client" ? (
+          <TouchableOpacity
+            onPress={() =>
+              router.push({
+                pathname: "/orderdetailnotif",
+                params: { orderID: item.id },
+              })
+            }
+          >
+            <Text style={styles.orderDetails}>See Details</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            onPress={() =>
+              router.push({
+                pathname: "/confrimorder",
+                params: { id: item.id },
+              })
+            }
+          >
+            <Text style={styles.orderDetails}>See Details</Text>
+          </TouchableOpacity>
+        )}
       </View>
       <MaterialIcons name="keyboard-arrow-right" size={24} color="#7DDD51" />
     </View>
@@ -89,7 +139,6 @@ const Pendingplaceorder: React.FC = () => {
 
   const renderFooter = () => {
     if (!hasMore) return null;
-
     return (
       <View style={styles.loadMore}>
         <TouchableOpacity style={styles.loadMoreButton} onPress={fetchOrders}>
@@ -107,7 +156,6 @@ const Pendingplaceorder: React.FC = () => {
           <Text style={styles.loadingText}>Loading orders...</Text>
         </View>
       ) : orders.length === 0 ? (
-        // Show "No orders found" message if the orders array is empty
         <View style={styles.noOrdersContainer}>
           <Text style={styles.noOrdersText}>No orders found.</Text>
         </View>
