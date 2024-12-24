@@ -262,86 +262,145 @@ const OrderDetail = () => {
 
     const htmlContent = `
       <html>
-        <head>
-          <style>
-            body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; }
-            .container { width: 100%; padding: 20px; background-color: #fff; border-radius: 10px; }
-            .header { text-align: center; margin-bottom: 20px; }
-            .header img { max-width: 150px; }
-            .company-name { font-size: 24px; font-weight: bold; margin-top: 10px; color: #333; }
-            h1 { font-size: 28px; font-weight: bold; color: #218838; margin-bottom: 20px; text-align: center; }
-            .card { background-color: #fff; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
-            .detail-container { display: flex; justify-content: space-between; margin-bottom: 15px; }
-            .label { font-size: 16px; color: #218838; }
-            .value { font-size: 16px; color: #333; text-align: right; }
-            .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #777; }
-            .footer p { margin: 0; }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <img src="${base64Logo}" alt="Company Logo">
-            </div>
-            <h1>Order Detail</h1>
-            <div class="card">
-              <div class="detail-container">
-                <span class="label">Product Name:</span>
-                <span class="value">${order.productID.productName}</span>
-              </div>
-              <div class="detail-container">
-                <span class="label">Submitting Vet:</span>
-                <span class="value">${order.veterinarianName}</span>
-              </div>
-              <div class="detail-container">
-                <span class="label">Site Name:</span>
-                <span class="value">${order.colonyName}</span>
-              </div>
-              <div class="detail-container">
-                <span class="label">ORT Confirmed:</span>
-                <span class="value">${order.ortConfirmed}</span>
-              </div>
-              <div class="detail-container">
-                <span class="label">Quantity:</span>
-                <span class="value">${order.quantity}</span>
-              </div>
-              <div class="detail-container">
-                <span class="label">Order Status:</span>
-                <span class="value">${getStatusText(order.status)}</span>
-              </div>
-              ${
-                order.status === "confirmed"
-                  ? `
-              <div class="detail-container">
-                <span class="label">Confirmed By:</span>
-                <span class="value">${order.confirmedByUser || "Unknown"}</span>
-              </div>
-              <div class="detail-container">
-                <span class="label">Confirmation Time:</span>
-                <span class="value">${
-                  order.confirmationTime
-                    ? formatConfirmationTime(order.confirmationTime)
-                    : "Unknown"
-                }</span>
-              </div>
-              <div class="detail-container">
-                <span class="label">Batch Number:</span>
-                <span class="value">${order.batchNumber || "Unknown"}</span>
-              </div>
-              <div class="detail-container">
-                <span class="label">Isolation Number:</span>
-                <span class="value">${order.isolateNumber || "Unknown"}</span>
-              </div>`
-                  : ""
-              }
-            </div>
-            <div class="footer">
-              <p>Aviaxin | 2301 Research Park Way, Suite 217, Brookings, South Dakota 57006 | Contact Info</p>
-              <p>Email: info@aviaxin.com | Phone: +1(952)213-1794</p>
-            </div>
-          </div>
-        </body>
-      </html>
+<head>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    .container {
+      width: 100%;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      text-align: left;
+      margin-bottom: 20px;
+    }
+    .header img {
+      max-width: 200px;
+    }
+    .company-info {
+      text-align: right;
+      font-size: 12px;
+      color: #333;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .details {
+      margin-bottom: 20px;
+    }
+    .details div {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+    .details .label {
+      font-size: 14px;
+      font-weight: bold;
+      color: #218838;
+    }
+    .details .value {
+      font-size: 14px;
+      color: #333;
+    }
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .items-table th, .items-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+    .items-table th {
+      background-color: #218838;
+      color: #fff;
+      text-align: left;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 12px;
+      color: #777;
+    }
+    .footer p {
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="${base64Logo}" alt="AVIAXIN Logo">
+      <div class="company-info">
+        <p>Aviaxin</p>
+        <p>871 East 7th Street</p>
+        <p>Saint Paul, Minnesota 55106</p>
+        <p>Phone: 9522131794</p>
+        <p>Mobile: 9522131794</p>
+        <p>aviaxin.com</p>
+      </div>
+    </div>
+    <h1>Invoice</h1>
+    <div class="details">
+      <div>
+        <span class="label">Invoice Number:</span>
+        <span class="value">${invoiceNumber}</span>
+      </div>
+      <div>
+        <span class="label">Invoice Date:</span>
+        <span class="value">${invoiceDate}</span>
+      </div>
+      <div>
+        <span class="label">Payment Due:</span>
+        <span class="value">${paymentDue}</span>
+      </div>
+      <div>
+        <span class="label">Amount Due (USD):</span>
+        <span class="value">${amountDue}</span>
+      </div>
+    </div>
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th>Items</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Clearfield Colony</td>
+          <td>40000</td>
+          <td>$0.03</td>
+          <td>$1,200.00</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3"><strong>Total</strong></td>
+          <td>$1,200.00</td>
+        </tr>
+      </tfoot>
+    </table>
+    <div class="footer">
+      <p>Aviaxin | 871 East 7th Street, Saint Paul, Minnesota 55106</p>
+      <p>Contact: info@aviaxin.com | Phone: +1(952)213-1794</p>
+    </div>
+  </div>
+</body>
+</html>
+
     `;
 
     try {
