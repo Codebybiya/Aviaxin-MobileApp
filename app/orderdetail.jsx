@@ -277,58 +277,53 @@ const OrderDetail = () => {
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
     .header {
-      text-align: left;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 20px;
     }
     .header img {
-      max-width: 200px;
+      max-width: 150px;
     }
     .company-info {
       text-align: right;
-      font-size: 12px;
+      font-size: 14px;
       color: #333;
     }
-    h1 {
+    .invoice-title {
+      text-align: center;
       font-size: 28px;
       font-weight: bold;
-      color: #333;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    .details {
+      color: #218838;
       margin-bottom: 20px;
     }
-    .details div {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 5px;
+    .details-section {
+      margin-bottom: 20px;
     }
-    .details .label {
-      font-size: 14px;
+    .details-section .label {
       font-weight: bold;
       color: #218838;
     }
-    .details .value {
-      font-size: 14px;
+    .details-section .value {
       color: #333;
     }
-    .items-table {
+    .table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
+      margin-bottom: 20px;
     }
-    .items-table th, .items-table td {
+    .table th, .table td {
       border: 1px solid #ddd;
-      padding: 8px;
-    }
-    .items-table th {
-      background-color: #218838;
-      color: #fff;
+      padding: 10px;
       text-align: left;
+    }
+    .table th {
+      background-color: #f4f4f4;
+      color: #218838;
     }
     .footer {
       text-align: center;
-      margin-top: 30px;
+      margin-top: 20px;
       font-size: 12px;
       color: #777;
     }
@@ -339,37 +334,45 @@ const OrderDetail = () => {
 </head>
 <body>
   <div class="container">
+    <!-- Header Section -->
     <div class="header">
       <img src="${base64Logo}" alt="AVIAXIN Logo">
       <div class="company-info">
-        <p>Aviaxin</p>
-        <p>871 East 7th Street</p>
-        <p>Saint Paul, Minnesota 55106</p>
-        <p>Phone: 9522131794</p>
-        <p>Mobile: 9522131794</p>
-        <p>aviaxin.com</p>
+        <strong>Aviaxin</strong><br>
+        871 East 7th Street<br>
+        Saint Paul, Minnesota 55106<br>
+        United States<br>
+        Phone: +1(952)213-1794<br>
+        Mobile: +1(952)213-1794<br>
+        Website: <a href="https://aviaxin.com" target="_blank">aviaxin.com</a>
       </div>
     </div>
-    <h1>Invoice</h1>
-    <div class="details">
-      <div>
-        <span class="label">Invoice Number:</span>
-        <span class="value">${invoiceNumber}</span>
-      </div>
-      <div>
-        <span class="label">Invoice Date:</span>
-        <span class="value">${invoiceDate}</span>
-      </div>
-      <div>
-        <span class="label">Payment Due:</span>
-        <span class="value">${paymentDue}</span>
-      </div>
-      <div>
-        <span class="label">Amount Due (USD):</span>
-        <span class="value">${amountDue}</span>
-      </div>
+
+    <!-- Invoice Title -->
+    <div class="invoice-title">INVOICE</div>
+
+    <!-- Invoice Details Section -->
+    <div class="details-section">
+      <p><strong>BILL TO:</strong></p>
+      <p>Standard Nutrition Company</p>
+      <p>Jody Fox</p>
+      <p>11823 Arbor Street, Suite 100</p>
+      <p>Omaha, Nebraska 68144</p>
+      <p>United States</p>
+      <p>Phone: +1(605)785-3553</p>
+      <p>Email: jfox@standardnutrition.com</p>
     </div>
-    <table class="items-table">
+
+    <div class="details-section">
+      <p><span class="label">Invoice Number:</span> SN-ORT002</p>
+      <p><span class="label">P.O./S.O. Number:</span> N/A</p>
+      <p><span class="label">Invoice Date:</span> October 1, 2024</p>
+      <p><span class="label">Payment Due:</span> October 4, 2024</p>
+      <p><span class="label">Amount Due (USD):</span> $1,200.00</p>
+    </div>
+
+    <!-- Item Table -->
+    <table class="table">
       <thead>
         <tr>
           <th>Items</th>
@@ -381,21 +384,30 @@ const OrderDetail = () => {
       <tbody>
         <tr>
           <td>Clearfield Colony</td>
-          <td>40000</td>
+          <td>40,000</td>
           <td>$0.03</td>
           <td>$1,200.00</td>
         </tr>
       </tbody>
-      <tfoot>
-        <tr>
-          <td colspan="3"><strong>Total</strong></td>
-          <td>$1,200.00</td>
-        </tr>
-      </tfoot>
     </table>
+
+    <!-- Total Section -->
+    <div class="details-section">
+      <p><strong>Total:</strong> $1,200.00</p>
+      <p><strong>Amount Due (USD):</strong> $1,200.00</p>
+    </div>
+
+    <!-- Notes Section -->
+    <div class="details-section">
+      <p><strong>Notes / Terms:</strong></p>
+      <p>Date of Order: 9/11/24</p>
+      <p>Date of First Dose: 10/1/24</p>
+    </div>
+
+    <!-- Footer Section -->
     <div class="footer">
       <p>Aviaxin | 871 East 7th Street, Saint Paul, Minnesota 55106</p>
-      <p>Contact: info@aviaxin.com | Phone: +1(952)213-1794</p>
+      <p>Contact Info: info@aviaxin.com | Phone: +1(952)213-1794</p>
     </div>
   </div>
 </body>
