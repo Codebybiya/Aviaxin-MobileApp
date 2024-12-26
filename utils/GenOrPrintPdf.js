@@ -8,7 +8,7 @@ const formatConfirmationTime = (time) => {
   const date = new Date(time);
   return date.toLocaleString(); // Format date and time into a readable string
 };
-const getBase64Image = async (localUri) => {
+export const getBase64Image = async (localUri) => {
   const asset = Asset.fromModule(localUri);
   await asset.downloadAsync();
 
@@ -33,6 +33,8 @@ const generateHTMLContent = (
   bodyPartsHTML,
   moreInfoHTML
 ) => {
+  const logoSrc =
+    Platform.OS === "web" ? "../assets/images/logo.png" : base64Logo;
   return `
     <html>
       <head>
@@ -54,7 +56,7 @@ const generateHTMLContent = (
       <body>
         <div class="container">
           <div class="header">
-            <img src="${base64Logo}" alt="Company Logo">
+            <img src="https://img.freepik.com/free-vector/bird-colorful-logo-gradient-vector_343694-1365.jpg" alt="AVIAXIN Logo">
           </div>
           <h1>Order Detail</h1>
           <div class="card">
@@ -164,7 +166,7 @@ export const handlePDF = async (action, order, id, showModal) => {
   }
 
   // Prepare data for the PDF
-  const base64Logo = getBase64Image(require("../assets/images/logo.png")); // For mobile, you can replace this with a Base64 string using getBase64Image
+  const base64Logo = await getBase64Image(require("../assets/images/logo.png")); // For mobile, you can replace this with a Base64 string using getBase64Image
   const ortIsolationHTML = ortIsolationInputs
     .map(
       (input) => `
@@ -193,13 +195,9 @@ export const handlePDF = async (action, order, id, showModal) => {
           (info) => `
             <div class="detail-container">
             <div>
-            <span>${info.markedBy?.firstname} ${
-              info.markedBy?.lastname
-            }</span>
+            <span>${info.markedBy?.firstname} ${info.markedBy?.lastname}</span>
             <br>
-            <span>${formatConfirmationTime(
-              info.timeOfMarking
-            )}</span>
+            <span>${formatConfirmationTime(info.timeOfMarking)}</span>
             </div>
               <span class="label">${info.title}:</span>
               <div class="value">

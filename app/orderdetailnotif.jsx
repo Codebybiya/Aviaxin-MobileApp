@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
@@ -9,6 +8,7 @@ import {
   Animated,
   Easing,
   ScrollView,
+  Platform,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import axios from "axios";
@@ -17,8 +17,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "@/context/authcontext/AuthContext";
 import { formatConfirmationTime } from "@/utils/utils";
 import { Table, Row, Rows } from "react-native-table-component";
-import { handlePDF } from "@/utils/GenOrPrintPdf";
-
+import { generatePDF } from "@/utils/GenPDF";
+import { useAlert } from "@/context/alertContext/AlertContext";
 // Backend URL configuration
 const backendUrl = `${config.backendUrl}`;
 
@@ -45,7 +45,7 @@ const OrderDetailNotif = () => {
   const { user } = useAuth();
   const [userrole, setUserrole] = useState("");
   const [confirmedByName, setConfirmedByName] = useState("");
-
+  const {showAlert}=useAlert();
   // Fetch order details on component mount
   useEffect(() => {
     const fetchOrderDetails = async () => {
@@ -123,7 +123,10 @@ const OrderDetailNotif = () => {
           />
           <OrderDetailsCard label="Site Name:" value={order.colonyName} />
           {console.log(order)}
-          <OrderDetailsCard label="Purchase Order No:" value={order.purchaseOrderNo} />
+          <OrderDetailsCard
+            label="Purchase Order No:"
+            value={order.purchaseOrderNo}
+          />
           <OrderDetailsCard
             label="ORT Confirmed Previously:"
             value={order.ortConfirmed ? "Yes" : "No"}
@@ -176,9 +179,29 @@ const OrderDetailNotif = () => {
                 label="Time of Confirmation:"
                 value={formatDate(order.confirmationTime)}
               />
-              <TouchableOpacity onPress={()=>handlePDF("generate",order,orderID,false)} style={styles.button}>
-                <Text style={styles.buttonText}>Print Confirmation</Text>
-              </TouchableOpacity>
+              {Platform.OS !== "web" ? (
+                <View>
+                  <TouchableOpacity
+                    onPress={() => generatePDF(order, "share", showAlert)}
+                    style={styles.button}
+                  >
+                    <Text style={styles.buttonText}>Share Report</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => generatePDF(order, "download", showAlert)}
+                    style={styles.button}
+                  >
+                    <Text style={styles.buttonText}>Print Report</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  onPress={() => generatePDF(order, "download", showAlert)}
+                  style={styles.button}
+                >
+                  <Text style={styles.buttonText}>Print Report</Text>
+                </TouchableOpacity>
+              )}
             </>
           )}
         </View>
@@ -300,7 +323,6 @@ const MoreInfoList = ({ moreInfo, userrole, handleApprove }) =>
           <Text style={styles.approveButtonText}>Approve</Text>
         </TouchableOpacity>
       )}
-
     </View>
   ));
 

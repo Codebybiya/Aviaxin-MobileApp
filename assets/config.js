@@ -8,8 +8,10 @@ const config = {
       : "http://192.168.0.47:8081/aviaxin",
   backendUrl:
     Platform.OS === "web"
-      ? "http://192.168.40.110:8080/aviaxin"
-      : "http://192.168.40.110:8080/aviaxin",
+      // ? "http://192.168.40.110:8080/aviaxin"
+      // : "http://192.168.40.110:8080/aviaxin",
+      ? "https://aviaxin-api.vercel.app/aviaxin"
+      : "https://aviaxin-api.vercel.app/aviaxin",
   //   "https://aviaxin-api-75cc816c85ed.herokuapp.com/aviaxin"
   // : "https://aviaxin-api-75cc816c85ed.herokuapp.com/aviaxin",
 };

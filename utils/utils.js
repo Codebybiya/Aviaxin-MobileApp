@@ -187,3 +187,59 @@ export const formatConfirmationTime = (time) => {
   const date = new Date(time);
   return date.toLocaleDateString("en-GB"); // "DD/MM/YYYY" format
 };
+
+// import { pdf } from "@react-pdf/renderer";
+// import * as FileSystem from "expo-file-system";
+// import * as Sharing from "expo-sharing";
+// import OrderPDFDocument from "./OrderPdfDocument";
+
+// // Save and Share PDF
+// export const saveAndSharePDF = async (order) => {
+//   const logo =
+//     "https://img.freepik.com/free-vector/bird-colorful-logo-gradient-vector_343694-1365.jpg";
+//   const pdfBlob = await pdf(
+//     <OrderPDFDocument order={order} logo={logo} />
+//   ).toBlob();
+
+//   const pdfPath = `${FileSystem.documentDirectory}order_${order?.id}_details.pdf`;
+//   await FileSystem.writeAsStringAsync(pdfPath, pdfBlob, {
+//     encoding: FileSystem.EncodingType.Base64,
+//   });
+
+//   if (await Sharing.isAvailableAsync()) {
+//     await Sharing.shareAsync(pdfPath);
+//   } else {
+//     console.log("Sharing not available");
+//   }
+// };
+
+// export const savePDFToDevice = async (order) => {
+//   const logo =
+//     "https://img.freepik.com/free-vector/bird-colorful-logo-gradient-vector_343694-1365.jpg";
+//   const pdfBlob = await pdf(
+//     <OrderPDFDocument order={order} logo={logo} />
+//   ).toBlob();
+
+//   const pdfPath = `${FileSystem.documentDirectory}order_${order?.id}_details.pdf`;
+//   await FileSystem.writeAsStringAsync(pdfPath, pdfBlob, {
+//     encoding: FileSystem.EncodingType.Base64,
+//   });
+
+//   console.log(`PDF saved to: ${pdfPath}`);
+// };
+
+// import { PDFDownloadLink } from "@react-pdf/renderer";
+
+// export const downloadPDF = (order) => {
+//   console.log("Order:", order);
+//   const logo =
+//     "https://img.freepik.com/free-vector/bird-colorful-logo-gradient-vector_343694-1365.jpg";
+//   return (
+//     <PDFDownloadLink
+//       document={<OrderPDFDocument order={order} logo={logo} />}
+//       fileName={`order_${order?.id || "unknown"}_details.pdf`}
+//     >
+//       {({ loading }) => (loading ? "Generating PDF..." : "Download PDF")}
+//     </PDFDownloadLink>
+//   );
+// };
