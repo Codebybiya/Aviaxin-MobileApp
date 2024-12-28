@@ -9,7 +9,6 @@ import {
   ortIsolationConfirmationInputs,
   ortVaccinationInputs,
 } from "@/constants/constants";
-import { Buffer } from "buffer";
 // Set the font for pdfMake
 pdfMake.vfs = pdfFonts?.pdfMake?.vfs;
 
@@ -43,10 +42,11 @@ export const generatePDF = async (order, action, showAlert) => {
         : require("../assets/images/logo.png"); // Replace with your logo URL or asset
     const logoDataUrl = await getBase64Image(logoUrl);
     // Mocked Inputs (Replace with actual data if needed)
-    const orderDetails = [
+    let orderDetails = [
       ...ortVaccinationInputs,
       ...ortIsolationConfirmationInputs,
     ];
+
     const dynamicColumns = reduceColumns(orderDetails, order);
     const moreInfo = order.moreInfo || [];
     const newDetails = reduceColumns(moreInfo, order, true);
@@ -210,29 +210,29 @@ export const generatePDF = async (order, action, showAlert) => {
 };
 
 export const reduceColumns = (orderDetails, order, prepare) => {
-  return orderDetails.reduce((acc, detail, index) => {
+  return orderDetails?.reduce((acc, detail, index) => {
     if (prepare) {
       acc.push({
         columns: [
           {
             stack: [
-              { text: detail.markedBy.firstname || "N/A", style: "label" },
+              { text: detail?.markedBy.firstname || "N/A", style: "label" },
               {
-                text: detail.timeOfMarking
-                  ? new Date(detail.timeOfMarking).toLocaleDateString()
+                text: detail?.timeOfMarking
+                  ? new Date(detail?.timeOfMarking).toLocaleDateString()
                   : "N/A",
                 style: "date",
               },
             ],
             width: "10%",
           },
-          { text: detail.title || "N/A", style: "label", width: "80%" },
+          { text: detail?.title || "N/A", style: "label", width: "80%" },
           {
             stack: [
-              { text: detail.approvedBy.firstname || "N/A", style: "label" },
+              { text: detail?.approvedBy.firstname || "N/A", style: "label" },
               {
-                text: detail.timeOfApproval
-                  ? new Date(detail.timeOfApproval).toLocaleDateString()
+                text: detail?.timeOfApproval
+                  ? new Date(detail?.timeOfApproval).toLocaleDateString()
                   : "N/A",
                 style: "date",
               },
@@ -244,36 +244,46 @@ export const reduceColumns = (orderDetails, order, prepare) => {
     } else {
       const columnIndex = Math.floor(index / 2);
       if (!acc[columnIndex]) acc[columnIndex] = { columns: [] };
-      acc[columnIndex].columns.push({
-        columns: [
-          { text: detail.label, style: "label", width: "60%" },
-          { text: order[detail.name] || "N/A", style: "value", width: "40%" },
-        ],
-        margin: [0, 5, 0, 5],
-      });
+      console.log("Detail", detail);
+      // Check if the detail corresponds to bodyparts
+      if (detail.name === "bodyParts" && Array.isArray(order.bodyParts)) {
+        // Include bodyparts dynamically
+        const bodypartsText = order.bodyParts
+          .map((part) => part.text || "N/A")
+          .join(", ");
+        acc[columnIndex].columns.push({
+          columns: [
+            {
+              text: detail?.label || "Body Parts",
+              style: "label",
+              width: "60%",
+            },
+            { text:bodypartsText, style: "value", width: "40%" },
+          ],
+          margin: [0, 5, 0, 5],
+        });
+      } else {
+        // Handle other details
+        acc[columnIndex].columns.push({
+          columns: [
+            { text: detail?.label, style: "label", width: "60%" },
+            {
+              text: order[detail?.name] || "N/A",
+              style: "value",
+              width: "40%",
+            },
+          ],
+          margin: [0, 5, 0, 5],
+        });
+      }
     }
+
     return acc;
   }, []);
 };
 
 export const generateHTMLContent = (order, details, logoBase64) => {
   // Render `orderDetails` dynamically
-  // const orderDetailsHTML = details
-  //   ? details
-  //       .map(
-  //         (detail) => `
-  //           <div class="row">
-  //             <div class="col">
-  //               <span class="label">${detail.label || "N/A"}</span>
-  //             </div>
-  //             <div class="col">
-  //               <span class="value">${order[detail.name] || "N/A"}</span>
-  //             </div>
-  //           </div>
-  //         `
-  //       )
-  //       .join("")
-  //   : "";
   const orderDetailsHTML = details
     ? details.reduce((html, detail, index) => {
         // Open a new row for every two details
@@ -284,8 +294,8 @@ export const generateHTMLContent = (order, details, logoBase64) => {
         // Add detail to the row
         html += `
           <div class="col">
-            <span class="label">${detail.label || "N/A"}:</span>
-            <span class="value">${order[detail.name] || "N/A"}</span>
+            <span class="label">${detail?.label || "N/A"}:</span>
+            <span class="value">${order[detail?.name] || "N/A"}</span>
           </div>
         `;
 
